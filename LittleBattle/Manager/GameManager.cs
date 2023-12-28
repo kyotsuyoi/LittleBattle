@@ -22,6 +22,7 @@ public class GameManager
 
         resolution = new Resolution(game, graphics, _canvas);
         resolution.SetResolution(Globals.Size);
+        resolution.SetFullScreen();
         player1 = new Sprite(new Vector2((Globals.Size.Width / 2) + 10, 504), Enums.Player.Player1);
         player2 = new Sprite(new Vector2((Globals.Size.Width / 2) - 10, 504), Enums.Player.Player2);
         Globals.Gravity = 10;

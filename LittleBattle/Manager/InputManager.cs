@@ -47,11 +47,10 @@ public static class InputManager
             player.Walk = false;
         }
 
-
-        if (keyboard.IsKeyDown(Keys.W) && player.Position.Y > 0)
-        {
-            player.Position = new Vector2(player.Position.X, 200);
-        }
+        //if (keyboard.IsKeyDown(Keys.W) && player.Position.Y > 0)
+        //{
+        //    player.Position = new Vector2(player.Position.X, 200);
+        //}
 
         if (keyboard.IsKeyDown(Keys.Space) && !jump_key_pressed
         && !player.Jump && player.Ground
