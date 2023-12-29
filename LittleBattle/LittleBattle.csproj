@@ -105,6 +105,9 @@
     </Compile>
     <Compile Include="Manager\AnimationManager.cs" />
     <Compile Include="Manager\BackgroundManager.cs" />
+    <Compile Include="Manager\BotManager.cs" />
+    <Compile Include="Classes\Colision.cs" />
+    <Compile Include="Manager\DebugManager.cs" />
     <Compile Include="Manager\GameManager.cs" />
     <Compile Include="Manager\InputManager.cs" />
     <Compile Include="Model\Canvas.cs" />
@@ -118,14 +121,6 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Character01.png" />
-    <Content Include="Content\Ground.png" />
-    <Content Include="Content\oie_transparent.png" />
-    <Content Include="Content\screen.png" />
-    <Content Include="Content\Sprite.png" />
-    <Content Include="Content\Sprite_x3.png" />
-    <Content Include="Content\Trees.png" />
-    <Content Include="Content\Trees1.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

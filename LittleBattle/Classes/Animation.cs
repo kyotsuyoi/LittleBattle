@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace LittleBattle.Classes
 {
@@ -14,24 +15,26 @@ namespace LittleBattle.Classes
         private float _frameTimeLeft;
         private bool _active = true;
         private SpriteEffects spriteEffects;
+        private bool loop;
 
-        public Animation(Texture2D texture, int framesX, int framesY, int framesStart, int framesEnd, float frameTime, int row, bool flip)
+        public bool EndLoop { get; set; }
+
+        public Animation(Texture2D texture, int framesX, int framesY, int framesStart, int framesEnd, float frameTime, int row, bool flip, bool loop)
         {
             _texture = texture;
             _frameTime = frameTime;
             _frameTimeLeft = _frameTime;
             _frames = framesX;
+            this.loop = loop;
+            EndLoop = false;
 
             var frameWidth = _texture.Width / framesX;
             var frameHeight = _texture.Height / framesY;
 
+            spriteEffects = SpriteEffects.None;
             if (flip)
             {
                 spriteEffects = SpriteEffects.FlipHorizontally;
-            }
-            else
-            {
-                spriteEffects = SpriteEffects.None;
             }
 
             int framesCount = 0;
@@ -60,10 +63,13 @@ namespace LittleBattle.Classes
         {
             _frame = 0;
             _frameTimeLeft = _frameTime;
+            EndLoop = false;
         }
 
         public void Update(bool fastAnimation, int specificFrame = -1)
         {
+            if(!loop)Globals.SpriteFrame = _frame;
+
             if (!_active) return;
             if (specificFrame != -1)
             {
@@ -71,11 +77,8 @@ namespace LittleBattle.Classes
                 return;
             }
 
+            _frameTimeLeft -= Globals.ElapsedSeconds;
             if (fastAnimation)
-            {
-                _frameTimeLeft -= Globals.ElapsedSeconds * 2;
-            }
-            else
             {
                 _frameTimeLeft -= Globals.ElapsedSeconds;
             }
@@ -83,6 +86,11 @@ namespace LittleBattle.Classes
             if (_frameTimeLeft <= 0)
             {
                 _frameTimeLeft += _frameTime;
+                if (!loop && _frame == _frames-1)
+                {
+                    EndLoop = true;
+                    return;
+                }
                 _frame = (_frame + 1) % _frames;
             }
         }

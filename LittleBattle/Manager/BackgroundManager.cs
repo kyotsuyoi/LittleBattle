@@ -15,11 +15,11 @@ public class BackgroundManager
         _layers.Add(layer);
     }
 
-    public void Update(float movement)
+    public void Update()
     {
         foreach (var layer in _layers)
         {
-            layer.Update(movement);
+            layer.Update();
         }
     }
 

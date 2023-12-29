@@ -1,14 +1,13 @@
 using LittleBattle.Classes;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Drawing;
-using static LittleBattle.Classes.Enums;
 
 public static class InputManager
 {
     private static KeyboardState _lastKeyboard;
     private static KeyboardState _currentKeyboard;
     public static bool jump_key_pressed = false;
+    public static bool attack_key_pressed = false;
 
     public static bool IsKeyPressed(Keys key)
     {
@@ -25,8 +24,8 @@ public static class InputManager
         _lastKeyboard = _currentKeyboard;
         _currentKeyboard = Keyboard.GetState();
         KeyboardState keyboard = Keyboard.GetState();
-        if(player.Player == Enums.Player.Player1) Player1(keyboard, player);
-        if (player.Player == Enums.Player.Player2) Player2(keyboard, player);
+        if(player.spriteType == Enums.SpriteType.Player1) Player1(keyboard, player);
+        if(player.spriteType == Enums.SpriteType.Player2) Player2(keyboard, player);
     }
 
     private static void Player1(KeyboardState keyboard, Sprite player)
@@ -60,9 +59,20 @@ public static class InputManager
             player.Jump = true;
         }
 
-        if (keyboard.IsKeyUp(Keys.Space) /*&& player.Position.Y >= 504*/)
+        if (keyboard.IsKeyUp(Keys.Space))
         {
             jump_key_pressed = false;
+        }
+
+        if (keyboard.IsKeyDown(Keys.M) && !attack_key_pressed)
+        {
+            attack_key_pressed = true;
+            player.Attack = true;
+        }
+
+        if (keyboard.IsKeyUp(Keys.M))
+        {
+            attack_key_pressed = false;
         }
     }
 

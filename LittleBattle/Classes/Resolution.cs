@@ -1,8 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Drawing;
-using Windows.UI.ViewManagement;
-using Windows.UI.Xaml;
 
 namespace LittleBattle.Classes
 {

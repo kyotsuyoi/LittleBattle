@@ -23,6 +23,11 @@ public class AnimationManager
         }
     }
 
+    public Animation GetAnimation(object key)
+    {
+        return _anims[key];
+    }
+
     public void Draw(Vector2 position)
     {
         _anims[_lastKey].Draw(position);

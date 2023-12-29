@@ -21,7 +21,7 @@ namespace LittleBattle.Classes
             _depth = depth;
             _moveScale = moveScale;
             _defaultSpeed = defaultSpeed;
-            Vector2 _position = new Vector2(0,Globals.Size.Height - texture.Height);
+            Vector2 _position = new Vector2(Globals.Size.Width/2, Globals.Size.Height - texture.Height);
             positions = new List<Vector2>
             {
                 _position
@@ -30,28 +30,30 @@ namespace LittleBattle.Classes
             _movementY = movementY;
         }
 
-        public void Update(float movement)
+        public void Update()
         {
             Vector2 _position = positions[0];
-            _position.X += (movement * 0/*_moveScale*/);
+            Globals.GroundX = _position.X;
+            _position.X += (Globals.CameraMovement * _moveScale);
             positions = new List<Vector2>
             {
                 _position
             };
 
+            float countX = _position.X;
+            while (countX > 0)
+            {
+                _position.X -= _texture.Width;
+                positions.Add(_position);
+                countX -= _texture.Width;
+            }
+
             int i = 0;
             int resRight = (int)((Globals.Size.Width - _position.X) / _texture.Width);
-            int resLeft = (int)(_texture.Width / _position.X);
+            _position = positions[0];
             while (i < resRight)
             {
                 _position.X += _texture.Width;
-                positions.Add(_position);
-                i++;
-            };
-            i = -1;
-            while (i < resLeft)
-            {
-                _position.X -= _texture.Width;
                 positions.Add(_position);
                 i++;
             };
