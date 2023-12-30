@@ -134,15 +134,12 @@ public class Sprite
             FallingSpeed = 0;
         }
 
+        Ground = false;
         if (Position.Y >= GroundLevel)
         {
             Position = new Vector2(Position.X, GroundLevel);
             Attribute.JumpPower = 5;
             Ground = true;
-        }
-        else
-        {
-            Ground = false;
         }
     }
 
@@ -207,6 +204,7 @@ public class Sprite
 
     public void SetAttack()
     {
+        if (Attribute.HP <= 0 && spriteType != Enums.SpriteType.Player1) return;
         if (Attribute.AttackCooldown > 0) return; 
         spriteFXs.Add(new SpriteFX(this, Direction, Enums.SpriteType.SwordAttack, Globals.Content.Load<Texture2D>("Sprites/SwordEffect"), 12, 1));
         Attack = true;
@@ -223,7 +221,6 @@ public class Sprite
     {
         var Owner = spriteFX.Owner;
         var res = (Owner.Attribute.Attack + spriteFX.AttributeFX.Damage) - Attribute.Defense;
-
 
         Attribute.Knockback = spriteFX.AttributeFX.Knockback;
         Attribute.KnockbackSide = spriteFX.Direction;
@@ -245,6 +242,17 @@ public class Sprite
                 damage.Damage(target);
             }
         }        
+    }
+
+    public void SetMovement(Vector2 Direction)
+    {
+        if (Attribute.HP <= 0 && spriteType != Enums.SpriteType.Player1)
+        {
+            this.Direction = Enums.Direction.None;
+            return;
+        }
+        this.Direction = Direction;
+        Walk = true;
     }
 
     public void Draw(SpriteBatch spriteBatch, SpriteFont font)

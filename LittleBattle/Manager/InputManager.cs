@@ -32,13 +32,11 @@ public static class InputManager
     {
         if (keyboard.IsKeyDown(Keys.A))
         {
-            player.Direction = Enums.Direction.WalkLeft;
-            player.Walk = true;
+            player.SetMovement(Enums.Direction.WalkLeft);
         }
         else if (keyboard.IsKeyDown(Keys.D))
         {
-            player.Direction = Enums.Direction.WalkRight;
-            player.Walk = true;
+            player.SetMovement(Enums.Direction.WalkRight);
         }
 
         if (keyboard.IsKeyUp(Keys.A) && keyboard.IsKeyUp(Keys.D))

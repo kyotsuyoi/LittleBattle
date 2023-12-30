@@ -34,13 +34,11 @@ namespace LittleBattle.Manager
                 if ((bot.RelativeX - (player.RelativeX + player.Size.X) < 200)
                     && (player.RelativeX + player.Size.X) * 1 < bot.RelativeX)
                 {
-                    bot.Direction = Enums.Direction.WalkLeft;
-                    bot.Walk = true;
+                    bot.SetMovement(Enums.Direction.WalkLeft);
                 }
                 else
                 {
-                    bot.Direction = Enums.Direction.StandLeft;
-                    bot.Walk = false;
+                    bot.SetMovement(Enums.Direction.StandLeft);
                 }
             }
 
@@ -49,20 +47,17 @@ namespace LittleBattle.Manager
                 if ((player.RelativeX + player.Size.X - bot.RelativeX < 200)
                     && ((bot.RelativeX + bot.Size.X) * 1 < player.RelativeX))
                 {
-                    bot.Direction = Enums.Direction.WalkRight;
-                    bot.Walk = true;
+                    bot.SetMovement(Enums.Direction.WalkRight);
                 }
                 else
                 {
-                    bot.Direction = Enums.Direction.StandRight;
-                    bot.Walk = false;
+                    bot.SetMovement(Enums.Direction.StandRight);
                 }
             }
         }
 
         private void TargetAttack(Sprite bot, Sprite player)
         {
-
             Collision collision = new Collision();
             var collide = collision.SquareCollision(
                 new Vector2((int)bot.RelativeX, 0),
