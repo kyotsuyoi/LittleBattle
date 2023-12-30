@@ -21,8 +21,11 @@ namespace LittleBattle.Manager
             {
                 foreach (var player in players)
                 {
-                    TargetDistance(bot, player);
-                    TargetAttack(bot, player);
+                    if(player.Attribute.HP > 0)
+                    {
+                        TargetDistance(bot, player);
+                        TargetAttack(bot, player);
+                    }
                 }                    
             }
         }

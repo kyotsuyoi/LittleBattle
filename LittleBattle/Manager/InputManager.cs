@@ -44,17 +44,18 @@ public static class InputManager
             player.Walk = false;
         }
 
-        //if (keyboard.IsKeyDown(Keys.W) && player.Position.Y > 0)
-        //{
-        //    player.Position = new Vector2(player.Position.X, 200);
-        //}
+        if (keyboard.IsKeyDown(Keys.W) && player.Position.Y > 0)
+        {
+            player.Attribute.HP = 100;
+            //player.Position = new Vector2(player.Position.X, 200);
+        }
 
         if (keyboard.IsKeyDown(Keys.Space) && !jump_key_pressed
         && !player.Jump && player.Ground
              && player.Position.Y > 0)
         {
             jump_key_pressed = true;
-            player.Jump = true;
+            player.SetJump();
         }
 
         if (keyboard.IsKeyUp(Keys.Space))

@@ -202,13 +202,30 @@ public class Sprite
         return value;
     }
 
+    public void SetMovement(Vector2 Direction)
+    {
+        if (Attribute.HP <= 0/* && spriteType != Enums.SpriteType.Player1*/)
+        {
+            this.Direction = Enums.Direction.None;
+            return;
+        }
+        this.Direction = Direction;
+        Walk = true;
+    }
+
     public void SetAttack()
     {
-        if (Attribute.HP <= 0 && spriteType != Enums.SpriteType.Player1) return;
+        if (Attribute.HP <= 0 /*&& spriteType != Enums.SpriteType.Player1*/) return;
         if (Attribute.AttackCooldown > 0) return; 
         spriteFXs.Add(new SpriteFX(this, Direction, Enums.SpriteType.SwordAttack, Globals.Content.Load<Texture2D>("Sprites/SwordEffect"), 12, 1));
         Attack = true;
         Attribute.AttackCooldown = Attribute.BaseAttackCooldown;
+    }
+
+    public void SetJump()
+    {
+        if (Attribute.HP <= 0 /*&& spriteType != Enums.SpriteType.Player1*/) return;
+        Jump = true;
     }
 
     private void UpdateCooldown()
@@ -244,17 +261,6 @@ public class Sprite
         }        
     }
 
-    public void SetMovement(Vector2 Direction)
-    {
-        if (Attribute.HP <= 0 && spriteType != Enums.SpriteType.Player1)
-        {
-            this.Direction = Enums.Direction.None;
-            return;
-        }
-        this.Direction = Direction;
-        Walk = true;
-    }
-
     public void Draw(SpriteBatch spriteBatch, SpriteFont font)
     {
         _anims.Draw(Position);
@@ -264,7 +270,7 @@ public class Sprite
             attack.Draw();
         }
 
-        spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-        spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y-2), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+        spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y-2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
     }
 }
