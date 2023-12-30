@@ -11,10 +11,20 @@ namespace LittleBattle.Classes
             public static Vector2 None = new Vector2(0, 0); 
             public static Vector2 WalkRight = new Vector2(1, 0);   
             public static Vector2 WalkLeft = new Vector2(-1, 0);
+
             public static Vector2 StandRight = new Vector2(0.1f, 0);
             public static Vector2 StandLeft = new Vector2(-0.1f, 0);
             public static Vector2 AttackRight = new Vector2(0.2f, 0);
             public static Vector2 AttackLeft = new Vector2(-0.2f, 0);
+            public static Vector2 DeadRight = new Vector2(0.3f, 0);
+            public static Vector2 DeadLeft = new Vector2(-0.3f, 0);
+        }
+
+        public enum Side
+        {
+            None = 0,
+            Right = 1,
+            Left = -1,
         }
 
         //public static class ControlKeys

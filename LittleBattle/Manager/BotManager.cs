@@ -1,5 +1,6 @@
 ﻿using LittleBattle.Classes;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace LittleBattle.Manager
@@ -17,17 +18,58 @@ namespace LittleBattle.Manager
 
         public void Update()
         {
-            foreach (var bot in bots)
+            var aliveBots = bots.Where(bot => !bot.IsDead()).ToList();
+            foreach (var bot in aliveBots)
             {
-                foreach (var player in players)
+                var target = SetTarget(bot);
+                if(target != null)
                 {
-                    if(player.Attribute.HP > 0)
-                    {
-                        TargetDistance(bot, player);
-                        TargetAttack(bot, player);
-                    }
-                }                    
+                    TargetDistance(bot, target);
+                    TargetAttack(bot, target);
+                }
+                //if (player.Attribute.HP > 0)
+                //{
+                //    TargetDistance(bot, player);
+                //    TargetAttack(bot, player);
+                //}
             }
+        }
+
+        private Sprite SetTarget(Sprite bot)
+        {
+            Sprite target = null;
+            var alivePlayers = players.Where(player => !player.IsDead()).ToList();
+            if (alivePlayers.Count() <= 0) return target;
+            target = alivePlayers[0];
+            float distance = 0;
+
+            if (bot.RelativeX >= target.RelativeX)
+            {
+                distance = bot.RelativeX - target.RelativeX;
+            }
+            if (bot.RelativeX < target.RelativeX)
+            {
+                distance = target.RelativeX - bot.RelativeX;
+            }
+
+            foreach (var player in alivePlayers)
+            {
+                float inner_distace = 0;
+                if (bot.RelativeX >= player.RelativeX)
+                {
+                    inner_distace = bot.RelativeX - player.RelativeX;
+                }
+                if (bot.RelativeX < player.RelativeX)
+                {
+                    inner_distace = player.RelativeX - bot.RelativeX;
+                }
+                if (inner_distace < distance)
+                {
+                    distance = inner_distace;
+                    target = player;
+                }
+            }
+            return target;
         }
 
         private void TargetDistance(Sprite bot, Sprite player)

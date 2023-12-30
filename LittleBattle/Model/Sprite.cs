@@ -45,8 +45,10 @@ public class Sprite
         _anims.AddAnimation(Enums.Direction.StandLeft, new Animation(texture, framesX, framesY, 0, 3, 0.25f, 1, true, true));
         _anims.AddAnimation(Enums.Direction.WalkRight, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 2, false, true));
         _anims.AddAnimation(Enums.Direction.WalkLeft, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 2, true, true));
-        _anims.AddAnimation(Enums.Direction.AttackRight, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 3, false, false));
-        _anims.AddAnimation(Enums.Direction.AttackLeft, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 3, true, false));
+        _anims.AddAnimation(Enums.Direction.AttackRight, new Animation(texture, framesX, framesY, 0, 3, 0.05f, 3, false, false));
+        _anims.AddAnimation(Enums.Direction.AttackLeft, new Animation(texture, framesX, framesY, 0, 3, 0.05f, 3, true, false));
+        _anims.AddAnimation(Enums.Direction.DeadRight, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 4, false, false));
+        _anims.AddAnimation(Enums.Direction.DeadLeft, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 4, true, false));
 
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
         GroundLevel = Globals.Size.Height - Size.Y -30;
@@ -64,6 +66,7 @@ public class Sprite
         if (spriteType != Enums.SpriteType.Player1)
         {
             Position += new Vector2(Globals.CameraMovement,0);
+            //Attribute.HP--;
         }
         RelativeX = Position.X - Globals.GroundX;
 
@@ -204,13 +207,9 @@ public class Sprite
 
     public void SetMovement(Vector2 Direction)
     {
-        if (Attribute.HP <= 0/* && spriteType != Enums.SpriteType.Player1*/)
-        {
-            this.Direction = Enums.Direction.None;
-            return;
-        }
-        this.Direction = Direction;
+        if (IsDead()) return;        
         Walk = true;
+        if (!Attack) this.Direction = Direction;
     }
 
     public void SetAttack()
@@ -239,15 +238,15 @@ public class Sprite
         var Owner = spriteFX.Owner;
         var res = (Owner.Attribute.Attack + spriteFX.AttributeFX.Damage) - Attribute.Defense;
 
+        Attribute.HP -= res;
+        if(IsDead()) return;
+
         Attribute.Knockback = spriteFX.AttributeFX.Knockback;
         Attribute.KnockbackSide = spriteFX.Direction;
         if (spriteType == Enums.SpriteType.Player1)
         {
             Attribute.Knockback = Attribute.Knockback / 2;
         }
-
-        Attribute.HP -= res;
-        if (Attribute.HP < 0) Attribute.HP = 0;
     }
 
     public void UpdateSpriteFXDamage(List<Sprite> targets)
@@ -261,6 +260,78 @@ public class Sprite
         }        
     }
 
+    private Enums.Side GetSide()
+    {
+        if (Direction == Enums.Direction.StandRight
+            || Direction == Enums.Direction.WalkRight
+            || Direction == Enums.Direction.AttackRight
+            || Direction == Enums.Direction.DeadRight
+        )
+        {
+            return Enums.Side.Right;
+        }
+
+        if (Direction == Enums.Direction.StandLeft 
+            || Direction == Enums.Direction.WalkLeft
+            || Direction == Enums.Direction.AttackLeft
+            || Direction == Enums.Direction.DeadLeft
+        )
+        {
+            return Enums.Side.Left;
+        }
+
+        return Enums.Side.None;
+    }
+
+    public void Revive()
+    {
+        if (!IsDead()) return;
+        Attribute.HP = Attribute.BaseHP;
+        var animRight = _anims.GetAnimation(Enums.Direction.DeadRight);
+        var animLeft = _anims.GetAnimation(Enums.Direction.DeadLeft);
+
+        if (animRight.EndLoop)
+        {
+            animRight.Reset();
+            Direction = Enums.Direction.StandRight;
+        }
+
+        if (animLeft.EndLoop)
+        {
+            animLeft.Reset();
+            Direction = Enums.Direction.StandLeft;
+        }
+    }
+
+    public bool IsDead()
+    {
+        if(Attribute.HP <= 0)
+        {
+            Dead();
+            return true;
+        }
+        return false;
+    }
+
+    private void Dead() {
+        Attribute.HP = 0;
+        spriteFXs = new List<SpriteFX>();
+
+        if (GetSide() == Enums.Side.Right)
+        {
+            Direction = Enums.Direction.DeadRight;
+        }
+        if (GetSide() == Enums.Side.Left)
+        {
+            Direction = Enums.Direction.DeadLeft;
+        }
+    }
+
+    public int GetSpriteFXCount()
+    {
+        return spriteFXs.Count();
+    }
+
     public void Draw(SpriteBatch spriteBatch, SpriteFont font)
     {
         _anims.Draw(Position);
@@ -270,6 +341,7 @@ public class Sprite
             attack.Draw();
         }
 
+        if (IsDead()) return;
         spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y-2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
     }

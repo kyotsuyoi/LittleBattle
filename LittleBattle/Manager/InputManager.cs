@@ -1,13 +1,20 @@
 using LittleBattle.Classes;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 
 public static class InputManager
 {
     private static KeyboardState _lastKeyboard;
     private static KeyboardState _currentKeyboard;
-    public static bool jump_key_pressed = false;
-    public static bool attack_key_pressed = false;
+
+    public static bool p1_jump_key_pressed = false;
+    public static bool p1_attack_key_pressed = false;
+
+    public static bool p2_jump_key_pressed = false;
+    public static bool p2_attack_key_pressed = false;
 
     public static bool IsKeyPressed(Keys key)
     {
@@ -19,16 +26,41 @@ public static class InputManager
         return _currentKeyboard.IsKeyDown(key) && _lastKeyboard.IsKeyUp(key);
     }
 
-    public static void Update(Sprite player)
+    public static void Update(Sprite player, List<Sprite> bots)
     {
         _lastKeyboard = _currentKeyboard;
         _currentKeyboard = Keyboard.GetState();
         KeyboardState keyboard = Keyboard.GetState();
-        if(player.spriteType == Enums.SpriteType.Player1) Player1(keyboard, player);
-        if(player.spriteType == Enums.SpriteType.Player2) Player2(keyboard, player);
+        var gamepad = GamePad.GetState(PlayerIndex.One);
+
+        if (player.spriteType == Enums.SpriteType.Player1) 
+        { 
+            if (gamepad.IsConnected)
+            {
+                Player1_Gamepad(gamepad, player);
+            }
+            else
+            {
+                Player1_Keybord(keyboard, player);
+            }
+        }
+
+        if (player.spriteType == Enums.SpriteType.Player2)
+        {
+            if (false /*gamepad.IsConnected*/)
+            {
+                Player1_Gamepad(gamepad, player);
+            }
+            else
+            {
+                Player2_Keybord(keyboard, player);
+            }
+        }
+
+        DebugCommand(keyboard, player, bots);
     }
 
-    private static void Player1(KeyboardState keyboard, Sprite player)
+    private static void Player1_Keybord(KeyboardState keyboard, Sprite player)
     {
         if (keyboard.IsKeyDown(Keys.A))
         {
@@ -44,48 +76,96 @@ public static class InputManager
             player.Walk = false;
         }
 
-        if (keyboard.IsKeyDown(Keys.W) && player.Position.Y > 0)
-        {
-            player.Attribute.HP = 100;
-            //player.Position = new Vector2(player.Position.X, 200);
-        }
-
-        if (keyboard.IsKeyDown(Keys.Space) && !jump_key_pressed
+        if (keyboard.IsKeyDown(Keys.Space) && !p1_jump_key_pressed
         && !player.Jump && player.Ground
              && player.Position.Y > 0)
         {
-            jump_key_pressed = true;
+            p1_jump_key_pressed = true;
             player.SetJump();
         }
 
         if (keyboard.IsKeyUp(Keys.Space))
         {
-            jump_key_pressed = false;
+            p1_jump_key_pressed = false;
         }
 
-        if (keyboard.IsKeyDown(Keys.M) && !attack_key_pressed)
+        if (keyboard.IsKeyDown(Keys.M) && !p1_attack_key_pressed)
         {
-            attack_key_pressed = true;
+            p1_attack_key_pressed = true;
             player.SetAttack();
         }
 
         if (keyboard.IsKeyUp(Keys.M))
         {
-            attack_key_pressed = false;
+            p1_attack_key_pressed = false;
         }
     }
 
-    private static void Player2(KeyboardState keyboard, Sprite player)
+    private static void Player1_Gamepad(GamePadState gamepad, Sprite player)
+    {
+        if (gamepad.DPad.Left == ButtonState.Pressed)
+        {
+            player.SetMovement(Enums.Direction.WalkLeft);
+        }
+        else if (gamepad.DPad.Right == ButtonState.Pressed)
+        {
+            player.SetMovement(Enums.Direction.WalkRight);
+        }
+
+        if (gamepad.DPad.Left == ButtonState.Released && gamepad.DPad.Right == ButtonState.Released)
+        {
+            player.Walk = false;
+        }
+
+        if (gamepad.Buttons.A == ButtonState.Pressed && !p1_jump_key_pressed
+        && !player.Jump && player.Ground
+             && player.Position.Y > 0)
+        {
+            p1_jump_key_pressed = true;
+            player.SetJump();
+        }
+
+        if (gamepad.Buttons.A == ButtonState.Released)
+        {
+            p1_jump_key_pressed = false;
+        }
+
+        if (gamepad.Buttons.X == ButtonState.Pressed && !p1_attack_key_pressed)
+        {
+            p1_attack_key_pressed = true;
+            player.SetAttack();
+        }
+
+        if (gamepad.Buttons.X == ButtonState.Released)
+        {
+            p1_attack_key_pressed = false;
+        }
+    }
+
+    private static void DebugCommand(KeyboardState keyboard, Sprite player, List<Sprite> bots)
+    {
+        if (keyboard.IsKeyDown(Keys.P)) { 
+                player.Revive();            
+        }
+
+        if (keyboard.IsKeyDown(Keys.O))
+        {
+            foreach (var bot in bots)
+            {
+                bot.Revive();
+            }
+        }
+    }
+
+    private static void Player2_Keybord(KeyboardState keyboard, Sprite player)
     {
         if (keyboard.IsKeyDown(Keys.Left))
         {
-            player.Direction = Enums.Direction.WalkLeft;
-            player.Walk = true;
+            player.SetMovement(Enums.Direction.WalkLeft);
         }
         else if (keyboard.IsKeyDown(Keys.Right))
         {
-            player.Direction = Enums.Direction.WalkRight;
-            player.Walk = true;
+            player.SetMovement(Enums.Direction.WalkRight);
         }
 
         if (keyboard.IsKeyUp(Keys.Left) && keyboard.IsKeyUp(Keys.Right))
@@ -93,17 +173,28 @@ public static class InputManager
             player.Walk = false;
         }
 
-        if (keyboard.IsKeyDown(Keys.NumPad0) && !jump_key_pressed
+        if (keyboard.IsKeyDown(Keys.NumPad0) && !p2_jump_key_pressed
         && !player.Jump && player.Ground
              && player.Position.Y > 0)
         {
-            jump_key_pressed = true;
-            player.Jump = true;
+            p2_jump_key_pressed = true;
+            player.SetJump();
         }
 
         if (keyboard.IsKeyUp(Keys.NumPad0) )
         {
-            jump_key_pressed = false;
+            p2_jump_key_pressed = false;
+        }
+
+        if (keyboard.IsKeyDown(Keys.NumPad1) && !p2_attack_key_pressed)
+        {
+            p2_attack_key_pressed = true;
+            player.SetAttack();
+        }
+
+        if (keyboard.IsKeyUp(Keys.NumPad1))
+        {
+            p2_attack_key_pressed = false;
         }
     }
 

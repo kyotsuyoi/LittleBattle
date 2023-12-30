@@ -3,6 +3,7 @@ using LittleBattle.Manager;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Linq;
 
 public class GameManager
 {
@@ -28,14 +29,14 @@ public class GameManager
         resolution.SetFullScreen();
         players = new List<Sprite>
         {
-            new Sprite(new Vector2((Globals.Size.Width / 2) + 10, 504), Enums.SpriteType.Player1, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 3),
-            //new Sprite(new Vector2((Globals.Size.Width / 2) - 10, 504), Enums.SpriteType.Player2, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 3),
+            new Sprite(new Vector2((Globals.Size.Width / 2) + 10, 504), Enums.SpriteType.Player1, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4),
+            new Sprite(new Vector2((Globals.Size.Width / 2) - 10, 504), Enums.SpriteType.Player2, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4),
         };
 
         bots = new List<Sprite>
         {
-            new Sprite(new Vector2((Globals.Size.Width / 2) - 500, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 3),
-            new Sprite(new Vector2((Globals.Size.Width / 2) - 900, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 3),
+            new Sprite(new Vector2((Globals.Size.Width / 2) - 500, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 4),
+            new Sprite(new Vector2((Globals.Size.Width / 2) - 900, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 4),
         };
     
         Globals.Gravity = 10;
@@ -50,11 +51,13 @@ public class GameManager
         InputManager.UpdateResolution(resolution);
         Globals.CameraMovement = players[0].DirectionSpeed();
         backgroundManager.Update();
-        InputManager.Update(players[0]);
-        //InputManager.Update(players[1]);
-        players[0].Update();
-        players[0].UpdateSpriteFXDamage(bots);
-        //player2.Update();
+
+        foreach(var player in players)
+        {
+            InputManager.Update(player, bots);
+            player.Update();
+            player.UpdateSpriteFXDamage(bots);
+        }
         foreach (var bot in bots)
         {
             botManager.Update();
@@ -69,13 +72,30 @@ public class GameManager
 
         spriteBatch.Begin();
         backgroundManager.Draw();
-        foreach (var bot in bots)
+
+        var deadBots = bots.Where(bot => bot.IsDead()).ToList();
+        var aliveBots = bots.Where(bot => !bot.IsDead()).ToList();
+        var deadPlayers = players.Where(player => player.IsDead()).ToList();
+        var alivePlayers = players.Where(player => !player.IsDead()).ToList();
+
+        foreach (var bot in deadBots)
         {
             bot.Draw(spriteBatch, font);
         }
-        //player2.Draw();
-        players[0].Draw(spriteBatch, font);
-        debugManager.Draw(spriteBatch, font, players[0], players[0], bots);
+        foreach (var player in deadPlayers)
+        {
+            player.Draw(spriteBatch, font);
+        }
+        foreach (var bot in aliveBots)
+        {
+            bot.Draw(spriteBatch, font);
+        }
+        alivePlayers = alivePlayers.OrderByDescending(player => player.spriteType).ToList();
+        foreach (var player in alivePlayers)
+        {
+            player.Draw(spriteBatch, font);
+        }
+        debugManager.Draw(spriteBatch, font, players[0], players[1], bots);
         spriteBatch.End();
 
         _canvas.Draw(spriteBatch);
