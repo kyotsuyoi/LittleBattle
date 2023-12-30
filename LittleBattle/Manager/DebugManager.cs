@@ -9,6 +9,9 @@ namespace LittleBattle.Manager
     {
         public void Draw(SpriteBatch spriteBatch, SpriteFont font, Sprite player1, Sprite player2, List<Sprite> bots) {
 
+            spriteBatch.DrawString(font, "Time:" + Globals.TotalSeconds, new Vector2(10, 0), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Time:" + Globals.TotalSeconds, new Vector2(12, 2), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
             spriteBatch.DrawString(font, "player1.Position.X:" + player1.Position.X, new Vector2(10, 20), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "player1.Position.X:" + player1.Position.X, new Vector2(12, 22), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
@@ -40,6 +43,9 @@ namespace LittleBattle.Manager
 
             spriteBatch.DrawString(font, "Globals.SpriteFrame:" + Globals.SpriteFrame.ToString(), new Vector2(10, 220), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "Globals.SpriteFrame:" + Globals.SpriteFrame.ToString(), new Vector2(12, 222), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            spriteBatch.DrawString(font, "player1.Attributes.AttackCooldown:" + player1.Attribute.AttackCooldown.ToString(), new Vector2(10, 240), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "player1.Attributes.AttackCooldown:" + player1.Attribute.AttackCooldown.ToString(), new Vector2(12, 242), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
         }
 
     }

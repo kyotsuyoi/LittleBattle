@@ -8,6 +8,7 @@ namespace LittleBattle.Classes
         {
             //Up,    
             //public static Vector2 Down = new Vector2(0, 0); 
+            public static Vector2 None = new Vector2(0, 0); 
             public static Vector2 WalkRight = new Vector2(1, 0);   
             public static Vector2 WalkLeft = new Vector2(-1, 0);
             public static Vector2 StandRight = new Vector2(0.1f, 0);
@@ -31,6 +32,7 @@ namespace LittleBattle.Classes
             Player1 = 1,
             Player2 = 2,
             Bot = 3,
+            SwordAttack = 50,
         }
 
         public enum Team

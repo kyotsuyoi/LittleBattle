@@ -6,8 +6,7 @@ using System.Collections.Generic;
 
 public class GameManager
 {
-    private readonly Sprite player1;
-    private readonly Sprite player2;
+    private readonly List<Sprite> players;
     private readonly Canvas _canvas;
     private readonly Resolution resolution;
     private readonly BackgroundManager backgroundManager;
@@ -27,34 +26,40 @@ public class GameManager
         resolution = new Resolution(game, graphics, _canvas);
         resolution.SetResolution(Globals.Size);
         resolution.SetFullScreen();
-        player1 = new Sprite(new Vector2((Globals.Size.Width / 2) + 10, 504), Enums.SpriteType.Player1, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 3);
-        player2 = new Sprite(new Vector2((Globals.Size.Width / 2) - 10, 504), Enums.SpriteType.Player2, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 3);
+        players = new List<Sprite>
+        {
+            new Sprite(new Vector2((Globals.Size.Width / 2) + 10, 504), Enums.SpriteType.Player1, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 3),
+            //new Sprite(new Vector2((Globals.Size.Width / 2) - 10, 504), Enums.SpriteType.Player2, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 3),
+        };
+
         bots = new List<Sprite>
         {
             new Sprite(new Vector2((Globals.Size.Width / 2) - 500, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 3),
-            new Sprite(new Vector2((Globals.Size.Width / 2) - 900, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 3)
+            new Sprite(new Vector2((Globals.Size.Width / 2) - 900, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 3),
         };
     
         Globals.Gravity = 10;
 
         font = Globals.Content.Load<SpriteFont>("Font/fontMedium");
         debugManager = new DebugManager();
-        botManager = new BotManager(bots, player1);
+        botManager = new BotManager(bots, players);
 ;    }    
 
     public void Update()
     {
         InputManager.UpdateResolution(resolution);
-        Globals.CameraMovement = player1.DirectionSpeed();
+        Globals.CameraMovement = players[0].DirectionSpeed();
         backgroundManager.Update();
-        InputManager.Update(player1);
-        InputManager.Update(player2);
-        player1.Update();
+        InputManager.Update(players[0]);
+        //InputManager.Update(players[1]);
+        players[0].Update();
+        players[0].UpdateSpriteFXDamage(bots);
         //player2.Update();
         foreach (var bot in bots)
         {
             botManager.Update();
             bot.Update();
+            bot.UpdateSpriteFXDamage(players);
         }
     }
 
@@ -66,11 +71,11 @@ public class GameManager
         backgroundManager.Draw();
         foreach (var bot in bots)
         {
-            bot.Draw();
+            bot.Draw(spriteBatch, font);
         }
         //player2.Draw();
-        player1.Draw();
-        debugManager.Draw(spriteBatch, font, player1, player2, bots);
+        players[0].Draw(spriteBatch, font);
+        debugManager.Draw(spriteBatch, font, players[0], players[0], bots);
         spriteBatch.End();
 
         _canvas.Draw(spriteBatch);

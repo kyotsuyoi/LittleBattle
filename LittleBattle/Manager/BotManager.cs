@@ -7,24 +7,27 @@ namespace LittleBattle.Manager
     public class BotManager
     {
         private List<Sprite> bots;
-        private Sprite player;
+        private List<Sprite> players;
 
-        public BotManager(List<Sprite> bots, Sprite player)
+        public BotManager(List<Sprite> bots, List<Sprite> players)
         {
             this.bots = bots;
-            this.player = player;
+            this.players = players;
         }
 
         public void Update()
         {
             foreach (var bot in bots)
             {
-                TargetDistance(bot);
-                TargetAttack(bot);
+                foreach (var player in players)
+                {
+                    TargetDistance(bot, player);
+                    TargetAttack(bot, player);
+                }                    
             }
         }
 
-        private void TargetDistance(Sprite bot)
+        private void TargetDistance(Sprite bot, Sprite player)
         {
             if (bot.RelativeX >= player.RelativeX)
             {
@@ -57,7 +60,7 @@ namespace LittleBattle.Manager
             }
         }
 
-        private void TargetAttack(Sprite bot)
+        private void TargetAttack(Sprite bot, Sprite player)
         {
 
             Collision collision = new Collision();
@@ -70,7 +73,7 @@ namespace LittleBattle.Manager
 
             if (collide)
             {
-                bot.Attack = true;
+                bot.SetAttack();
             }
         }
     }

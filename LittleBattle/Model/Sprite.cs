@@ -1,13 +1,16 @@
 using LittleBattle.Classes;
+using LittleBattle.Manager;
+using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
+using System.Linq;
 
 public class Sprite
 {
     protected Texture2D texture;
     public Vector2 Position { get; set; }
     public Vector2 Size { get; }
-    public float Speed { get; set; }
     public bool Walk { get; set; }
     public bool Run { get; set; }
     public bool Jump { get; set; }
@@ -15,25 +18,26 @@ public class Sprite
     public bool Ground { get; set; }
     public float GroundLevel { get; set; }
     public float FallingSpeed { get; set; }
-    public float JumpPower { get; set; }
     public Vector2 Direction { get; set; }
     public Enums.SpriteType spriteType { get; }
     public float RelativeX { get; set; }
 
+    private List<SpriteFX> spriteFXs;
+
     private readonly AnimationManager _anims = new AnimationManager();
+    public Attribute Attribute { get; set; }
 
     public Sprite(Vector2 position, Enums.SpriteType spriteType, Texture2D texture, int framesX, int framesY)
     {
         Position = position;
         this.spriteType = spriteType;
+        Attribute = new Attribute();
 
-        Speed = 1;
-        if (spriteType == Enums.SpriteType.Bot) Speed = 0.5f;
+        if (spriteType == Enums.SpriteType.Bot) Attribute.Speed = 0.5f;
 
         Jump = false;
         Ground = false;
         FallingSpeed = 0;
-        JumpPower = 5;
         Direction = Enums.Direction.StandRight;
 
         this.texture = texture;
@@ -46,14 +50,16 @@ public class Sprite
 
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
         GroundLevel = Globals.Size.Height - Size.Y -30;
+        spriteFXs = new List<SpriteFX>();
     }
 
     public void Update()
     {
         AnimationResolve();
+        AttackResolve();
+        UpdateCooldown();
         JumpResolve();
         FallingResolve();
-        AttackResolve();
 
         if (spriteType != Enums.SpriteType.Player1)
         {
@@ -61,13 +67,19 @@ public class Sprite
         }
         RelativeX = Position.X - Globals.GroundX;
 
+        foreach(var attack in spriteFXs)
+        {
+            attack.Update();
+        }
+        spriteFXs = spriteFXs.Where(attack => attack.Active == true).ToList();
+
         _anims.Update(Direction, Walk);
     }
 
     private void AnimationResolve()
     {
-        var speed = Speed;
-        if (spriteType != Enums.SpriteType.Player1) speed = Speed * 2;
+        var speed = Attribute.Speed;
+        if (spriteType != Enums.SpriteType.Player1) speed = Attribute.Speed * 2;
         if ((Position.X <= 0 && Direction == Enums.Direction.WalkLeft)
             || (Position.X >= Globals.Size.Width - Size.X && Direction == Enums.Direction.WalkRight)) Walk = false;
 
@@ -93,6 +105,20 @@ public class Sprite
                 Direction = Enums.Direction.StandRight;
             }
         }
+
+        if(Attribute.Knockback > 0)
+        {
+            if(Attribute.KnockbackSide == Enums.Direction.StandRight)
+            {
+                Position += new Vector2(Attribute.Knockback, 0);
+            }
+            if (Attribute.KnockbackSide == Enums.Direction.StandLeft)
+            {
+                Position += new Vector2(-Attribute.Knockback, 0);
+            }
+            Attribute.Knockback-= 0.5f;
+            if (Attribute.Knockback <= 0) Attribute.Knockback = 0;
+        }
     }
 
     private void FallingResolve()
@@ -111,7 +137,7 @@ public class Sprite
         if (Position.Y >= GroundLevel)
         {
             Position = new Vector2(Position.X, GroundLevel);
-            JumpPower = 5;
+            Attribute.JumpPower = 5;
             Ground = true;
         }
         else
@@ -125,11 +151,11 @@ public class Sprite
         if (Jump)
         {
             Ground = false;
-            Position += new Vector2(0, -JumpPower);
-            JumpPower -= 0.25f;
-            if (JumpPower <= 0)
+            Position += new Vector2(0, -Attribute.JumpPower);
+            Attribute.JumpPower -= 0.25f;
+            if (Attribute.JumpPower <= 0)
             {
-                JumpPower = 0;
+                Attribute.JumpPower = 0;
                 Jump = false;
             }
         }
@@ -147,36 +173,90 @@ public class Sprite
             {
                 Direction = Enums.Direction.AttackLeft;
             }
-            //Attack = false;
-        }
+        }        
+
         var animRight = _anims.GetAnimation(Enums.Direction.AttackRight);
         var animLeft = _anims.GetAnimation(Enums.Direction.AttackLeft);
 
-        if (animRight.EndLoop)
+        if (animRight.EndLoop && Attack)
         {
             animRight.Reset();
             Attack = false;
             Direction = Enums.Direction.StandRight;
         }
 
-        if (animLeft.EndLoop)
+        if (animLeft.EndLoop && Attack)
         {
             animLeft.Reset();
-            Attack = false;
+            Attack = false; 
             Direction = Enums.Direction.StandLeft;
         }
-
     }
 
     public float DirectionSpeed()
     {
-        if (Direction == Enums.Direction.WalkLeft && Walk) return Speed;
-        if (Direction == Enums.Direction.WalkRight && Walk) return -Speed;
-        return 0;
+        var value = Attribute.Knockback;
+        if(Attribute.KnockbackSide == Enums.Direction.StandRight)
+        {
+            value = -value;
+        }
+        if (Direction == Enums.Direction.WalkLeft && Walk) value = Attribute.Speed + value;
+        if (Direction == Enums.Direction.WalkRight && Walk) value = -Attribute.Speed + value;
+        return value;
     }
 
-    public void Draw()
+    public void SetAttack()
+    {
+        if (Attribute.AttackCooldown > 0) return; 
+        spriteFXs.Add(new SpriteFX(this, Direction, Enums.SpriteType.SwordAttack, Globals.Content.Load<Texture2D>("Sprites/SwordEffect"), 12, 1));
+        Attack = true;
+        Attribute.AttackCooldown = Attribute.BaseAttackCooldown;
+    }
+
+    private void UpdateCooldown()
+    {
+        Attribute.AttackCooldown-=Globals.ElapsedSeconds;
+        if (Attribute.AttackCooldown < 0) Attribute.AttackCooldown = 0;
+    }
+
+    public void TakeDamage(SpriteFX spriteFX)
+    {
+        var Owner = spriteFX.Owner;
+        var res = (Owner.Attribute.Attack + spriteFX.AttributeFX.Damage) - Attribute.Defense;
+
+
+        Attribute.Knockback = spriteFX.AttributeFX.Knockback;
+        Attribute.KnockbackSide = spriteFX.Direction;
+        if (spriteType == Enums.SpriteType.Player1)
+        {
+            Attribute.Knockback = Attribute.Knockback / 2;
+        }
+
+        Attribute.HP -= res;
+        if (Attribute.HP < 0) Attribute.HP = 0;
+    }
+
+    public void UpdateSpriteFXDamage(List<Sprite> targets)
+    {
+        foreach(var target in targets)
+        {
+            foreach (var damage in spriteFXs)
+            {
+                damage.Damage(target);
+            }
+        }        
+    }
+
+    public void Draw(SpriteBatch spriteBatch, SpriteFont font)
     {
         _anims.Draw(Position);
+
+        foreach (var attack in spriteFXs)
+        {
+            attack.Draw();
+        }
+
+        spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y-2), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
     }
 }

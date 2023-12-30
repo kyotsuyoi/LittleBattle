@@ -11,8 +11,10 @@
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite01_x3.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite02_x3.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/SwordEffect.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

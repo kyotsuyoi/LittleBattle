@@ -67,7 +67,7 @@ public static class InputManager
         if (keyboard.IsKeyDown(Keys.M) && !attack_key_pressed)
         {
             attack_key_pressed = true;
-            player.Attack = true;
+            player.SetAttack();
         }
 
         if (keyboard.IsKeyUp(Keys.M))
