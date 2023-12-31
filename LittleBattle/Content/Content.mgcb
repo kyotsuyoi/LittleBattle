@@ -25,7 +25,7 @@
 /processorParam:TextureFormat=Color
 /build:Background/Ground.png
 
-#begin Background/oie_transparent.png
+#begin Background/Mountain.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -35,7 +35,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Background/oie_transparent.png
+/build:Background/Mountain.png
 
 #begin Background/Trees.png
 /importer:TextureImporter
@@ -91,6 +91,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Sprites/Sprite02_x3.png
+
+#begin Sprites/SpriteCameraman_x3.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/SpriteCameraman_x3.png
 
 #begin Sprites/SwordEffect.png
 /importer:TextureImporter

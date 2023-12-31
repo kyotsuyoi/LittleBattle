@@ -9,13 +9,16 @@ namespace LittleBattle.Classes
     {
         public static ContentManager Content { get; set; }
         public static SpriteBatch SpriteBatch { get; set; }
-        public static Size Size { get; set;  }
+        public static Size Size { get; set; }
+        public static Size PositiveLimit { get; set; }
+        public static Size NegativeLimit { get; set; }
         public static float ElapsedSeconds { get; set; }
         public static float TotalSeconds { get; set; }
         public static float Gravity { get; set; }
         public static float GroundX { get; set; }
         public static float CameraMovement { get; set; }
         public static int SpriteFrame { get; set; }
+
         public static void Update(GameTime gameTime)
         {
             ElapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;

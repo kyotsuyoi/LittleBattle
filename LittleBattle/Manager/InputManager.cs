@@ -16,6 +16,8 @@ public static class InputManager
     public static bool p2_jump_key_pressed = false;
     public static bool p2_attack_key_pressed = false;
 
+    public static bool visibleCamerman = false;
+
     public static bool IsKeyPressed(Keys key)
     {
         return _currentKeyboard.IsKeyDown(key) && _lastKeyboard.IsKeyUp(key);
@@ -167,11 +169,11 @@ public static class InputManager
     {
         if (keyboard.IsKeyDown(Keys.Left))
         {
-            //player.SetMovement(Enums.Direction.WalkLeft);
+            player.SetMovement(true, Enums.Side.Left);
         }
         else if (keyboard.IsKeyDown(Keys.Right))
         {
-            //player.SetMovement(Enums.Direction.WalkRight);
+            player.SetMovement(true, Enums.Side.Right);
         }
 
         if (keyboard.IsKeyUp(Keys.Left) && keyboard.IsKeyUp(Keys.Right))
@@ -208,7 +210,6 @@ public static class InputManager
     {
         _lastKeyboard = _currentKeyboard;
         _currentKeyboard = Keyboard.GetState();
-        KeyboardState keyboard = Keyboard.GetState();
         if (IsKeyPressed(Keys.F1)) resolution.SetResolution(new Size(600, 400));
         if (IsKeyPressed(Keys.F2)) resolution.SetResolution(new Size(800, 600));
         if (IsKeyPressed(Keys.F3)) resolution.SetResolution(new Size(1280, 720));
@@ -216,6 +217,15 @@ public static class InputManager
         //if (InputManager.IsKeyPressed(Keys.F4)) SetBorderlessScreen();
         if (IsKeyPressed(Keys.F5)) { 
             resolution.SetFullScreen(); 
+        }
+        if (IsKeyPressed(Keys.F6))
+        {
+            if (visibleCamerman)
+            {
+                visibleCamerman = false;
+                return;
+            }
+            visibleCamerman = true;            
         }
     }
 }

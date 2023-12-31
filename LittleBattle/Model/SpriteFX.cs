@@ -41,6 +41,7 @@ public class SpriteFX
         Ground = false;
         FallingSpeed = 0;
         Direction = direction;
+        AttributeFX.Range += Owner.Attribute.Range;
 
         this.texture = texture;
         _anims.AddAnimation(Enums.Direction.StandRight, new Animation(texture, framesX, framesY, 0, 11, 0.01f, 1, false, false));

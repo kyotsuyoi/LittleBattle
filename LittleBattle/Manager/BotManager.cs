@@ -3,16 +3,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
+using Windows.UI.Xaml.Controls;
 
 namespace LittleBattle.Manager
 {
     public class BotManager
     {
+        private Sprite Cameraman;
         private List<Sprite> bots;
         private List<Sprite> players;
 
-        public BotManager(List<Sprite> bots, List<Sprite> players)
+        private float lastSecond = 0;
+
+        public BotManager(Sprite Cameraman, List<Sprite> bots, List<Sprite> players)
         {
+            this.Cameraman = Cameraman;
             this.bots = bots;
             this.players = players;
         }
@@ -36,6 +42,69 @@ namespace LittleBattle.Manager
                     Patrol(bot);
                 }
             }
+        }
+
+        public void UpdateCamerman()
+        {
+            var player_position_side = players[0].Position;
+            if (Cameraman.GetSide() != players[0].GetSide())
+            {
+                Cameraman.Attribute.Speed = 4;
+                lastSecond = Globals.TotalSeconds - 1f;
+            }
+            if (players[0].GetSide() == Enums.Side.Right)
+            {
+                player_position_side *= new Vector2(1.25f, 1);
+            }
+            if (players[0].GetSide() == Enums.Side.Left)
+            {
+                player_position_side /= new Vector2(1.25f, 1);
+            }
+            Collision collision = new Collision();
+            var collide = collision.SquareCollision(
+                Cameraman.Position,
+                Cameraman.Size,
+                player_position_side,
+                players[0].Size
+            );
+
+            if (collide)
+            {
+                Cameraman.Attribute.Speed = 1;
+                Cameraman.SetMovement(false, Enums.Side.None);
+                return;
+            }
+
+            if (Globals.TotalSeconds - lastSecond < 1f)
+            {
+                return;
+            }
+
+            lastSecond = Globals.TotalSeconds;
+
+            if (players[0].GetSide() == Enums.Side.Left)
+            {
+                Cameraman.Attribute.Speed += 0.5f;
+                Cameraman.SetMovement(true, Enums.Side.Left);
+            }
+
+            if (players[0].GetSide() == Enums.Side.Right)
+            {
+                Cameraman.Attribute.Speed += 0.5f;
+                Cameraman.SetMovement(true, Enums.Side.Right);
+            }
+
+            //if ((Cameraman.RelativeX + Cameraman.Size.X) /2  > (player_position_side.X + players[0].Size.X) /2)
+            //{
+            //    Cameraman.Attribute.Speed += 0.1f;
+            //    Cameraman.SetMovement(true, Enums.Side.Left);                
+            //}
+
+            //if ((Cameraman.RelativeX + Cameraman.Size.X) /2 < (player_position_side.X + players[0].Size.X) /2)
+            //{
+            //    Cameraman.Attribute.Speed += 0.1f;
+            //    Cameraman.SetMovement(true, Enums.Side.Right);                
+            //}
         }
 
         private Sprite SetTarget(Sprite bot)

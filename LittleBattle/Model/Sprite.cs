@@ -83,7 +83,7 @@ public class Sprite
         JumpResolve();
         FallingResolve();
 
-        if (spriteType != Enums.SpriteType.Player1)
+        if (spriteType != Enums.SpriteType.None)
         {
             Position += new Vector2(Globals.CameraMovement,0);
         }
@@ -104,20 +104,22 @@ public class Sprite
         if (spriteType != Enums.SpriteType.Player1) speed = Attribute.Speed * 2;
         if ((Position.X <= 0 && GetSide() == Enums.Side.Left)
             || (Position.X >= Globals.Size.Width - Size.X && GetSide() == Enums.Side.Right)) Walk = false;
+
+        if (ID == 0) speed = 0;
         if (Walk)
         {
-            if (GetSide() == Enums.Side.Left)
+            if (GetSide() == Enums.Side.Left && Globals.NegativeLimit.Width < RelativeX)
             {
                 Position += new Vector2(-speed, 0);
             }
-            else if (GetSide() == Enums.Side.Right)
+            else if (GetSide() == Enums.Side.Right && Globals.PositiveLimit.Width > RelativeX + Size.X)
             {
                 Position += new Vector2(speed, 0);
             }
         }
         else
         {
-            if (GetSide() == Enums.Side.Left)
+            if (GetSide() == Enums.Side.Left )
             {
                 Direction = Enums.Direction.StandLeft;
             }
@@ -369,8 +371,14 @@ public class Sprite
         return spriteFXs.Count();
     }
 
+    public void CenterX_Adjust()
+    {
+        Position = new Vector2(Position.X - Size.X / 2, Position.Y);
+    }
+
     public void Draw(SpriteBatch spriteBatch, SpriteFont font)
     {
+        //if (ID == 0) return;
         _anims.Draw(Position);
 
         foreach (var attack in spriteFXs)
@@ -378,7 +386,8 @@ public class Sprite
             attack.Draw();
         }
 
-        if (IsDead()) return;
+        if (IsDead() || ID==0) return;
+        if(ID==01) spriteBatch.DrawString(font, "*", new Vector2(Position.X+18, Position.Y-20), Color.Red, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y-2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
     }

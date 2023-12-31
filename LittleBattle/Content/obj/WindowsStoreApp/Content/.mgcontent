@@ -5,15 +5,17 @@
   <Config />
   <SourceFiles>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Background/Ground.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Background/oie_transparent.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Background/Mountain.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Background/Trees.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Font/fontMedium.spritefont</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite01_x3.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite02_x3.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/SpriteCameraman_x3.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/SwordEffect.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

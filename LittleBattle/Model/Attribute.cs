@@ -1,5 +1,4 @@
 ﻿using LittleBattle.Classes;
-using Microsoft.Xna.Framework;
 
 namespace LittleBattle.Model
 {
@@ -16,6 +15,7 @@ namespace LittleBattle.Model
         public float BaseAttackCooldown { get; set; }
         public float Knockback { get; set; }
         public Enums.Side KnockbackSide { get; set; }
+        public int Range { get; set; }
 
         public Attribute()
         {
@@ -25,7 +25,7 @@ namespace LittleBattle.Model
             Attack = 2;
             Defense = 1;
 
-            Speed = 1;
+            Speed = 2;
             JumpPower = 5;
             BaseJumpPower = 5;
             AttackCooldown = 0;
@@ -33,6 +33,8 @@ namespace LittleBattle.Model
 
             Knockback = 0;
             KnockbackSide = Enums.Side.None;
+
+            Range = 5;
         }
     }
 }
