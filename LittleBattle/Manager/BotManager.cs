@@ -20,18 +20,20 @@ namespace LittleBattle.Manager
         public void Update()
         {
             var aliveBots = bots.Where(bot => !bot.IsDead()).ToList();
-            Patrol();
             foreach (var bot in aliveBots)
             {
                 var target = SetTarget(bot);
-                if(target != null)
-                {
-                    TargetDistance(bot, target);
+                if(target != null){
                     TargetAttack(bot, target);
+                }
+                if (target != null && TargetDistance(bot, target))
+                {
+                    //TargetDistance(bot, target);
+                    //TargetAttack(bot, target);
                 }
                 else
                 {
-                    bot.SetMovement(false, Enums.Side.None);
+                    Patrol(bot);
                 }
             }
         }
@@ -81,47 +83,40 @@ namespace LittleBattle.Manager
             return target;
         }
 
-        private void TargetDistance(Sprite bot, Sprite player)
+        private bool TargetDistance(Sprite bot, Sprite target)
         {
-            if (bot.RelativeX >= player.RelativeX)
+            bool range = false;
+            if (target == null) return false;
+            if (bot.RelativeX + bot.Size.X >= target.RelativeX)
             {
-                if ((bot.RelativeX - (player.RelativeX + player.Size.X) < 200)
-                    && (player.RelativeX + player.Size.X) * 1 < bot.RelativeX)
+                if ((bot.RelativeX - (target.RelativeX + target.Size.X) < 200)
+                    && (target.RelativeX + target.Size.X) * 1 < bot.RelativeX)
                 {
-                    //bot.SetMovement(Enums.Direction.WalkLeft);
                     bot.SetMovement(true, Enums.Side.Left);
-                }
-                else
-                {
-                    //bot.SetMovement(Enums.Direction.StandLeft);
-                    bot.SetMovement(false, Enums.Side.Left);
+                    range = true;
                 }
             }
 
-            if (bot.RelativeX < player.RelativeX)
+            if (bot.RelativeX < target.RelativeX + target.Size.X)
             {
-                if ((player.RelativeX + player.Size.X - bot.RelativeX < 200)
-                    && ((bot.RelativeX + bot.Size.X) * 1 < player.RelativeX))
+                if ((target.RelativeX + target.Size.X - bot.RelativeX < 200)
+                    && ((bot.RelativeX + bot.Size.X) * 1 < target.RelativeX))
                 {
-                    //bot.SetMovement(Enums.Direction.WalkRight);
                     bot.SetMovement(true, Enums.Side.Right);
-                }
-                else
-                {
-                    //bot.SetMovement(Enums.Direction.StandRight);
-                    bot.SetMovement(false, Enums.Side.Right);
+                    range = true;
                 }
             }
+            return range;
         }
 
         private void TargetAttack(Sprite bot, Sprite player)
         {
             Collision collision = new Collision();
             var collide = collision.SquareCollision(
-                new Vector2((int)bot.RelativeX, 0),
-                bot.Size * new Vector2(1.2f, 1.2f),
-                new Vector2((int)player.RelativeX, 0),
-                player.Size * new Vector2(1.2f, 1.2f)
+                new Vector2((int)bot.RelativeX*0.8f, 0),
+                bot.Size * new Vector2(1.2f, 1),
+                new Vector2((int)player.RelativeX*0.8f, 0),
+                player.Size * new Vector2(1.2f, 1)
             );
 
             if (collide)
@@ -130,10 +125,36 @@ namespace LittleBattle.Manager
             }
         }
 
-        private void Patrol()
+        private void Patrol(Sprite bot)
         {
-            Random random = new Random();
-            int randomVal = random.Next(400) * 1 - 200;
+            bot.BotPatrolWait -= 0.1f * Globals.ElapsedSeconds;
+            if (bot.BotPatrolWait > 0) return;
+            if (bot.BotPatrol == 0)
+            {
+                Random random = new Random();
+                int randomVal = random.Next(400) * 1 - 200;
+                bot.BotPatrol = randomVal;
+                bot.SetMovement(false, Enums.Side.None);
+            }
+            else
+            {
+                if (bot.RelativeX > bot.BotPatrol)
+                {
+                    bot.SetMovement(true, Enums.Side.Left);
+                }
+
+                if (bot.RelativeX < bot.BotPatrol)
+                {
+                    bot.SetMovement(true, Enums.Side.Right);
+                }
+
+                if ((int)bot.RelativeX == (int)bot.BotPatrol)
+                {
+                    bot.SetMovement(false, Enums.Side.None);
+                    bot.BotPatrol = 0;
+                    bot.BotPatrolWait = 5;
+                }
+            }
         }
     }
 }

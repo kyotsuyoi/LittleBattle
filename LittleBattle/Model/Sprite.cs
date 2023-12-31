@@ -8,6 +8,7 @@ using System.Linq;
 
 public class Sprite
 {
+    public int ID { get; }
     protected Texture2D texture;
     public Vector2 Position { get; set; }
     public Vector2 Size { get; }
@@ -29,8 +30,13 @@ public class Sprite
 
     public Enums.Team Team;
 
-    public Sprite(Vector2 position, Enums.SpriteType spriteType, Texture2D texture, int framesX, int framesY, Enums.Team team)
+    public float BotPatrol;
+
+    public float BotPatrolWait;
+
+    public Sprite(int ID, Vector2 position, Enums.SpriteType spriteType, Texture2D texture, int framesX, int framesY, Enums.Team team)
     {
+        this.ID = ID;
         Position = position;
         this.spriteType = spriteType;
         Attribute = new Attribute();
@@ -57,6 +63,16 @@ public class Sprite
         GroundLevel = Globals.Size.Height - Size.Y - 30;
         spriteFXs = new List<SpriteFX>();
         Team = team;
+
+        //Debug
+        //if (ID == 1)
+        //{
+        //    Attribute.BaseHP = 200;
+        //    Attribute.BaseJumpPower = 20;
+        //    Attribute.Attack = 10;
+        //    Attribute.Defense = 10;
+        //    Attribute.BaseAttackCooldown = 0.02f;
+        //}
     }
 
     public void Update()
@@ -143,7 +159,7 @@ public class Sprite
         if (Position.Y >= GroundLevel)
         {
             Position = new Vector2(Position.X, GroundLevel);
-            Attribute.JumpPower = 5;
+            Attribute.JumpPower = Attribute.BaseJumpPower;
             Ground = true;
         }
     }
@@ -253,6 +269,7 @@ public class Sprite
     {
         var Owner = spriteFX.Owner;
         var res = (Owner.Attribute.Attack + spriteFX.AttributeFX.Damage) - Attribute.Defense;
+        if (res < 1) res = 1;
 
         Attribute.HP -= res;
         if(IsDead()) return;
@@ -277,7 +294,7 @@ public class Sprite
         }        
     }
 
-    private Enums.Side GetSide()
+    public Enums.Side GetSide()
     {
         if (Direction == Enums.Direction.StandRight
             || Direction == Enums.Direction.WalkRight

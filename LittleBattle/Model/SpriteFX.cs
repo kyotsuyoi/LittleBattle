@@ -3,6 +3,8 @@ using LittleBattle.Manager;
 using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
+using System.Linq;
 
 public class SpriteFX
 {
@@ -23,6 +25,8 @@ public class SpriteFX
     private readonly AnimationManager _anims = new AnimationManager();
     public Sprite Owner { get; set; }
     public AttributeFX AttributeFX { get; set; }
+
+    private List<int> DamagedIDs;
 
     public SpriteFX(Sprite Owner, Vector2 direction, Enums.SpriteType spriteType, Texture2D texture, int framesX, int framesY)
     {
@@ -46,7 +50,14 @@ public class SpriteFX
 
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
         GroundLevel = Globals.Size.Height - Size.Y -30;
+
+        //Debug
+        //if (Owner.ID == 1)
+        //{
+        //    AttributeFX.Range = 50;
+        //}
         InitalPosition();
+        DamagedIDs = new List<int>();        
     }
 
     public void Update()
@@ -141,15 +152,18 @@ public class SpriteFX
         var centerY = Size.Y / 2;
 
         Position = new Vector2(oCenterX - centerX, (oCenterY - centerY));
+        if (Owner.GetSide() == Enums.Side.Right) Position += new Vector2(AttributeFX.Range, 0);
+        if (Owner.GetSide() == Enums.Side.Left) Position -= new Vector2(AttributeFX.Range, 0);
     }
 
     public void Damage(Sprite target)
     {
         Collision collision = new Collision();
         var collide = collision.SquareCollision(Position, Size, target.Position, target.Size);
-        if (collide)
+        if (collide && !DamagedIDs.Any(id=> id == target.ID))
         {
             target.TakeDamage(this);
+            DamagedIDs.Add(target.ID);
         }
     }
 

@@ -11,6 +11,7 @@ namespace LittleBattle.Model
         public int Defense { get; set; }
         public float Speed { get; set; }
         public float JumpPower { get; set; }
+        public float BaseJumpPower { get; set; }
         public float AttackCooldown { get; set; }
         public float BaseAttackCooldown { get; set; }
         public float Knockback { get; set; }
@@ -26,6 +27,7 @@ namespace LittleBattle.Model
 
             Speed = 1;
             JumpPower = 5;
+            BaseJumpPower = 5;
             AttackCooldown = 0;
             BaseAttackCooldown = 0.5f;
 
