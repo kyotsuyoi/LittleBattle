@@ -15,6 +15,7 @@ public class SpriteFX
     public float GroundLevel { get; set; }
     public float FallingSpeed { get; set; }
     public Vector2 Direction { get; set; }
+    private Enums.Side Side { get; set; }
     public Enums.SpriteType spriteType { get; }
     public float RelativeX { get; set; }
     public bool Active { get; set; }
@@ -157,6 +158,29 @@ public class SpriteFX
         if (Direction == Enums.Direction.WalkLeft && Walk) return Speed;
         if (Direction == Enums.Direction.WalkRight && Walk) return -Speed;
         return 0;
+    }
+
+    public Enums.Side GetSide()
+    {
+        if (Direction == Enums.Direction.StandRight
+            || Direction == Enums.Direction.WalkRight
+            || Direction == Enums.Direction.AttackRight
+            || Direction == Enums.Direction.DeadRight
+        )
+        {
+            return Enums.Side.Right;
+        }
+
+        if (Direction == Enums.Direction.StandLeft
+            || Direction == Enums.Direction.WalkLeft
+            || Direction == Enums.Direction.AttackLeft
+            || Direction == Enums.Direction.DeadLeft
+        )
+        {
+            return Enums.Side.Left;
+        }
+
+        return Enums.Side.None;
     }
 
     public void Draw()

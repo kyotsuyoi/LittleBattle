@@ -27,11 +27,14 @@ public class Sprite
     private readonly AnimationManager _anims = new AnimationManager();
     public Attribute Attribute { get; set; }
 
-    public Sprite(Vector2 position, Enums.SpriteType spriteType, Texture2D texture, int framesX, int framesY)
+    public Enums.Team Team;
+
+    public Sprite(Vector2 position, Enums.SpriteType spriteType, Texture2D texture, int framesX, int framesY, Enums.Team team)
     {
         Position = position;
         this.spriteType = spriteType;
         Attribute = new Attribute();
+        Team = team;
 
         if (spriteType == Enums.SpriteType.Bot) Attribute.Speed = 0.5f;
 
@@ -51,8 +54,9 @@ public class Sprite
         _anims.AddAnimation(Enums.Direction.DeadLeft, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 4, true, false));
 
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
-        GroundLevel = Globals.Size.Height - Size.Y -30;
+        GroundLevel = Globals.Size.Height - Size.Y - 30;
         spriteFXs = new List<SpriteFX>();
+        Team = team;
     }
 
     public void Update()
@@ -66,7 +70,6 @@ public class Sprite
         if (spriteType != Enums.SpriteType.Player1)
         {
             Position += new Vector2(Globals.CameraMovement,0);
-            //Attribute.HP--;
         }
         RelativeX = Position.X - Globals.GroundX;
 
@@ -75,35 +78,34 @@ public class Sprite
             attack.Update();
         }
         spriteFXs = spriteFXs.Where(attack => attack.Active == true).ToList();
-
         _anims.Update(Direction, Walk);
     }
 
     private void AnimationResolve()
     {
+        if (IsDead()) return;
         var speed = Attribute.Speed;
         if (spriteType != Enums.SpriteType.Player1) speed = Attribute.Speed * 2;
-        if ((Position.X <= 0 && Direction == Enums.Direction.WalkLeft)
-            || (Position.X >= Globals.Size.Width - Size.X && Direction == Enums.Direction.WalkRight)) Walk = false;
-
+        if ((Position.X <= 0 && GetSide() == Enums.Side.Left)
+            || (Position.X >= Globals.Size.Width - Size.X && GetSide() == Enums.Side.Right)) Walk = false;
         if (Walk)
         {
-            if (Direction == Enums.Direction.WalkLeft)
+            if (GetSide() == Enums.Side.Left)
             {
                 Position += new Vector2(-speed, 0);
             }
-            else if (Direction == Enums.Direction.WalkRight)
+            else if (GetSide() == Enums.Side.Right)
             {
                 Position += new Vector2(speed, 0);
             }
         }
         else
         {
-            if (Direction == Enums.Direction.WalkLeft || Direction == Enums.Direction.StandLeft)
+            if (GetSide() == Enums.Side.Left)
             {
                 Direction = Enums.Direction.StandLeft;
             }
-            else if (Direction == Enums.Direction.WalkRight || Direction == Enums.Direction.StandRight)
+            else if (GetSide() == Enums.Side.Right)
             {
                 Direction = Enums.Direction.StandRight;
             }
@@ -111,11 +113,11 @@ public class Sprite
 
         if(Attribute.Knockback > 0)
         {
-            if(Attribute.KnockbackSide == Enums.Direction.StandRight)
+            if(Attribute.KnockbackSide == Enums.Side.Right)
             {
                 Position += new Vector2(Attribute.Knockback, 0);
             }
-            if (Attribute.KnockbackSide == Enums.Direction.StandLeft)
+            if (Attribute.KnockbackSide == Enums.Side.Left)
             {
                 Position += new Vector2(-Attribute.Knockback, 0);
             }
@@ -165,11 +167,11 @@ public class Sprite
     {
         if (Attack)
         {
-            if (Direction == Enums.Direction.WalkRight || Direction == Enums.Direction.StandRight)
+            if (GetSide() == Enums.Side.Right)
             {
                 Direction = Enums.Direction.AttackRight;
             }
-            if (Direction == Enums.Direction.WalkLeft || Direction == Enums.Direction.StandLeft)
+            if (GetSide() == Enums.Side.Left)
             {
                 Direction = Enums.Direction.AttackLeft;
             }
@@ -196,20 +198,34 @@ public class Sprite
     public float DirectionSpeed()
     {
         var value = Attribute.Knockback;
-        if(Attribute.KnockbackSide == Enums.Direction.StandRight)
+        if(Attribute.KnockbackSide == Enums.Side.Right)
         {
             value = -value;
         }
-        if (Direction == Enums.Direction.WalkLeft && Walk) value = Attribute.Speed + value;
-        if (Direction == Enums.Direction.WalkRight && Walk) value = -Attribute.Speed + value;
+        if (IsDead()) return 0;
+        if (GetSide() == Enums.Side.Left && Walk) value = Attribute.Speed + value;
+        if (GetSide() == Enums.Side.Right && Walk) value = -Attribute.Speed + value;
         return value;
     }
 
-    public void SetMovement(Vector2 Direction)
+    public void SetMovement(bool move, Enums.Side side /*Vector2 Direction*/)
     {
-        if (IsDead()) return;        
-        Walk = true;
-        if (!Attack) this.Direction = Direction;
+        if (IsDead()) return;
+        if (move){
+            if(side == Enums.Side.Right && !Attack)
+            {
+                Direction = Enums.Direction.WalkRight;
+            }
+            if (side == Enums.Side.Left && !Attack)
+            {
+                Direction = Enums.Direction.WalkLeft;
+            }
+            Walk = true;
+        }
+        else
+        {
+            Walk = false;
+        }
     }
 
     public void SetAttack()
@@ -242,7 +258,7 @@ public class Sprite
         if(IsDead()) return;
 
         Attribute.Knockback = spriteFX.AttributeFX.Knockback;
-        Attribute.KnockbackSide = spriteFX.Direction;
+        Attribute.KnockbackSide = spriteFX.GetSide();
         if (spriteType == Enums.SpriteType.Player1)
         {
             Attribute.Knockback = Attribute.Knockback / 2;
@@ -251,7 +267,8 @@ public class Sprite
 
     public void UpdateSpriteFXDamage(List<Sprite> targets)
     {
-        foreach(var target in targets)
+        var inner_targets = targets.Where(target => target.Team != Team).ToList();
+        foreach (var target in inner_targets)
         {
             foreach (var damage in spriteFXs)
             {
@@ -325,6 +342,9 @@ public class Sprite
         {
             Direction = Enums.Direction.DeadLeft;
         }
+        Walk = false;
+        Attack = false;
+        Attribute.Knockback = 0;
     }
 
     public int GetSpriteFXCount()

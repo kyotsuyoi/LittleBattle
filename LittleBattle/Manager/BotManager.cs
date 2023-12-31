@@ -1,4 +1,5 @@
 ﻿using LittleBattle.Classes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -19,6 +20,7 @@ namespace LittleBattle.Manager
         public void Update()
         {
             var aliveBots = bots.Where(bot => !bot.IsDead()).ToList();
+            Patrol();
             foreach (var bot in aliveBots)
             {
                 var target = SetTarget(bot);
@@ -27,20 +29,27 @@ namespace LittleBattle.Manager
                     TargetDistance(bot, target);
                     TargetAttack(bot, target);
                 }
-                //if (player.Attribute.HP > 0)
-                //{
-                //    TargetDistance(bot, player);
-                //    TargetAttack(bot, player);
-                //}
+                else
+                {
+                    bot.SetMovement(false, Enums.Side.None);
+                }
             }
         }
 
         private Sprite SetTarget(Sprite bot)
         {
             Sprite target = null;
-            var alivePlayers = players.Where(player => !player.IsDead()).ToList();
-            if (alivePlayers.Count() <= 0) return target;
-            target = alivePlayers[0];
+            var alivePlayers = players.Where(player => !player.IsDead() && player.Team != bot.Team).ToList();
+            var aliveBots_enemy = bots.Where(enemyBot => !enemyBot.IsDead() && enemyBot.Team != bot.Team).ToList();
+            var allEnemies = aliveBots_enemy;
+
+            foreach (var player in alivePlayers)
+            {
+                allEnemies.Add(player);
+            }
+
+            if (allEnemies.Count() <= 0) return target;
+            target = allEnemies[0];
             float distance = 0;
 
             if (bot.RelativeX >= target.RelativeX)
@@ -52,21 +61,21 @@ namespace LittleBattle.Manager
                 distance = target.RelativeX - bot.RelativeX;
             }
 
-            foreach (var player in alivePlayers)
+            foreach (var enemy in allEnemies)
             {
                 float inner_distace = 0;
-                if (bot.RelativeX >= player.RelativeX)
+                if (bot.RelativeX >= enemy.RelativeX)
                 {
-                    inner_distace = bot.RelativeX - player.RelativeX;
+                    inner_distace = bot.RelativeX - enemy.RelativeX;
                 }
-                if (bot.RelativeX < player.RelativeX)
+                if (bot.RelativeX < enemy.RelativeX)
                 {
-                    inner_distace = player.RelativeX - bot.RelativeX;
+                    inner_distace = enemy.RelativeX - bot.RelativeX;
                 }
                 if (inner_distace < distance)
                 {
                     distance = inner_distace;
-                    target = player;
+                    target = enemy;
                 }
             }
             return target;
@@ -79,11 +88,13 @@ namespace LittleBattle.Manager
                 if ((bot.RelativeX - (player.RelativeX + player.Size.X) < 200)
                     && (player.RelativeX + player.Size.X) * 1 < bot.RelativeX)
                 {
-                    bot.SetMovement(Enums.Direction.WalkLeft);
+                    //bot.SetMovement(Enums.Direction.WalkLeft);
+                    bot.SetMovement(true, Enums.Side.Left);
                 }
                 else
                 {
-                    bot.SetMovement(Enums.Direction.StandLeft);
+                    //bot.SetMovement(Enums.Direction.StandLeft);
+                    bot.SetMovement(false, Enums.Side.Left);
                 }
             }
 
@@ -92,11 +103,13 @@ namespace LittleBattle.Manager
                 if ((player.RelativeX + player.Size.X - bot.RelativeX < 200)
                     && ((bot.RelativeX + bot.Size.X) * 1 < player.RelativeX))
                 {
-                    bot.SetMovement(Enums.Direction.WalkRight);
+                    //bot.SetMovement(Enums.Direction.WalkRight);
+                    bot.SetMovement(true, Enums.Side.Right);
                 }
                 else
                 {
-                    bot.SetMovement(Enums.Direction.StandRight);
+                    //bot.SetMovement(Enums.Direction.StandRight);
+                    bot.SetMovement(false, Enums.Side.Right);
                 }
             }
         }
@@ -115,6 +128,12 @@ namespace LittleBattle.Manager
             {
                 bot.SetAttack();
             }
+        }
+
+        private void Patrol()
+        {
+            Random random = new Random();
+            int randomVal = random.Next(400) * 1 - 200;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace LittleBattle.Model
         public float AttackCooldown { get; set; }
         public float BaseAttackCooldown { get; set; }
         public float Knockback { get; set; }
-        public Vector2 KnockbackSide { get; set; }
+        public Enums.Side KnockbackSide { get; set; }
 
         public Attribute()
         {
@@ -30,7 +30,7 @@ namespace LittleBattle.Model
             BaseAttackCooldown = 0.5f;
 
             Knockback = 0;
-            KnockbackSide = Enums.Direction.None;
+            KnockbackSide = Enums.Side.None;
         }
     }
 }

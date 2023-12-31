@@ -27,10 +27,10 @@ namespace LittleBattle.Manager
             spriteBatch.DrawString(font, "player2.RelativeX:" + (player2.RelativeX).ToString(), new Vector2(10, 100), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "player2.RelativeX:" + (player2.RelativeX).ToString(), new Vector2(12, 102), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-            spriteBatch.DrawString(font, "bot1.RelativeX:" + (bots[0].RelativeX).ToString(), new Vector2(10, 120), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            spriteBatch.DrawString(font, "bot1.RelativeX:" + (bots[0].RelativeX).ToString(), new Vector2(12, 122), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
-            spriteBatch.DrawString(font, "bot2.RelativeX:" + (bots[1].RelativeX).ToString(), new Vector2(10, 140), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            spriteBatch.DrawString(font, "bot2.RelativeX:" + (bots[1].RelativeX).ToString(), new Vector2(12, 142), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            //spriteBatch.DrawString(font, "bot1.RelativeX:" + (bots[0].RelativeX).ToString(), new Vector2(10, 120), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            //spriteBatch.DrawString(font, "bot1.RelativeX:" + (bots[0].RelativeX).ToString(), new Vector2(12, 122), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            //spriteBatch.DrawString(font, "bot2.RelativeX:" + (bots[1].RelativeX).ToString(), new Vector2(10, 140), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            //spriteBatch.DrawString(font, "bot2.RelativeX:" + (bots[1].RelativeX).ToString(), new Vector2(12, 142), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
             spriteBatch.DrawString(font, "player1.Jump:" + player1.Jump, new Vector2(10, 160), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "player1.Jump:" + player1.Jump, new Vector2(12, 162), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);

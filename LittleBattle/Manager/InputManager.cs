@@ -64,16 +64,19 @@ public static class InputManager
     {
         if (keyboard.IsKeyDown(Keys.A))
         {
-            player.SetMovement(Enums.Direction.WalkLeft);
+            //player.SetMovement(Enums.Direction.WalkLeft);
+            player.SetMovement(true, Enums.Side.Left);
         }
         else if (keyboard.IsKeyDown(Keys.D))
         {
-            player.SetMovement(Enums.Direction.WalkRight);
+            //player.SetMovement(Enums.Direction.WalkRight);
+            player.SetMovement(true, Enums.Side.Right);
         }
 
         if (keyboard.IsKeyUp(Keys.A) && keyboard.IsKeyUp(Keys.D))
         {
-            player.Walk = false;
+            //player.Walk = false;
+            player.SetMovement(false, Enums.Side.None);
         }
 
         if (keyboard.IsKeyDown(Keys.Space) && !p1_jump_key_pressed
@@ -105,16 +108,19 @@ public static class InputManager
     {
         if (gamepad.DPad.Left == ButtonState.Pressed)
         {
-            player.SetMovement(Enums.Direction.WalkLeft);
+            //player.SetMovement(Enums.Direction.WalkLeft);
+            player.SetMovement(true, Enums.Side.Left);
         }
         else if (gamepad.DPad.Right == ButtonState.Pressed)
         {
-            player.SetMovement(Enums.Direction.WalkRight);
+            //player.SetMovement(Enums.Direction.WalkRight);
+            player.SetMovement(true, Enums.Side.Right);
         }
 
         if (gamepad.DPad.Left == ButtonState.Released && gamepad.DPad.Right == ButtonState.Released)
         {
-            player.Walk = false;
+            //player.Walk = false;
+            player.SetMovement(false, Enums.Side.None);
         }
 
         if (gamepad.Buttons.A == ButtonState.Pressed && !p1_jump_key_pressed
@@ -161,11 +167,11 @@ public static class InputManager
     {
         if (keyboard.IsKeyDown(Keys.Left))
         {
-            player.SetMovement(Enums.Direction.WalkLeft);
+            //player.SetMovement(Enums.Direction.WalkLeft);
         }
         else if (keyboard.IsKeyDown(Keys.Right))
         {
-            player.SetMovement(Enums.Direction.WalkRight);
+            //player.SetMovement(Enums.Direction.WalkRight);
         }
 
         if (keyboard.IsKeyUp(Keys.Left) && keyboard.IsKeyUp(Keys.Right))
