@@ -47,8 +47,13 @@ namespace LittleBattle.Manager
             spriteBatch.DrawString(font, "player1.Attributes.AttackCooldown:" + player1.Attribute.AttackCooldown.ToString(), new Vector2(10, 240), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "player1.Attributes.AttackCooldown:" + player1.Attribute.AttackCooldown.ToString(), new Vector2(12, 242), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-            spriteBatch.DrawString(font, "player1.GetSpriteFXCount:" + player1.GetSpriteFXCount().ToString(), new Vector2(10, 260), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            spriteBatch.DrawString(font, "player1.GetSpriteFXCount:" + player1.GetSpriteFXCount().ToString(), new Vector2(12, 262), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            var count = player1.GetSpriteFXCount();
+            foreach (var bot in bots)
+            {
+                count += bot.GetSpriteFXCount();
+            }
+            spriteBatch.DrawString(font, "FXCount:" + count.ToString(), new Vector2(10, 260), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "FXCount:" + count.ToString(), new Vector2(12, 262), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
         }
 
     }

@@ -19,11 +19,11 @@ namespace LittleBattle.Model
 
         public Attribute()
         {
-            BaseHP = 100;
+            BaseHP = 1000;
             HP = BaseHP;
 
             Attack = 2;
-            Defense = 1;
+            Defense = 100;
 
             Speed = 2;
             JumpPower = 5;

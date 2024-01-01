@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
+using static LittleBattle.Classes.Enums;
 
 public class SpriteFX
 {
@@ -28,7 +29,7 @@ public class SpriteFX
 
     private List<int> DamagedIDs;
 
-    public SpriteFX(Sprite Owner, Vector2 direction, Enums.SpriteType spriteType, Texture2D texture, int framesX, int framesY)
+    public SpriteFX(Sprite Owner, Enums.Side side, Enums.SpriteType spriteType, Texture2D texture, int framesX, int framesY)
     {
         this.Owner = Owner;
         this.spriteType = spriteType;
@@ -40,7 +41,8 @@ public class SpriteFX
 
         Ground = false;
         FallingSpeed = 0;
-        Direction = direction;
+        Direction = Enums.Direction.StandRight;
+        if (side == Side.Left) Direction = Enums.Direction.StandLeft;
         AttributeFX.Range += Owner.Attribute.Range;
 
         this.texture = texture;
@@ -52,12 +54,7 @@ public class SpriteFX
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
         GroundLevel = Globals.Size.Height - Size.Y -30;
 
-        //Debug
-        //if (Owner.ID == 1)
-        //{
-        //    AttributeFX.Range = 50;
-        //}
-        InitalPosition();
+        InitialPosition();
         DamagedIDs = new List<int>();        
     }
 
@@ -66,10 +63,7 @@ public class SpriteFX
         AnimationResolve();
         //FallingResolve();
 
-        if (spriteType != Enums.SpriteType.Player1)
-        {
-            Position += new Vector2(Globals.CameraMovement,0);
-        }
+        Position += new Vector2(Globals.CameraMovement,0);
         RelativeX = Position.X - Globals.GroundX;
 
         _anims.Update(Direction, Walk);
@@ -110,13 +104,13 @@ public class SpriteFX
 
         if (animRight.EndLoop)
         {            
-            Direction = Enums.Direction.None;
+            Direction = Enums.Direction.StandRight;
             Active = false;
         }
 
         if (animLeft.EndLoop)
         {
-            Direction = Enums.Direction.None;
+            Direction = Enums.Direction.StandLeft;
             Active = false;
         }
     }
@@ -145,7 +139,7 @@ public class SpriteFX
         }
     }
 
-    private void InitalPosition()
+    public void InitialPosition()
     {
         var oCenterX = Owner.Position.X + (Owner.Size.X / 2);
         var oCenterY = Owner.Position.Y + (Owner.Size.Y / 2);
@@ -179,8 +173,6 @@ public class SpriteFX
     {
         if (Direction == Enums.Direction.StandRight
             || Direction == Enums.Direction.WalkRight
-            || Direction == Enums.Direction.AttackRight
-            || Direction == Enums.Direction.DeadRight
         )
         {
             return Enums.Side.Right;
@@ -188,8 +180,6 @@ public class SpriteFX
 
         if (Direction == Enums.Direction.StandLeft
             || Direction == Enums.Direction.WalkLeft
-            || Direction == Enums.Direction.AttackLeft
-            || Direction == Enums.Direction.DeadLeft
         )
         {
             return Enums.Side.Left;

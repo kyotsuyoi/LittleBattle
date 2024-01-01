@@ -47,20 +47,20 @@ public class GameManager
             new Sprite(12, new Vector2((Globals.Size.Width / 2) - 700, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 4, Enums.Team.Team2),
             new Sprite(13, new Vector2((Globals.Size.Width / 2) - 800, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 4, Enums.Team.Team2),
 
-            new Sprite(14, new Vector2((Globals.Size.Width / 2) - 500, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 4, Enums.Team.Team2),
-            new Sprite(15, new Vector2((Globals.Size.Width / 2) - 600, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 4, Enums.Team.Team2),
-            new Sprite(16, new Vector2((Globals.Size.Width / 2) - 700, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 4, Enums.Team.Team2),
-            new Sprite(17, new Vector2((Globals.Size.Width / 2) - 800, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 4, Enums.Team.Team2),
+            //new Sprite(14, new Vector2((Globals.Size.Width / 2) - 500, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 4, Enums.Team.Team2),
+            //new Sprite(15, new Vector2((Globals.Size.Width / 2) - 600, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 4, Enums.Team.Team2),
+            //new Sprite(16, new Vector2((Globals.Size.Width / 2) - 700, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 4, Enums.Team.Team2),
+            //new Sprite(17, new Vector2((Globals.Size.Width / 2) - 800, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 4, Enums.Team.Team2),
 
-            new Sprite(18, new Vector2((Globals.Size.Width / 2) - 400, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
-            new Sprite(19, new Vector2((Globals.Size.Width / 2) - 300, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
-            new Sprite(20, new Vector2((Globals.Size.Width / 2) - 200, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
-            new Sprite(21, new Vector2((Globals.Size.Width / 2) - 100, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
+            //new Sprite(18, new Vector2((Globals.Size.Width / 2) - 400, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
+            //new Sprite(19, new Vector2((Globals.Size.Width / 2) - 300, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
+            //new Sprite(20, new Vector2((Globals.Size.Width / 2) - 200, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
+            //new Sprite(21, new Vector2((Globals.Size.Width / 2) - 100, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
 
-            new Sprite(22, new Vector2((Globals.Size.Width / 2) - 400, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
-            new Sprite(23, new Vector2((Globals.Size.Width / 2) - 300, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
-            new Sprite(24, new Vector2((Globals.Size.Width / 2) - 200, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
-            new Sprite(25, new Vector2((Globals.Size.Width / 2) - 100, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
+            //new Sprite(22, new Vector2((Globals.Size.Width / 2) - 400, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
+            //new Sprite(23, new Vector2((Globals.Size.Width / 2) - 300, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
+            //new Sprite(24, new Vector2((Globals.Size.Width / 2) - 200, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
+            //new Sprite(25, new Vector2((Globals.Size.Width / 2) - 100, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
         };
     
         Globals.Gravity = 10;
@@ -76,7 +76,7 @@ public class GameManager
     {
         InputManager.UpdateResolution(resolution);
         //Globals.CameraMovement = players[0].DirectionSpeed();
-        Globals.CameraMovement = Cameraman.DirectionSpeed();
+        Globals.CameraMovement = Cameraman.CameraDirectionSpeed();
         backgroundManager.Update();
 
         Cameraman.Update();

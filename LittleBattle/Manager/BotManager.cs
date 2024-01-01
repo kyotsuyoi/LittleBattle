@@ -60,15 +60,32 @@ namespace LittleBattle.Manager
             {
                 player_position_side /= new Vector2(1.25f, 1);
             }
-            Collision collision = new Collision();
-            var collide = collision.SquareCollision(
-                Cameraman.Position,
-                Cameraman.Size,
-                player_position_side,
-                players[0].Size
-            );
 
-            if (collide)
+            var stop = false;
+            if (players[0].GetSide() == Enums.Side.Right)
+            {
+                if (Cameraman.Position.X > player_position_side.X)
+                {
+                    stop = true;
+                }
+            }
+            if (players[0].GetSide() == Enums.Side.Left)
+            {
+                if (Cameraman.Position.X < player_position_side.X)
+                {
+                    stop = true;
+                }
+            }
+
+            //Collision collision = new Collision();
+            //var collide = collision.SquareCollision(
+            //    Cameraman.Position,
+            //    Cameraman.Size,
+            //    player_position_side,
+            //    players[0].Size
+            //);
+
+            if (stop)
             {
                 Cameraman.Attribute.Speed = 1;
                 Cameraman.SetMovement(false, Enums.Side.None);
@@ -158,7 +175,7 @@ namespace LittleBattle.Manager
             if (target == null) return false;
             if (bot.RelativeX + bot.Size.X >= target.RelativeX)
             {
-                if ((bot.RelativeX - (target.RelativeX + target.Size.X) < 200)
+                if ((bot.RelativeX - (target.RelativeX + target.Size.X) < 400)
                     && (target.RelativeX + target.Size.X) * 1 < bot.RelativeX)
                 {
                     bot.SetMovement(true, Enums.Side.Left);
@@ -168,7 +185,7 @@ namespace LittleBattle.Manager
 
             if (bot.RelativeX < target.RelativeX + target.Size.X)
             {
-                if ((target.RelativeX + target.Size.X - bot.RelativeX < 200)
+                if ((target.RelativeX + target.Size.X - bot.RelativeX < 400)
                     && ((bot.RelativeX + bot.Size.X) * 1 < target.RelativeX))
                 {
                     bot.SetMovement(true, Enums.Side.Right);
