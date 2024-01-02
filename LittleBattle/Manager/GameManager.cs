@@ -20,7 +20,7 @@ public class GameManager
 
     public GameManager(Game game, GraphicsDeviceManager graphics)
     {
-        Globals.Size = new System.Drawing.Size(1920, 1080);
+        Globals.Size = new Size(1920, 1080);
         _canvas = new Canvas(graphics.GraphicsDevice, Globals.Size.Width, Globals.Size.Height);
         backgroundManager = new BackgroundManager();
         backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Mountain"), 0.6f, 0.6f, false));
@@ -33,39 +33,25 @@ public class GameManager
 
         Cameraman = new Sprite(00, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.None, Globals.Content.Load<Texture2D>("Sprites/SpriteCameraman_x3"), 4, 4, Enums.Team.None);
         Cameraman.CenterX_Adjust();
+        Cameraman.SetToGroundLevel(0);
+
         players = new List<Sprite>
         {
             new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.Player1, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 5, Enums.Team.Team1),
             //new Sprite(02, new Vector2((Globals.Size.Width / 2) - 10, 504), Enums.SpriteType.Player2, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
         };
-        players[0].CenterX_Adjust();
-
-        bots = new List<Sprite>
+        foreach (var player in players)
         {
-            new Sprite(10, new Vector2((Globals.Size.Width / 2) - 500, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 5, Enums.Team.Team2),
-            new Sprite(11, new Vector2((Globals.Size.Width / 2) - 600, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 5, Enums.Team.Team2),
-            new Sprite(12, new Vector2((Globals.Size.Width / 2) - 700, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 5, Enums.Team.Team2),
-            new Sprite(13, new Vector2((Globals.Size.Width / 2) - 800, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 5, Enums.Team.Team2),
+            player.CenterX_Adjust();
+            player.SetToGroundLevel(0);
+        }
 
-            new Sprite(14, new Vector2((Globals.Size.Width / 2) - 500, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 5, Enums.Team.Team2),
-            new Sprite(15, new Vector2((Globals.Size.Width / 2) - 600, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 5, Enums.Team.Team2),
-            new Sprite(16, new Vector2((Globals.Size.Width / 2) - 700, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 5, Enums.Team.Team2),
-            new Sprite(17, new Vector2((Globals.Size.Width / 2) - 800, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 5, Enums.Team.Team2),
-
-            new Sprite(18, new Vector2((Globals.Size.Width / 2) - 400, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 5, Enums.Team.Team1),
-            new Sprite(19, new Vector2((Globals.Size.Width / 2) - 300, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 5, Enums.Team.Team1),
-            new Sprite(20, new Vector2((Globals.Size.Width / 2) - 200, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 5, Enums.Team.Team1),
-            new Sprite(21, new Vector2((Globals.Size.Width / 2) - 100, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 5, Enums.Team.Team1),
-
-            new Sprite(22, new Vector2((Globals.Size.Width / 2) - 400, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 5, Enums.Team.Team1),
-            new Sprite(23, new Vector2((Globals.Size.Width / 2) - 300, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 5, Enums.Team.Team1),
-            new Sprite(24, new Vector2((Globals.Size.Width / 2) - 200, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 5, Enums.Team.Team1),
-            new Sprite(25, new Vector2((Globals.Size.Width / 2) - 100, 504), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 5, Enums.Team.Team1),
-        };
+        bots = new List<Sprite>();
 
         foreach(var bot in bots)
         {
             bot.CenterX_Adjust();
+            bot.SetToGroundLevel(0);
         }
     
         Globals.Gravity = 10;
@@ -74,18 +60,18 @@ public class GameManager
 
         font = Globals.Content.Load<SpriteFont>("Font/fontMedium");
         debugManager = new DebugManager();
-        botManager = new BotManager(Cameraman, bots, players);
+        botManager = new BotManager();
 ;    }    
 
     public void Update()
     {
         InputManager.UpdateResolution(resolution);
-        //Globals.CameraMovement = players[0].DirectionSpeed();
+        InputManager.DebugCommand(players, bots);
         Globals.CameraMovement = Cameraman.CameraDirectionSpeed();
         backgroundManager.Update();
 
         Cameraman.Update();
-        botManager.UpdateCamerman();
+        botManager.UpdateCamerman(Cameraman, players);
         foreach(var player in players)
         {
             InputManager.Update(player, bots);
@@ -93,12 +79,29 @@ public class GameManager
             player.UpdateSpriteFXDamage(players);
             player.UpdateSpriteFXDamage(bots);
         }
+
+        //Debug Command
+        if (InputManager.ClearBot)
+        {
+            bots = bots.Where(bot => !bot.IsDead()).ToList();
+            InputManager.ClearBot = false;
+        }
+
         foreach (var bot in bots)
         {
-            botManager.Update();
             bot.Update();
             bot.UpdateSpriteFXDamage(players);
             bot.UpdateSpriteFXDamage(bots);
+        }
+
+        if (InputManager.CommandBot)
+        {
+            botManager.Update(bots, players, true);
+            InputManager.CommandBot = false;
+        }
+        else
+        {
+            botManager.Update(bots, players);
         }
     }
 

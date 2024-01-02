@@ -30,9 +30,11 @@ public class Sprite
 
     public Enums.Team Team;
 
-    public float BotPatrol;
-
+    public bool BotPatrol = false;
+    public float BotPatrolX;
+    public float BotPatrolX_Area;
     public float BotPatrolWait;
+    public bool BotGoTo = false;
 
     private bool combo = false;
 
@@ -376,7 +378,7 @@ public class Sprite
 
     public void UpdateSpriteFXDamage(List<Sprite> targets)
     {
-        var inner_targets = targets.Where(target => target.Team != Team).ToList();
+        var inner_targets = targets.Where(target => target.Team != Team && !target.IsDead()).ToList();
         foreach (var target in inner_targets)
         {
             foreach (var damage in spriteFXs)
@@ -466,12 +468,23 @@ public class Sprite
 
     public void CenterX_Adjust()
     {
-        Position = new Vector2(Position.X - Size.X / 2, Position.Y / 2);
+        Position = new Vector2(Position.X - Size.X / 2, Position.Y - Size.Y / 2);
     }
 
     public bool GetCombo()
     {
         return combo;
+    }
+
+    public void SetToGroundLevel(float positionX)
+    {
+        Position = new Vector2(Position.X, GroundLevel);
+    }
+
+    public void SetInitialPatrolArea(float positionX)
+    {
+        BotPatrolX_Area = positionX;
+        BotPatrol = true;
     }
 
     public void Draw(SpriteBatch spriteBatch, SpriteFont font)
@@ -484,8 +497,20 @@ public class Sprite
             attack.Draw();
         }
 
+        if (ID == 01) spriteBatch.DrawString(font, "*", new Vector2(Position.X + 18, Position.Y - 20), Color.Red, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+
         if (IsDead() || ID==0) return;
-        if(ID==01) spriteBatch.DrawString(font, "*", new Vector2(Position.X+18, Position.Y-20), Color.Red, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        string mark = "";
+        if (BotPatrol)
+        {
+            mark += "P ";
+        }
+        if (BotGoTo)
+        {
+            mark += "G ";
+        }
+
+        spriteBatch.DrawString(font, mark, new Vector2(Position.X + 18, Position.Y - 20), Color.Red, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y-2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
     }
