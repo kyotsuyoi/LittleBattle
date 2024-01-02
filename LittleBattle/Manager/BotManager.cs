@@ -173,25 +173,43 @@ namespace LittleBattle.Manager
         {
             bool range = false;
             if (target == null) return false;
-            if (bot.RelativeX + bot.Size.X >= target.RelativeX)
+
+            if (bot.RelativeX < target.RelativeX)
             {
-                if ((bot.RelativeX - (target.RelativeX + target.Size.X) < 400)
-                    && (target.RelativeX + target.Size.X) * 1 < bot.RelativeX)
+                if ((target.RelativeX - bot.RelativeX < 400)
+                    && (bot.RelativeX < target.RelativeX))
                 {
-                    bot.SetMovement(true, Enums.Side.Left);
+                    //Needs to get Range using a method (calc Attack Range)
+                    if(bot.RelativeX + bot.Size.X + bot.Attribute.Range > target.RelativeX)
+                    {
+                        bot.SetMovement(false, Enums.Side.Right);
+                    }
+                    else
+                    {
+                        bot.SetMovement(true, Enums.Side.Right);
+                    }
                     range = true;
                 }
             }
 
-            if (bot.RelativeX < target.RelativeX + target.Size.X)
+            if (bot.RelativeX + bot.Size.X >= target.RelativeX)
             {
-                if ((target.RelativeX + target.Size.X - bot.RelativeX < 400)
-                    && ((bot.RelativeX + bot.Size.X) * 1 < target.RelativeX))
+                if ((bot.RelativeX - (target.RelativeX) < 400)
+                    && (target.RelativeX) * 1 < bot.RelativeX)
                 {
-                    bot.SetMovement(true, Enums.Side.Right);
+                    //Needs to get Range using a method (calc Attack Range)
+                    if (bot.RelativeX - bot.Size.X - bot.Attribute.Range < target.RelativeX)
+                    {
+                        bot.SetMovement(false, Enums.Side.Left);
+                    }
+                    else
+                    {
+                        bot.SetMovement(true, Enums.Side.Left);
+                    }
                     range = true;
                 }
             }
+
             return range;
         }
 
@@ -213,7 +231,7 @@ namespace LittleBattle.Manager
 
         private void Patrol(Sprite bot)
         {
-            bot.BotPatrolWait -= 0.1f * Globals.ElapsedSeconds;
+            bot.BotPatrolWait -= Globals.ElapsedSeconds;
             if (bot.BotPatrolWait > 0) return;
             if (bot.BotPatrol == 0)
             {

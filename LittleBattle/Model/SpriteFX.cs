@@ -29,6 +29,8 @@ public class SpriteFX
 
     private List<int> DamagedIDs;
 
+    private bool combo = false;
+
     public SpriteFX(Sprite Owner, Enums.Side side, Enums.SpriteType spriteType, Texture2D texture, int framesX, int framesY)
     {
         this.Owner = Owner;
@@ -54,6 +56,8 @@ public class SpriteFX
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
         GroundLevel = Globals.Size.Height - Size.Y -30;
 
+        this.Position = Position;
+        CenterX_Adjust();
         InitialPosition();
         DamagedIDs = new List<int>();        
     }
@@ -141,14 +145,20 @@ public class SpriteFX
 
     public void InitialPosition()
     {
-        var oCenterX = Owner.Position.X + (Owner.Size.X / 2);
-        var oCenterY = Owner.Position.Y + (Owner.Size.Y / 2);
+        var oCenterX = Owner.Position.X + Owner.Size.X /2;
+        var oCenterY = Owner.Position.Y + Owner.Size.Y / 2;
         var centerX = Size.X / 2;
         var centerY = Size.Y / 2;
 
-        Position = new Vector2(oCenterX - centerX, (oCenterY - centerY));
+        Position = new Vector2(oCenterX - centerX, oCenterY - centerY);
+
         if (Owner.GetSide() == Enums.Side.Right) Position += new Vector2(AttributeFX.Range, 0);
         if (Owner.GetSide() == Enums.Side.Left) Position -= new Vector2(AttributeFX.Range, 0);
+    }
+
+    public void CenterX_Adjust()
+    {
+        Position = new Vector2(Owner.RelativeX, Owner.Position.Y);
     }
 
     public void Damage(Sprite target)
@@ -186,6 +196,16 @@ public class SpriteFX
         }
 
         return Enums.Side.None;
+    }
+
+    public bool GetCombo()
+    {
+        return combo;
+    }
+
+    public void SetCombo(bool combo)
+    {
+        this.combo = combo;
     }
 
     public void Draw()

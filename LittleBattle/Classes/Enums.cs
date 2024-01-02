@@ -18,6 +18,8 @@ namespace LittleBattle.Classes
             public static Vector2 AttackLeft = new Vector2(-0.2f, 0);
             public static Vector2 DeadRight = new Vector2(0.3f, 0);
             public static Vector2 DeadLeft = new Vector2(-0.3f, 0);
+            public static Vector2 StuntRight = new Vector2(0.4f, 0);
+            public static Vector2 StuntLeft = new Vector2(-0.4f, 0);
         }
 
         public enum Side

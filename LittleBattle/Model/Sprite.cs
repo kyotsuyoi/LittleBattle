@@ -60,6 +60,8 @@ public class Sprite
         _anims.AddAnimation(Enums.Direction.AttackLeft, new Animation(texture, framesX, framesY, 0, 3, 0.05f, 3, true, false));
         _anims.AddAnimation(Enums.Direction.DeadRight, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 4, false, false));
         _anims.AddAnimation(Enums.Direction.DeadLeft, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 4, true, false));
+        _anims.AddAnimation(Enums.Direction.StuntRight, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 5, false, false));
+        _anims.AddAnimation(Enums.Direction.StuntLeft, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 5, true, false));
 
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
         GroundLevel = Globals.Size.Height - Size.Y - 30;
@@ -90,6 +92,11 @@ public class Sprite
             Position += new Vector2(Globals.CameraMovement,0);
         }
         RelativeX = Position.X - Globals.GroundX;
+
+        if (combo && Attribute.ComboTimeLimit == 0)
+        {
+            combo = false;
+        }
 
         _anims.Update(Direction, Walk);
     }
@@ -140,6 +147,26 @@ public class Sprite
             }
             Attribute.Knockback-= 0.5f;
             if (Attribute.Knockback <= 0) Attribute.Knockback = 0;
+        }
+
+        if(Attribute.StuntTime > 0)
+        {
+            if (GetSide() == Enums.Side.Right)
+            {
+                Direction = Enums.Direction.StuntRight;
+            }
+            if (GetSide() == Enums.Side.Left)
+            {
+                Direction = Enums.Direction.StuntLeft;
+            }
+        }
+        else
+        {
+            var animRight = _anims.GetAnimation(Enums.Direction.StuntRight);
+            var animLeft = _anims.GetAnimation(Enums.Direction.StuntLeft);
+
+            animRight.Reset();
+            animLeft.Reset();
         }
     }
 
@@ -233,7 +260,10 @@ public class Sprite
 
     public void SetMovement(bool move, Enums.Side side)
     {
-        if (IsDead()) return;
+        if (IsDead() || Attribute.StuntTime > 0) {
+            Walk = false;
+            return; 
+        }
 
         var PositiveLimit = Globals.PositiveLimit.Width;
         var NegativeLimit = Globals.NegativeLimit.Width;
@@ -245,12 +275,12 @@ public class Sprite
         }
 
         if (move){
-            if(side == Enums.Side.Right && !Attack && RelativeX + Size.X < PositiveLimit)
+            if(side == Enums.Side.Right /*&& !Attack*/ && RelativeX + Size.X < PositiveLimit)
             {
                 Direction = Enums.Direction.WalkRight;
                 Walk = true;
             }
-            else if (side == Enums.Side.Left && !Attack && RelativeX > NegativeLimit)
+            else if (side == Enums.Side.Left /*&& !Attack*/ && RelativeX > NegativeLimit)
             {
                 Direction = Enums.Direction.WalkLeft;
                 Walk = true;
@@ -268,17 +298,28 @@ public class Sprite
 
     public void SetAttack()
     {
-        if (Attribute.HP <= 0) return;
+        if (IsDead() || Attribute.StuntTime > 0) return;
         if (Attribute.AttackCooldown > 0) return; 
         spriteFXs.Add(new SpriteFX(this, GetSide(), Enums.SpriteType.SwordAttack, Globals.Content.Load<Texture2D>("Sprites/SwordEffect"), 12, 1));
+
         if (combo)
         {
-            spriteFXs[spriteFXs.Count() - 1].AttributeFX.Damage += 20;
-            spriteFXs[spriteFXs.Count() - 1].AttributeFX.Range += 100;
-            spriteFXs[spriteFXs.Count() - 1].AttributeFX.Knockback += 5;
-            spriteFXs[spriteFXs.Count() - 1].InitialPosition();
+            var spFX = spriteFXs[spriteFXs.Count() - 1];
+            spFX.AttributeFX.Damage += 8;
+            spFX.AttributeFX.Range += 8;
+            spFX.AttributeFX.Knockback += 4;
+            spFX.AttributeFX.StuntTime = 1f;
+            spFX.InitialPosition();
             combo = false;
+            spFX.SetCombo(true);
+
+            Position = new Vector2(spFX.Position.X + spFX.Size.X / 2, spFX.Position.Y);
+            if (spFX.GetSide() == Enums.Side.Left)
+            {
+                Position = new Vector2(spFX.Position.X, spFX.Position.Y);
+            }
         }
+
         Attack = true;
         Attribute.AttackCooldown = Attribute.BaseAttackCooldown;
     }
@@ -291,8 +332,14 @@ public class Sprite
 
     private void UpdateCooldown()
     {
-        Attribute.AttackCooldown-=Globals.ElapsedSeconds;
+        Attribute.AttackCooldown -= Globals.ElapsedSeconds;
         if (Attribute.AttackCooldown < 0) Attribute.AttackCooldown = 0;
+
+        Attribute.ComboTimeLimit -= Globals.ElapsedSeconds;
+        if (Attribute.ComboTimeLimit < 0 || !combo) Attribute.ComboTimeLimit = 0;
+
+        Attribute.StuntTime -= Globals.ElapsedSeconds;
+        if (Attribute.StuntTime < 0) Attribute.StuntTime = 0;
     }
 
     public void TakeDamage(SpriteFX spriteFX)
@@ -300,14 +347,25 @@ public class Sprite
         var Owner = spriteFX.Owner;
         var res = (Owner.Attribute.Attack + spriteFX.AttributeFX.Damage) - Attribute.Defense;
         if (res < 1) res = 1;
-        if (Owner.spriteType == Enums.SpriteType.Player1 && Owner.combo == false) { 
-            Owner.combo = true;
-            Owner.Attribute.AttackCooldown = 0.1f;
-        }
 
         Attribute.HP -= res;
         if(IsDead()) return;
 
+        if (Owner.spriteType == Enums.SpriteType.Player1 && !Owner.combo && !spriteFX.GetCombo())
+        {
+            Owner.Attribute.AttackCooldown = Owner.Attribute.AttackCooldown / 3;
+
+            Owner.Attribute.ComboTimeLimit = Owner.Attribute.BaseComboTimeLimit;
+            Owner.combo = true;
+        }
+
+        if (Owner.spriteType == Enums.SpriteType.Bot && !Owner.combo && !spriteFX.GetCombo())
+        {
+            Owner.Attribute.ComboTimeLimit = Owner.Attribute.BaseComboTimeLimit;
+            Owner.combo = true;
+        }
+
+        Attribute.StuntTime = spriteFX.AttributeFX.StuntTime;
         Attribute.Knockback = spriteFX.AttributeFX.Knockback;
         Attribute.KnockbackSide = spriteFX.GetSide();
         if (spriteType == Enums.SpriteType.Player1)
@@ -334,6 +392,7 @@ public class Sprite
             || Direction == Enums.Direction.WalkRight
             || Direction == Enums.Direction.AttackRight
             || Direction == Enums.Direction.DeadRight
+            || Direction == Enums.Direction.StuntRight
         )
         {
             return Enums.Side.Right;
@@ -343,6 +402,7 @@ public class Sprite
             || Direction == Enums.Direction.WalkLeft
             || Direction == Enums.Direction.AttackLeft
             || Direction == Enums.Direction.DeadLeft
+            || Direction == Enums.Direction.StuntLeft
         )
         {
             return Enums.Side.Left;
@@ -406,7 +466,12 @@ public class Sprite
 
     public void CenterX_Adjust()
     {
-        Position = new Vector2(Position.X - Size.X / 2, Position.Y);
+        Position = new Vector2(Position.X - Size.X / 2, Position.Y / 2);
+    }
+
+    public bool GetCombo()
+    {
+        return combo;
     }
 
     public void Draw(SpriteBatch spriteBatch, SpriteFont font)

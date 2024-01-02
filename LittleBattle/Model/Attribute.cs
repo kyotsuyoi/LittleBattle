@@ -16,14 +16,17 @@ namespace LittleBattle.Model
         public float Knockback { get; set; }
         public Enums.Side KnockbackSide { get; set; }
         public int Range { get; set; }
+        public float ComboTimeLimit { get; set; }
+        public float BaseComboTimeLimit { get; set; }
+        public float StuntTime { get; set; }
 
         public Attribute()
         {
-            BaseHP = 1000;
+            BaseHP = 100;
             HP = BaseHP;
 
             Attack = 2;
-            Defense = 100;
+            Defense = 1;
 
             Speed = 2;
             JumpPower = 5;
@@ -35,6 +38,11 @@ namespace LittleBattle.Model
             KnockbackSide = Enums.Side.None;
 
             Range = 5;
+
+            ComboTimeLimit = 0;
+            BaseComboTimeLimit = 0.5f;
+
+            StuntTime = 0;
         }
     }
 }
