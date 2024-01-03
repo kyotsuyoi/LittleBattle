@@ -27,11 +27,13 @@ namespace LittleBattle.Manager
         public void Update(List<Sprite> bots, List<Sprite> players, bool goToCommand = false)
         {
             var aliveBots = bots.Where(bot => !bot.IsDead()).ToList();
+            var test = bots.Where(bot => bot.Team != Enums.Team.Team1).ToList();
+
             foreach (var bot in aliveBots)
             {
                 var target = SetTarget(bot, players, bots);
                 if(target != null){
-                    TargetAttack(bot, target);
+                    if (TargetAttack(bot, target)) goto _continue;
                 }
 
                 if (!TargetDistance(bot, target) || target == null)
@@ -55,6 +57,7 @@ namespace LittleBattle.Manager
                         Patrol(bot);
                     }
                 }
+                _continue:;
             }
         }
 
@@ -227,20 +230,32 @@ namespace LittleBattle.Manager
             return range;
         }
 
-        private void TargetAttack(Sprite bot, Sprite player)
+        private bool TargetAttack(Sprite bot, Sprite player)
         {
             Collision collision = new Collision();
+
+            var m = 1.2f;
+            var d = 0.8f;
+            if (bot.classType == Enums.ClassType.Archer)
+            {
+                 m = 1.85f;
+                 d = 0.15f;
+            }
+
             var collide = collision.SquareCollision(
-                new Vector2((int)bot.RelativeX*0.8f, 0),
-                bot.Size * new Vector2(1.2f, 1),
-                new Vector2((int)player.RelativeX*0.8f, 0),
-                player.Size * new Vector2(1.2f, 1)
+                new Vector2((int)bot.RelativeX * d, 0),
+                bot.Size * new Vector2(m, 1),
+                new Vector2((int)player.RelativeX * d, 0),
+                player.Size * new Vector2(m, 1)
             );
 
             if (collide)
             {
+                if (bot.RelativeX > player.RelativeX) bot.SetMovement(false, Enums.Side.Left);
+                if (bot.RelativeX < player.RelativeX) bot.SetMovement(false, Enums.Side.Right);
                 bot.SetAttack();
             }
+            return collide;
         }
 
         private void Patrol(Sprite bot)

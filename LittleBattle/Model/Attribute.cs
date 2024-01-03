@@ -20,7 +20,7 @@ namespace LittleBattle.Model
         public float BaseComboTimeLimit { get; set; }
         public float StuntTime { get; set; }
 
-        public Attribute()
+        public Attribute(Enums.ClassType classType)
         {
             BaseHP = 100;
             HP = BaseHP;
@@ -43,6 +43,15 @@ namespace LittleBattle.Model
             BaseComboTimeLimit = 0.5f;
 
             StuntTime = 0;
+
+            if(classType == Enums.ClassType.Warrior)
+            {
+                BaseHP = 200;
+                HP = BaseHP;
+
+                Attack = 4;
+                Defense = 2;
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 
 public class Sprite
@@ -21,6 +22,7 @@ public class Sprite
     public float FallingSpeed { get; set; }
     public Vector2 Direction { get; set; }
     public Enums.SpriteType spriteType { get; }
+    public Enums.ClassType classType { get; }
     public float RelativeX { get; set; }
 
     private List<SpriteFX> spriteFXs;
@@ -38,12 +40,13 @@ public class Sprite
 
     private bool combo = false;
 
-    public Sprite(int ID, Vector2 position, Enums.SpriteType spriteType, Texture2D texture, int framesX, int framesY, Enums.Team team)
+    public Sprite(int ID, Vector2 position, Enums.SpriteType spriteType, int framesX, int framesY, Enums.Team team, Enums.ClassType classType)
     {
         this.ID = ID;
         Position = position;
         this.spriteType = spriteType;
-        Attribute = new Attribute();
+        this.classType = classType;
+        Attribute = new Attribute(classType);
         Team = team;
 
         if (spriteType == Enums.SpriteType.Bot) Attribute.Speed = 0.5f;
@@ -53,7 +56,21 @@ public class Sprite
         FallingSpeed = 0;
         Direction = Enums.Direction.StandRight;
 
-        this.texture = texture;
+        if (spriteType == Enums.SpriteType.Cameraman)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprites/SpriteCameraman_x3");
+        }
+        else if(team == Enums.Team.Team1)
+        {
+            if (classType == Enums.ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3");
+            if (classType == Enums.ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite03_x3");
+        }
+        else if(team == Enums.Team.Team2)
+        {
+            if (classType == Enums.ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3");
+            if (classType == Enums.ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite04_x3");
+        }
+
         _anims.AddAnimation(Enums.Direction.StandRight, new Animation(texture, framesX, framesY, 0, 3, 0.25f, 1, false, true));
         _anims.AddAnimation(Enums.Direction.StandLeft, new Animation(texture, framesX, framesY, 0, 3, 0.25f, 1, true, true));
         _anims.AddAnimation(Enums.Direction.WalkRight, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 2, false, true));
@@ -89,7 +106,7 @@ public class Sprite
         JumpResolve();
         FallingResolve();
 
-        if (spriteType != Enums.SpriteType.None)
+        if (spriteType != Enums.SpriteType.Cameraman)
         {
             Position += new Vector2(Globals.CameraMovement,0);
         }
@@ -108,8 +125,8 @@ public class Sprite
         if (IsDead()) return;
         var speed = Attribute.Speed;
         if (spriteType != Enums.SpriteType.Player1) speed = Attribute.Speed * 2;
-        if ((Position.X <= 0 && GetSide() == Enums.Side.Left)
-            || (Position.X >= Globals.Size.Width - Size.X && GetSide() == Enums.Side.Right)) Walk = false;
+        //if ((Position.X <= 0 && GetSide() == Enums.Side.Left)
+        //    || (Position.X >= Globals.Size.Width - Size.X && GetSide() == Enums.Side.Right)) Walk = false;
 
         //Cameraman ID
         if (ID == 0) speed = 0;
@@ -294,6 +311,14 @@ public class Sprite
         }
         else
         {
+            if (side == Enums.Side.Right)
+            {
+                Direction = Enums.Direction.StandRight;
+            }
+            else if (side == Enums.Side.Left)
+            {
+                Direction = Enums.Direction.StandLeft;
+            }
             Walk = false;
         }
     }
@@ -302,24 +327,37 @@ public class Sprite
     {
         if (IsDead() || Attribute.StuntTime > 0) return;
         if (Attribute.AttackCooldown > 0) return; 
-        spriteFXs.Add(new SpriteFX(this, GetSide(), Enums.SpriteType.SwordAttack, Globals.Content.Load<Texture2D>("Sprites/SwordEffect"), 12, 1));
+
+        if (classType == Enums.ClassType.Warrior) spriteFXs.Add(new SpriteFX(this, GetSide(), Enums.SpriteType.SwordEffect, 12, 1));
+        if (classType == Enums.ClassType.Archer) spriteFXs.Add(new SpriteFX(this, GetSide(), Enums.SpriteType.ArrowEffect, 12, 1));
 
         if (combo)
         {
             var spFX = spriteFXs[spriteFXs.Count() - 1];
-            spFX.AttributeFX.Damage += 8;
-            spFX.AttributeFX.Range += 8;
-            spFX.AttributeFX.Knockback += 4;
-            spFX.AttributeFX.StuntTime = 1f;
             spFX.InitialPosition();
             combo = false;
-            spFX.SetCombo(true);
 
-            Position = new Vector2(spFX.Position.X + spFX.Size.X / 2, spFX.Position.Y);
-            if (spFX.GetSide() == Enums.Side.Left)
+            //Jump to position into combo
+            if (spFX.spriteType == Enums.SpriteType.SwordEffect)
             {
-                Position = new Vector2(spFX.Position.X, spFX.Position.Y);
+                if (spFX.GetSide() == Enums.Side.Left) Position = new Vector2(spFX.Position.X + spFX.Size.X / 2, spFX.Position.Y);
+                if (spFX.GetSide() == Enums.Side.Left) Position = new Vector2(spFX.Position.X, spFX.Position.Y);
+
+                spFX.AttributeFX.Damage += 8;
+                spFX.AttributeFX.Range += 8;
+                spFX.AttributeFX.Knockback += 4;
+                spFX.AttributeFX.StuntTime = 1f;
             }
+
+            if (spFX.spriteType == Enums.SpriteType.ArrowEffect)
+            {
+                spFX.AttributeFX.Damage += 4;
+                spFX.AttributeFX.Range += 0;
+                spFX.AttributeFX.Knockback += 1;
+                spFX.AttributeFX.StuntTime = 0.5f;
+            }
+
+            spFX.SetCombo(true);            
         }
 
         Attack = true;
@@ -346,6 +384,7 @@ public class Sprite
 
     public void TakeDamage(SpriteFX spriteFX)
     {
+        if (!spriteFX.Active) return;
         var Owner = spriteFX.Owner;
         var res = (Owner.Attribute.Attack + spriteFX.AttributeFX.Damage) - Attribute.Defense;
         if (res < 1) res = 1;
@@ -356,7 +395,6 @@ public class Sprite
         if (Owner.spriteType == Enums.SpriteType.Player1 && !Owner.combo && !spriteFX.GetCombo())
         {
             Owner.Attribute.AttackCooldown = Owner.Attribute.AttackCooldown / 3;
-
             Owner.Attribute.ComboTimeLimit = Owner.Attribute.BaseComboTimeLimit;
             Owner.combo = true;
         }
@@ -374,6 +412,8 @@ public class Sprite
         {
             Attribute.Knockback = Attribute.Knockback / 2;
         }
+
+        if (spriteFX.spriteType == Enums.SpriteType.ArrowEffect) spriteFX.Active = false;
     }
 
     public void UpdateSpriteFXDamage(List<Sprite> targets)
@@ -411,6 +451,57 @@ public class Sprite
         }
 
         return Enums.Side.None;
+    }
+
+    public void SetSide(Enums.Side side)
+    {
+        if (side == Enums.Side.Left)
+        {
+            if (Direction == Enums.Direction.StandLeft)
+            {
+                Position = Enums.Direction.StandRight;
+            }
+            else if (Direction == Enums.Direction.WalkLeft)
+            {
+                Position = Enums.Direction.WalkRight;
+            }
+            else if (Direction == Enums.Direction.AttackLeft)
+            {
+                Position = Enums.Direction.AttackRight;
+            }
+            else if (Direction == Enums.Direction.DeadLeft)
+            {
+                Position = Enums.Direction.DeadRight;
+            }
+            else if (Direction == Enums.Direction.StuntLeft)
+            {
+                Position = Enums.Direction.StuntRight;
+            }
+        }
+
+        if (side == Enums.Side.Right)
+        {
+            if (Direction == Enums.Direction.StandRight)
+            {
+                Position = Enums.Direction.StandLeft;
+            }
+            else if (Direction == Enums.Direction.WalkRight)
+            {
+                Position = Enums.Direction.WalkLeft;
+            }
+            else if (Direction == Enums.Direction.AttackRight)
+            {
+                Position = Enums.Direction.AttackLeft;
+            }
+            else if (Direction == Enums.Direction.DeadRight)
+            {
+                Position = Enums.Direction.DeadLeft;
+            }
+            else if (Direction == Enums.Direction.StuntRight)
+            {
+                Position = Enums.Direction.StuntLeft;
+            }
+        }
     }
 
     public void Revive()

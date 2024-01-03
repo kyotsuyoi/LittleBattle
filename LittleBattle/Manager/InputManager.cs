@@ -175,7 +175,16 @@ public static class InputManager
         {
             botID++;
             var val = Globals.NegativeLimit.Width + Globals.GroundX;
-            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 5, Enums.Team.Team1));
+            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, 4, 5, Enums.Team.Team1, Enums.ClassType.Warrior));
+            var bot = bots[bots.Count - 1];
+            bot.CenterX_Adjust();
+            bot.SetToGroundLevel(0);
+        }
+        if (IsKeyPressed(Keys.D7))
+        {
+            botID++;
+            var val = Globals.NegativeLimit.Width + Globals.GroundX;
+            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, 4, 5, Enums.Team.Team1, Enums.ClassType.Archer));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
             bot.SetToGroundLevel(0);
@@ -185,7 +194,16 @@ public static class InputManager
         {
             botID++;
             var val = Globals.PositiveLimit.Width + Globals.GroundX;
-            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3"), 4, 5, Enums.Team.Team2));
+            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, 4, 5, Enums.Team.Team2, Enums.ClassType.Warrior));
+            var bot = bots[bots.Count - 1];
+            bot.CenterX_Adjust();
+            bot.SetToGroundLevel(0);
+        }
+        if (IsKeyPressed(Keys.D8))
+        {
+            botID++;
+            var val = Globals.PositiveLimit.Width + Globals.GroundX;
+            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, 4, 5, Enums.Team.Team2, Enums.ClassType.Archer));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
             bot.SetToGroundLevel(0);

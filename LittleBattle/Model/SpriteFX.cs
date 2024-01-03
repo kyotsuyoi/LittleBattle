@@ -31,23 +31,29 @@ public class SpriteFX
 
     private bool combo = false;
 
-    public SpriteFX(Sprite Owner, Enums.Side side, Enums.SpriteType spriteType, Texture2D texture, int framesX, int framesY)
+    public SpriteFX(Sprite Owner, Enums.Side side, Enums.SpriteType spriteType, int framesX, int framesY)
     {
         this.Owner = Owner;
         this.spriteType = spriteType;
         Active = true;
 
-        AttributeFX = new AttributeFX();
+        AttributeFX = new AttributeFX(spriteType);
 
         Speed = 1;
 
         Ground = false;
-        FallingSpeed = 0;
+        FallingSpeed = -1;
         Direction = Enums.Direction.StandRight;
         if (side == Side.Left) Direction = Enums.Direction.StandLeft;
         AttributeFX.Range += Owner.Attribute.Range;
 
-        this.texture = texture;
+        if (spriteType == SpriteType.SwordEffect) texture = Globals.Content.Load<Texture2D>("Sprites/SwordEffect");
+        if (spriteType == SpriteType.ArrowEffect)
+        {
+            Walk = true;
+            texture = Globals.Content.Load<Texture2D>("Sprites/ArrowEffect"); framesX = 1; framesY = 1;
+        }
+
         _anims.AddAnimation(Enums.Direction.StandRight, new Animation(texture, framesX, framesY, 0, 11, 0.01f, 1, false, false));
         _anims.AddAnimation(Enums.Direction.StandLeft, new Animation(texture, framesX, framesY, 0, 11, 0.01f, 1, true, false));
         _anims.AddAnimation(Enums.Direction.WalkRight, new Animation(texture, framesX, framesY, 0, 11, 0.01f, 1, false, false));
@@ -65,7 +71,7 @@ public class SpriteFX
     public void Update()
     {
         AnimationResolve();
-        //FallingResolve();
+        FallingResolve();
 
         Position += new Vector2(Globals.CameraMovement,0);
         RelativeX = Position.X - Globals.GroundX;
@@ -76,17 +82,17 @@ public class SpriteFX
     private void AnimationResolve()
     {
         var speed = Speed;
-        if (spriteType != Enums.SpriteType.Player1) speed = Speed * 2;
+        speed = Speed * 10;
         if ((Position.X <= 0 && Direction == Enums.Direction.WalkLeft)
             || (Position.X >= Globals.Size.Width - Size.X && Direction == Enums.Direction.WalkRight)) Walk = false;
 
         if (Walk)
         {
-            if (Direction == Enums.Direction.WalkLeft)
+            if (Direction == Enums.Direction.StandLeft)
             {
                 Position += new Vector2(-speed, 0);
             }
-            else if (Direction == Enums.Direction.WalkRight)
+            else if (Direction == Enums.Direction.StandRight)
             {
                 Position += new Vector2(speed, 0);
             }
@@ -106,13 +112,13 @@ public class SpriteFX
         var animRight = _anims.GetAnimation(Enums.Direction.StandRight);
         var animLeft = _anims.GetAnimation(Enums.Direction.StandLeft);
 
-        if (animRight.EndLoop)
+        if (animRight.EndLoop && spriteType == SpriteType.SwordEffect)
         {            
             Direction = Enums.Direction.StandRight;
             Active = false;
         }
 
-        if (animLeft.EndLoop)
+        if (animLeft.EndLoop && spriteType == SpriteType.SwordEffect)
         {
             Direction = Enums.Direction.StandLeft;
             Active = false;
@@ -123,19 +129,20 @@ public class SpriteFX
     {
         if (!Ground && FallingSpeed <= Globals.Gravity)
         {
-            FallingSpeed += 0.25f;
+            FallingSpeed += 0.05f;
             Position += new Vector2(0, FallingSpeed);
             if (FallingSpeed >= Globals.Gravity) FallingSpeed = Globals.Gravity;
         }
         else
         {
-            FallingSpeed = 0;
+            FallingSpeed = -2;
         }
 
         if (Position.Y >= GroundLevel)
         {
             Position = new Vector2(Position.X, GroundLevel);
             Ground = true;
+            if(spriteType == SpriteType.ArrowEffect) Active = false;
         }
         else
         {

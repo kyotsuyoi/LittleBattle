@@ -31,13 +31,13 @@ public class GameManager
         resolution.SetResolution(Globals.Size);
         resolution.SetFullScreen();
 
-        Cameraman = new Sprite(00, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.None, Globals.Content.Load<Texture2D>("Sprites/SpriteCameraman_x3"), 4, 4, Enums.Team.None);
+        Cameraman = new Sprite(00, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.Cameraman, 4, 4, Enums.Team.None, Enums.ClassType.None);
         Cameraman.CenterX_Adjust();
         Cameraman.SetToGroundLevel(0);
 
         players = new List<Sprite>
         {
-            new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.Player1, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 5, Enums.Team.Team1),
+            new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.Player1, 4, 5, Enums.Team.Team1, Enums.ClassType.Archer),
             //new Sprite(02, new Vector2((Globals.Size.Width / 2) - 10, 504), Enums.SpriteType.Player2, Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3"), 4, 4, Enums.Team.Team1),
         };
         foreach (var player in players)
