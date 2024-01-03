@@ -1,4 +1,5 @@
 using LittleBattle.Classes;
+using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ public static class InputManager
         return _currentKeyboard.IsKeyDown(key) && _lastKeyboard.IsKeyUp(key);
     }
 
-    public static void Update(Sprite player, List<Sprite> bots)
+    public static void Update(Sprite player, List<Sprite> bots, KeyMappingsManager keyMappings)
     {
         _lastKeyboard = _currentKeyboard;
         _currentKeyboard = Keyboard.GetState();
@@ -43,7 +44,7 @@ public static class InputManager
             }
             else
             {
-                Player1_Keybord(keyboard, player);
+                Player1_Keybord(keyboard, player,keyMappings);
             }
         }
 
@@ -62,26 +63,28 @@ public static class InputManager
         DebugCommand(keyboard, player, bots);
     }
 
-    private static void Player1_Keybord(KeyboardState keyboard, Sprite player)
+    private static void Player1_Keybord(KeyboardState keyboard, Sprite player, KeyMappingsManager keyMappings)
     {
-        if (keyboard.IsKeyDown(Keys.A))
+      
+
+        if (keyboard.IsKeyDown(keyMappings.MoveLeft))
         {
             //player.SetMovement(Enums.Direction.WalkLeft);
             player.SetMovement(true, Enums.Side.Left);
         }
-        else if (keyboard.IsKeyDown(Keys.D))
+        else if (keyboard.IsKeyDown(keyMappings.MoveRight))
         {
             //player.SetMovement(Enums.Direction.WalkRight);
             player.SetMovement(true, Enums.Side.Right);
         }
 
-        if (keyboard.IsKeyUp(Keys.A) && keyboard.IsKeyUp(Keys.D))
+        if (keyboard.IsKeyUp(keyMappings.MoveLeft) && keyboard.IsKeyUp(keyMappings.MoveRight))
         {
             //player.Walk = false;
             player.SetMovement(false, Enums.Side.None);
         }
 
-        if (keyboard.IsKeyDown(Keys.Space) && !p1_jump_key_pressed
+        if (keyboard.IsKeyDown(keyMappings.Jump) && !p1_jump_key_pressed
         && !player.Jump && player.Ground
              && player.Position.Y > 0)
         {
@@ -89,18 +92,19 @@ public static class InputManager
             player.SetJump();
         }
 
-        if (keyboard.IsKeyUp(Keys.Space))
+        if (keyboard.IsKeyUp(keyMappings.Jump))
         {
             p1_jump_key_pressed = false;
         }
+        
 
-        if (keyboard.IsKeyDown(Keys.M) && !p1_attack_key_pressed)
+        if (keyboard.IsKeyDown(keyMappings.Attack) && !p1_attack_key_pressed)
         {
             p1_attack_key_pressed = true;
             player.SetAttack();
         }
 
-        if (keyboard.IsKeyUp(Keys.M))
+        if (keyboard.IsKeyUp(keyMappings.Attack))
         {
             p1_attack_key_pressed = false;
         }

@@ -1,5 +1,6 @@
 using LittleBattle.Classes;
 using LittleBattle.Manager;
+using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ public class GameManager
     private List<Sprite> bots;
     private BotManager botManager;
     private Sprite Cameraman;
+    public static KeyMappingsManager keyMappings;
 
     public GameManager(Game game, GraphicsDeviceManager graphics)
     {
@@ -75,7 +77,14 @@ public class GameManager
         font = Globals.Content.Load<SpriteFont>("Font/fontMedium");
         debugManager = new DebugManager();
         botManager = new BotManager(Cameraman, bots, players);
-;    }    
+        keyMappings = new KeyMappingsManager();
+        keyMappings.LoadKeyMappings();
+
+        //KeyMappingsManager custom = new KeyMappingsManager();
+        //custom.MoveLeft = Microsoft.Xna.Framework.Input.Keys.A;
+        //keyMappings.SaveCustomConfig(custom);
+        //keyMappings = custom;
+    }
 
     public void Update()
     {
@@ -88,7 +97,7 @@ public class GameManager
         botManager.UpdateCamerman();
         foreach(var player in players)
         {
-            InputManager.Update(player, bots);
+            InputManager.Update(player, bots,keyMappings);
             player.Update();
             player.UpdateSpriteFXDamage(players);
             player.UpdateSpriteFXDamage(bots);
