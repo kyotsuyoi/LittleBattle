@@ -1,10 +1,11 @@
 using LittleBattle.Classes;
 using LittleBattle.Model;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 
 public static class InputManager
 {
@@ -18,6 +19,10 @@ public static class InputManager
     public static bool p2_attack_key_pressed = false;
 
     public static bool visibleCamerman = false;
+
+    private static int botID = 9;
+    public static bool ClearBot = false;
+    public static bool CommandBot = false;
 
     public static bool IsKeyPressed(Keys key)
     {
@@ -59,8 +64,6 @@ public static class InputManager
                 Player2_Keybord(keyboard, player);
             }
         }
-
-        DebugCommand(keyboard, player, bots);
     }
 
     private static void Player1_Keybord(KeyboardState keyboard, Sprite player, KeyMappingsManager keyMappings)
@@ -108,6 +111,7 @@ public static class InputManager
         {
             p1_attack_key_pressed = false;
         }
+
     }
 
     private static void Player1_Gamepad(GamePadState gamepad, Sprite player)
@@ -154,17 +158,84 @@ public static class InputManager
         }
     }
 
-    private static void DebugCommand(KeyboardState keyboard, Sprite player, List<Sprite> bots)
+    public static void DebugCommand(List<Sprite> players, List<Sprite> bots)
     {
-        if (keyboard.IsKeyDown(Keys.P)) { 
-                player.Revive();            
+        if (IsKeyPressed(Keys.P)) {
+            foreach (var player in players)
+            {
+                player.Revive();
+            }         
         }
 
-        if (keyboard.IsKeyDown(Keys.O))
+        if (IsKeyPressed(Keys.O))
         {
             foreach (var bot in bots)
             {
                 bot.Revive();
+            }
+        }
+
+        if (IsKeyPressed(Keys.F7))
+        {
+            botID++;
+            var val = Globals.NegativeLimit.Width + Globals.GroundX;
+            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, 4, 5, Enums.Team.Team1, Enums.ClassType.Warrior));
+            var bot = bots[bots.Count - 1];
+            bot.CenterX_Adjust();
+            bot.SetToGroundLevel(0);
+        }
+        if (IsKeyPressed(Keys.D7))
+        {
+            botID++;
+            var val = Globals.NegativeLimit.Width + Globals.GroundX;
+            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, 4, 5, Enums.Team.Team1, Enums.ClassType.Archer));
+            var bot = bots[bots.Count - 1];
+            bot.CenterX_Adjust();
+            bot.SetToGroundLevel(0);
+        }
+
+        if (IsKeyPressed(Keys.F8))
+        {
+            botID++;
+            var val = Globals.PositiveLimit.Width + Globals.GroundX;
+            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, 4, 5, Enums.Team.Team2, Enums.ClassType.Warrior));
+            var bot = bots[bots.Count - 1];
+            bot.CenterX_Adjust();
+            bot.SetToGroundLevel(0);
+        }
+        if (IsKeyPressed(Keys.D8))
+        {
+            botID++;
+            var val = Globals.PositiveLimit.Width + Globals.GroundX;
+            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, 4, 5, Enums.Team.Team2, Enums.ClassType.Archer));
+            var bot = bots[bots.Count - 1];
+            bot.CenterX_Adjust();
+            bot.SetToGroundLevel(0);
+        }
+
+        if (IsKeyPressed(Keys.F9))
+        {
+            ClearBot = true;
+        }
+
+
+        if (IsKeyPressed(Keys.N))
+        {
+            CommandBot = true;
+        }
+
+        if (IsKeyPressed(Keys.B))
+        {
+            var alliedBots = players.Where(bot => players[0].Team == bot.Team).ToList();
+            foreach(var bot in bots)
+            {
+                bot.BotPatrol = !bot.BotPatrol;
+                if(!bot.BotPatrol && !bot.BotGoTo)
+                {
+                    bot.SetMovement(false, bot.GetSide());
+                    bot.BotPatrolWait = 0;
+                    bot.BotPatrol = false;
+                }
             }
         }
     }

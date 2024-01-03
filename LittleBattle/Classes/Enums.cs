@@ -49,8 +49,10 @@ namespace LittleBattle.Classes
             None = 0,
             Player1 = 1,
             Player2 = 2,
-            Bot = 3,
-            SwordAttack = 50,
+            Bot = 5,
+            Cameraman = 6,
+            SwordEffect = 50,
+            ArrowEffect = 51,
         }
 
         public enum Team
@@ -60,6 +62,13 @@ namespace LittleBattle.Classes
             Team2 = 2,
             Team3 = 3,
             Team4 = 4,
+        }
+
+        public enum ClassType
+        {
+            None = 0,
+            Warrior = 1,
+            Archer = 2,
         }
     }
 }

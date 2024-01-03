@@ -76,7 +76,7 @@ public class GameManager
 
         font = Globals.Content.Load<SpriteFont>("Font/fontMedium");
         debugManager = new DebugManager();
-        botManager = new BotManager(Cameraman, bots, players);
+        botManager = new BotManager();
         keyMappings = new KeyMappingsManager();
         keyMappings.LoadKeyMappings();
 
