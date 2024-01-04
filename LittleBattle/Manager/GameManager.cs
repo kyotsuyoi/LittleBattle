@@ -1,5 +1,6 @@
 using LittleBattle.Classes;
 using LittleBattle.Manager;
+using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ public class GameManager
     private List<Sprite> bots;
     private BotManager botManager;
     private Sprite Cameraman;
+    public static KeyMappingsManager keyMappings;
 
     public GameManager(Game game, GraphicsDeviceManager graphics)
     {
@@ -50,12 +52,12 @@ public class GameManager
 
         bots = new List<Sprite>();
 
-        foreach(var bot in bots)
+        foreach (var bot in bots)
         {
             bot.CenterX_Adjust();
             bot.SetToGroundLevel(0);
         }
-    
+
         Globals.Gravity = 10;
         Globals.PositiveLimit = new Size(2000, 0);
         Globals.NegativeLimit = new Size(-2000, 0);
@@ -63,49 +65,39 @@ public class GameManager
         font = Globals.Content.Load<SpriteFont>("Font/fontMedium");
         debugManager = new DebugManager();
         botManager = new BotManager();
-;    }    
+        keyMappings = new KeyMappingsManager();
+        keyMappings.LoadKeyMappings();
+
+        //KeyMappingsManager custom = new KeyMappingsManager();
+        //custom.MoveLeft = Microsoft.Xna.Framework.Input.Keys.A;
+        //keyMappings.SaveCustomConfig(custom);
+        //keyMappings = custom;
+    }
 
     public void Update()
     {
         InputManager.UpdateResolution(resolution);
-        InputManager.DebugCommand(players, bots);
+        //Globals.CameraMovement = players[0].DirectionSpeed();
         Globals.CameraMovement = Cameraman.CameraDirectionSpeed();
         backgroundManager.Update();
 
         Cameraman.Update();
         botManager.UpdateCamerman(Cameraman, players);
-        foreach(var player in players)
+        foreach (var player in players)
         {
-            InputManager.Update(player, bots);
+            InputManager.Update(player, bots,keyMappings);
             player.Update();
             player.UpdateSpriteFXDamage(players);
             player.UpdateSpriteFXDamage(bots);
             player.UpdateSpriteObjects();
             player.UpdateInteraction();
         }
-
-        //Debug Command
-        if (InputManager.ClearBot)
-        {
-            bots = bots.Where(bot => !bot.IsDead()).ToList();
-            InputManager.ClearBot = false;
-        }
-
         foreach (var bot in bots)
         {
+            botManager.UpdateCamerman(Cameraman, players);
             bot.Update();
             bot.UpdateSpriteFXDamage(players);
             bot.UpdateSpriteFXDamage(bots);
-        }
-
-        if (InputManager.CommandBot)
-        {
-            botManager.Update(bots, players, true);
-            InputManager.CommandBot = false;
-        }
-        else
-        {
-            botManager.Update(bots, players);
         }
     }
 

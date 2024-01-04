@@ -29,6 +29,12 @@ namespace LittleBattle.Classes
             Left = -1,
         }
 
+        public enum ControlType
+        {
+            KeyBoard = 0,
+            GamePad = 1
+        }
+
         //public static class ControlKeys
         //{
         //    public const Keys Left = Keys.Left;

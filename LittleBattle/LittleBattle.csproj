@@ -115,6 +115,7 @@
     <Compile Include="Model\Attribute.cs" />
     <Compile Include="Model\Canvas.cs" />
     <Compile Include="Model\SpriteObject .cs" />
+    <Compile Include="Manager\KeyMappingsManager.cs" />
     <Compile Include="Model\SpriteFX.cs" />
     <Compile Include="Model\Sprite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -150,6 +151,9 @@
     </PackageReference>
     <PackageReference Include="MonoGame.Framework.WindowsUniversal" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+    <PackageReference Include="System.Text.Json">
+      <Version>8.0.0</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Control\" />
