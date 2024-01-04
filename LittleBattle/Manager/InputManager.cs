@@ -49,7 +49,7 @@ public static class InputManager
             }
             else
             {
-                Player1_Keybord(keyboard, player,keyMappings);
+                Player1_Keybord(keyboard, player, keyMappings);
             }
         }
 
@@ -160,6 +160,23 @@ public static class InputManager
 
     public static void DebugCommand(List<Sprite> players, List<Sprite> bots)
     {
+        if (IsKeyPressed(Keys.F9))
+        {
+            Globals.Debug = !Globals.Debug;
+        }
+
+        if (!Globals.Debug) return;
+
+        if (IsKeyPressed(Keys.F6))
+        {
+            if (visibleCamerman)
+            {
+                visibleCamerman = false;
+                return;
+            }
+            visibleCamerman = true;
+        }
+
         if (IsKeyPressed(Keys.P)) {
             foreach (var player in players)
             {
@@ -175,7 +192,7 @@ public static class InputManager
             }
         }
 
-        if (IsKeyPressed(Keys.F7))
+        if (IsKeyPressed(Keys.D6))
         {
             botID++;
             var val = Globals.NegativeLimit.Width + Globals.GroundX;
@@ -194,7 +211,7 @@ public static class InputManager
             bot.SetToGroundLevel(0);
         }
 
-        if (IsKeyPressed(Keys.F8))
+        if (IsKeyPressed(Keys.D9))
         {
             botID++;
             var val = Globals.PositiveLimit.Width + Globals.GroundX;
@@ -213,7 +230,7 @@ public static class InputManager
             bot.SetToGroundLevel(0);
         }
 
-        if (IsKeyPressed(Keys.F9))
+        if (IsKeyPressed(Keys.D0))
         {
             ClearBot = true;
         }
@@ -246,6 +263,11 @@ public static class InputManager
         if (IsKeyPressed(Keys.Y))
         {
             players[0].InteractObjects(null);
+        }
+
+        if (IsKeyPressed(Keys.F8))
+        {
+            Globals.DebugArea = !Globals.DebugArea;
         }
     }
 
@@ -301,15 +323,6 @@ public static class InputManager
         //if (InputManager.IsKeyPressed(Keys.F4)) SetBorderlessScreen();
         if (IsKeyPressed(Keys.F5)) { 
             resolution.SetFullScreen(); 
-        }
-        if (IsKeyPressed(Keys.F6))
-        {
-            if (visibleCamerman)
-            {
-                visibleCamerman = false;
-                return;
-            }
-            visibleCamerman = true;            
         }
     }
 }

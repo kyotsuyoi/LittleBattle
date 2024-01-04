@@ -114,7 +114,7 @@
     <Compile Include="Model\AttributeFX .cs" />
     <Compile Include="Model\Attribute.cs" />
     <Compile Include="Model\Canvas.cs" />
-    <Compile Include="Model\SpriteObject .cs" />
+    <Compile Include="Model\SpriteObject.cs" />
     <Compile Include="Manager\KeyMappingsManager.cs" />
     <Compile Include="Model\SpriteFX.cs" />
     <Compile Include="Model\Sprite.cs" />

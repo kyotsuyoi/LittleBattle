@@ -225,9 +225,24 @@ public class SpriteFX
     {
         this.combo = combo;
     }
-
-    public void Draw(float layerDepth)
+    private Rectangle GetRectangle()
     {
+        var Pos = new Point((int)Position.X, (int)Position.Y);
+        var Siz = new Point((int)Size.X, (int)Size.Y);
+
+        return new Rectangle(Pos, Siz);
+    }
+
+    public void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics, float layerDepth)
+    {
+        if (Globals.Debug && Globals.DebugArea)
+        {
+            Texture2D _texture;
+            _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
+            _texture.SetData(new Color[] { Color.Red });
+            spriteBatch.Draw(_texture, GetRectangle(), Color.Red * 0.4f);
+        }
+
         _anims.Draw(Position);
     }
 }

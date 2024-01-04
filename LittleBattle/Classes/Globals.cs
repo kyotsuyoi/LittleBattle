@@ -21,6 +21,8 @@ namespace LittleBattle.Classes
         public static float GroundLevel { get; set; }
 
         private static int LastID = 10;
+        public static bool Debug { get; set; }
+        public static bool DebugArea { get; set; }
 
         public static void Update(GameTime gameTime)
         {

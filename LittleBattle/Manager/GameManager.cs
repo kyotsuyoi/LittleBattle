@@ -9,6 +9,7 @@ using System.Linq;
 
 public class GameManager
 {
+    private GraphicsDeviceManager graphics;
     private readonly List<Sprite> players;
     private readonly Canvas _canvas;
     private readonly Resolution resolution;
@@ -22,8 +23,12 @@ public class GameManager
 
     public GameManager(Game game, GraphicsDeviceManager graphics)
     {
+        this.graphics = graphics;
         Globals.Size = new Size(1920, 1080);
         _canvas = new Canvas(graphics.GraphicsDevice, Globals.Size.Width, Globals.Size.Height);
+
+        Globals.Debug = false;
+        Globals.DebugArea = false;
 
         backgroundManager = new BackgroundManager();
         backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Mountain"), 0.6f, 0.6f, false));
@@ -65,6 +70,7 @@ public class GameManager
         font = Globals.Content.Load<SpriteFont>("Font/fontMedium");
         debugManager = new DebugManager();
         botManager = new BotManager();
+
         keyMappings = new KeyMappingsManager();
         keyMappings.LoadKeyMappings();
 
@@ -77,7 +83,7 @@ public class GameManager
     public void Update()
     {
         InputManager.UpdateResolution(resolution);
-        //Globals.CameraMovement = players[0].DirectionSpeed();
+        InputManager.DebugCommand(players, bots);
         Globals.CameraMovement = Cameraman.CameraDirectionSpeed();
         backgroundManager.Update();
 
@@ -85,19 +91,35 @@ public class GameManager
         botManager.UpdateCamerman(Cameraman, players);
         foreach (var player in players)
         {
-            InputManager.Update(player, bots,keyMappings);
+            InputManager.Update(player, bots, keyMappings);
             player.Update();
             player.UpdateSpriteFXDamage(players);
             player.UpdateSpriteFXDamage(bots);
             player.UpdateSpriteObjects();
-            player.UpdateInteraction();
         }
+
+        //Debug Command
+        if (InputManager.ClearBot)
+        {
+            bots = bots.Where(bot => !bot.IsDead()).ToList();
+            InputManager.ClearBot = false;
+        }
+
         foreach (var bot in bots)
         {
-            botManager.UpdateCamerman(Cameraman, players);
             bot.Update();
             bot.UpdateSpriteFXDamage(players);
             bot.UpdateSpriteFXDamage(bots);
+        }
+
+        if (InputManager.CommandBot)
+        {
+            botManager.Update(bots, players, true);
+            InputManager.CommandBot = false;
+        }
+        else
+        {
+            botManager.Update(bots, players);
         }
     }
 
@@ -107,7 +129,7 @@ public class GameManager
 
         spriteBatch.Begin();
         backgroundManager.Draw();
-        if (InputManager.visibleCamerman) Cameraman.Draw(spriteBatch, font);
+        if (InputManager.visibleCamerman && Globals.Debug) Cameraman.Draw(spriteBatch, font, graphics);
 
         var deadBots = bots.Where(bot => bot.IsDead()).ToList();
         var aliveBots = bots.Where(bot => !bot.IsDead()).ToList();
@@ -116,27 +138,27 @@ public class GameManager
 
         foreach (var player in players)
         {
-            player.DrawObjects(spriteBatch, font);
+            player.DrawObjects(spriteBatch, font, graphics);
         }
 
         foreach (var bot in deadBots)
         {
-            bot.Draw(spriteBatch, font);
+            bot.Draw(spriteBatch, font, graphics);
         }
         foreach (var player in deadPlayers)
         {
-            player.Draw(spriteBatch, font);
+            player.Draw(spriteBatch, font, graphics);
         }
         foreach (var bot in aliveBots)
         {
-            bot.Draw(spriteBatch, font);
+            bot.Draw(spriteBatch, font, graphics);
         }
         alivePlayers = alivePlayers.OrderByDescending(player => player.spriteType).ToList();
         foreach (var player in alivePlayers)
         {
-            player.Draw(spriteBatch, font);
+            player.Draw(spriteBatch, font, graphics);
         }
-        debugManager.Draw(spriteBatch, font, players[0], players[0], bots);
+        if (Globals.Debug) debugManager.Draw(spriteBatch, font, players[0], players[0], bots);
         spriteBatch.End();
 
         _canvas.Draw(spriteBatch);

@@ -43,6 +43,8 @@ public class Sprite
 
     private bool combo = false;
 
+    private readonly GraphicsDevice graphicsDevice;
+
     public Sprite(int ID, Vector2 position, Enums.SpriteType spriteType, int framesX, int framesY, Enums.Team team, Enums.ClassType classType)
     {
         this.ID = ID;
@@ -93,6 +95,7 @@ public class Sprite
 
     public void Update()
     {
+        UpdateInteraction();
         AnimationResolve();
         AttackResolve();
         UpdateCooldown();
@@ -196,9 +199,9 @@ public class Sprite
         }
 
         Ground = false;
-        if (Position.Y >= GroundLevel)
+        if (Position.Y + Size.Y >= GroundLevel)
         {
-            Position = new Vector2(Position.X, GroundLevel);
+            Position = new Vector2(Position.X, GroundLevel - Size.Y);
             Attribute.JumpPower = Attribute.BaseJumpPower;
             Ground = true;
         }
@@ -359,7 +362,7 @@ public class Sprite
 
     public void SetJump()
     {
-        if (Attribute.HP <= 0 /*&& spriteType != Enums.SpriteType.Player1*/) return;
+        if (IsDead()) return;
         Jump = true;
     }
 
@@ -583,7 +586,7 @@ public class Sprite
 
     public void SetToGroundLevel(float positionX)
     {
-        Position = new Vector2(Position.X, GroundLevel);
+        //Position = new Vector2(Position.X, GroundLevel);
     }
 
     public void SetInitialPatrolArea(float positionX)
@@ -607,54 +610,68 @@ public class Sprite
         SpriteObject _object = null;
         foreach (var inner_object in this.spriteObjects)
         {
-            if(collision.SquareCollision(Position, new Vector2(Size.X * 0.8f, Size.Y),
-                inner_object.Position, new Vector2(inner_object.Size.X * 0.8f, inner_object.Size.Y)))
+            var PosB = new Point((int)inner_object.Position.X, (int)inner_object.Position.Y);
+            var SizB = new Point((int)inner_object.Size.X, (int)inner_object.Size.Y);
+
+            var RectB = new Rectangle(PosB, SizB);
+            var isCollide = collision.IsCollide(GetRectangle(), RectB);
+
+            if (isCollide)
             {
                 _object = inner_object;
                 break;
             }
         }
-        if(_object != null)
+        if (_object != null)
         {
-            if(_object.spriteType == Enums.SpriteType.ArcherTower)
+            if (_object.spriteType == Enums.SpriteType.ArcherTower)
             {
-                GroundLevel = (int)(_object.Position.Y - Size.Y);
+                GroundLevel = (int)(_object.Position.Y);
             }
             else
             {
-                GroundLevel = Globals.GroundLevel - Size.Y;
+                GroundLevel = Globals.GroundLevel;
             }
         }
         else
         {
-            GroundLevel = Globals.GroundLevel - Size.Y;
+            GroundLevel = Globals.GroundLevel;
         }
     }
 
     public void UpdateInteraction()
     {
-        //Attribute.BaseJumpPower = 5;
         Collision collision = new Collision();
         SpriteObject _object = null;
         spriteObjects = spriteObjects.Where(_spriteobject => _spriteobject.Active).ToList();
         foreach (var inner_object in spriteObjects)
         {
-            if (collision.SquareCollision(Position, new Vector2(Size.X * 0.8f, Size.Y), 
-                inner_object.Position, new Vector2(inner_object.Size.X * 0.8f, inner_object.Size.Y * 20000f)))
+            var PosB = new Point((int)inner_object.Position.X, (int)inner_object.Position.Y);
+            var SizB = new Point((int)inner_object.Size.X, (int)inner_object.Size.Y);
+            var RectB = new Rectangle(PosB, SizB);
+            var isCollide = collision.IsCollide(GetRectangle(), RectB);
+
+            if (isCollide)
             {
                 _object = inner_object;
                 break;
             }
+
+            //if (collision.SquareCollision(Position, new Vector2(Size.X * 0.8f, Size.Y),
+            //    new Vector2(inner_object.Position.X, inner_object.Position.Y-1), new Vector2(inner_object.Size.X * 0.8f, inner_object.Size.Y)))
+            //{
+            //    _object = inner_object;
+            //    break;
+            //}
         }
 
-        var calcGroundLevel = (int)Position.Y + Size.Y - 3;
-        if (_object != null && calcGroundLevel < _object.Position.Y)
+        if (_object != null && GroundLevel < (int)_object.Position.Y)
         {
-            GroundLevel = _object.Position.Y - Size.Y;
+            GroundLevel = (int)(_object.Position.Y);
         }
 
         //Needs buff list
-        if (_object != null && (int)(_object.Position.Y - Size.Y/2) <= (int)GroundLevel && classType == Enums.ClassType.Archer)
+        if (_object != null && (int)(_object.Position.Y) == GroundLevel && classType == Enums.ClassType.Archer)
         {
             Attribute.BuffAttack = 5;
             Attribute.BuffKnockback = 2;
@@ -665,18 +682,33 @@ public class Sprite
             Attribute.BuffKnockback = 0;
         }
 
-        if (_object == null || _object.Position.Y - Size.Y != GroundLevel)
+        //var nCalc = (int)(_object.Position.Y);
+        if (_object == null || (int)(_object.Position.Y) != GroundLevel)
         {
-            GroundLevel = Globals.GroundLevel - Size.Y;
+            GroundLevel = Globals.GroundLevel ;
         }
+    }
+
+    private Rectangle GetRectangle()
+    {
+        var AdjustSizX = (int)(Size.X * 0.5);
+        var AdjustPosX = (int)(Position.X + ((Size.X - AdjustSizX))/2);
+
+        var AdjustSizY = (int)(Size.Y);//(int)(Size.Y * 0.9);
+        var AdjustPosY = (int)(Position.Y);//(int)(Position.Y + ((Size.Y - AdjustSizY)) / 2);
+
+        var Pos = new Point(AdjustPosX, AdjustPosY);
+        var Siz = new Point(AdjustSizX, AdjustSizY);
+
+        return new Rectangle(Pos, Siz);
     }
 
     private float CalcGroundLevel()
     {
-        return GroundLevel = Globals.GroundLevel - Size.Y;
+        return GroundLevel = Globals.GroundLevel;
     }
 
-    public void Draw(SpriteBatch spriteBatch, SpriteFont font)
+    public void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics)
     {
         //if (ID == 0) return;
 
@@ -684,7 +716,7 @@ public class Sprite
 
         foreach (var attack in spriteFXs)
         {
-            attack.Draw(0.1f);
+            attack.Draw(spriteBatch, font, graphics, 0.1f);
         }
 
         if (ID == 01) spriteBatch.DrawString(font, "*", new Vector2(Position.X + 18, Position.Y - 20), Color.Red, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
@@ -703,16 +735,21 @@ public class Sprite
         spriteBatch.DrawString(font, mark, new Vector2(Position.X + 18, Position.Y - 20), Color.Red, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y-2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+        if (Globals.Debug && Globals.DebugArea)
+        {
+            Texture2D _texture;
+            _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
+            _texture.SetData(new Color[] { Color.Blue });
+            spriteBatch.Draw(_texture, GetRectangle(), Color.Blue * 0.4f);
+        }
     }
 
-    public void DrawObjects(SpriteBatch spriteBatch, SpriteFont font)
+    public void DrawObjects(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics)
     {
         foreach (var _object in spriteObjects)
         {
-            _object.Draw(spriteBatch, font, 1);
+            _object.Draw(spriteBatch, font, graphics, 1);
         }
-
-        spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-        spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
     }
 }

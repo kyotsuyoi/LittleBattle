@@ -9,7 +9,7 @@ namespace LittleBattle.Manager
         public float contactTop = 0;
         public float contactBottom = 0;
 
-        private bool IsCollide(Rectangle A, Rectangle B)
+        public bool IsCollide(Rectangle A, Rectangle B)
         {
             if (A.Left - 1 < B.Right && A.Right + 1 > B.Left &&
                 A.Top - 1 < B.Bottom && A.Bottom + 1 > B.Top) return true;
