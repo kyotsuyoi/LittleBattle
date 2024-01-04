@@ -110,9 +110,11 @@
     <Compile Include="Manager\DebugManager.cs" />
     <Compile Include="Manager\GameManager.cs" />
     <Compile Include="Manager\InputManager.cs" />
+    <Compile Include="Model\AttributeObject .cs" />
     <Compile Include="Model\AttributeFX .cs" />
     <Compile Include="Model\Attribute.cs" />
     <Compile Include="Model\Canvas.cs" />
+    <Compile Include="Model\SpriteObject .cs" />
     <Compile Include="Model\SpriteFX.cs" />
     <Compile Include="Model\Sprite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

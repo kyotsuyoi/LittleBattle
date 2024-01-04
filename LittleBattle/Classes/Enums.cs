@@ -47,6 +47,7 @@ namespace LittleBattle.Classes
             Cameraman = 6,
             SwordEffect = 50,
             ArrowEffect = 51,
+            ArcherTower = 100,
         }
 
         public enum Team

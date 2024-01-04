@@ -15,17 +15,17 @@ namespace LittleBattle.Manager
             spriteBatch.DrawString(font, "player1.Position.X:" + player1.Position.X, new Vector2(10, 20), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "player1.Position.X:" + player1.Position.X, new Vector2(12, 22), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-            //spriteBatch.DrawString(font, "player2.Position.X:" + player2.Position.X, new Vector2(10, 40), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            //spriteBatch.DrawString(font, "player2.Position.X:" + player2.Position.X, new Vector2(12, 42), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            spriteBatch.DrawString(font, "player1.Position.Y:" + player1.Position.Y, new Vector2(10, 40), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "player1.Position.Y:" + player1.Position.Y, new Vector2(12, 42), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
             spriteBatch.DrawString(font, "GroundX:" + Globals.GroundX.ToString(), new Vector2(10, 60), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "GroundX:" + Globals.GroundX.ToString(), new Vector2(12, 62), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-            spriteBatch.DrawString(font, "player1.RelativeX:" + (player1.RelativeX).ToString(), new Vector2(10, 80), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            spriteBatch.DrawString(font, "player1.RelativeX:" + (player1.RelativeX).ToString(), new Vector2(12, 82), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            spriteBatch.DrawString(font, "player1.RelativeX:" + player1.RelativeX.ToString(), new Vector2(10, 80), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "player1.RelativeX:" + player1.RelativeX.ToString(), new Vector2(12, 82), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-            //spriteBatch.DrawString(font, "player2.RelativeX:" + (player2.RelativeX).ToString(), new Vector2(10, 100), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            //spriteBatch.DrawString(font, "player2.RelativeX:" + (player2.RelativeX).ToString(), new Vector2(12, 102), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            spriteBatch.DrawString(font, "player1.GroundLevel:" + player1.GroundLevel.ToString(), new Vector2(10, 100), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "player1.GroundLevel:" + player1.GroundLevel.ToString(), new Vector2(12, 102), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
             //spriteBatch.DrawString(font, "bot1.RelativeX:" + (bots[0].RelativeX).ToString(), new Vector2(10, 120), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             //spriteBatch.DrawString(font, "bot1.RelativeX:" + (bots[0].RelativeX).ToString(), new Vector2(12, 122), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);

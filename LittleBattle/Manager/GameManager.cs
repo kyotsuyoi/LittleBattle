@@ -22,6 +22,7 @@ public class GameManager
     {
         Globals.Size = new Size(1920, 1080);
         _canvas = new Canvas(graphics.GraphicsDevice, Globals.Size.Width, Globals.Size.Height);
+
         backgroundManager = new BackgroundManager();
         backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Mountain"), 0.6f, 0.6f, false));
         backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Trees"), 0.8f, 0.8f, false));
@@ -30,6 +31,7 @@ public class GameManager
         resolution = new Resolution(game, graphics, _canvas);
         resolution.SetResolution(Globals.Size);
         resolution.SetFullScreen();
+        Globals.GroundLevel = Globals.Size.Height - 30;
 
         Cameraman = new Sprite(00, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.Cameraman, 4, 4, Enums.Team.None, Enums.ClassType.None);
         Cameraman.CenterX_Adjust();
@@ -78,6 +80,8 @@ public class GameManager
             player.Update();
             player.UpdateSpriteFXDamage(players);
             player.UpdateSpriteFXDamage(bots);
+            player.UpdateSpriteObjects();
+            player.UpdateInteraction();
         }
 
         //Debug Command
@@ -117,6 +121,11 @@ public class GameManager
         var aliveBots = bots.Where(bot => !bot.IsDead()).ToList();
         var deadPlayers = players.Where(player => player.IsDead()).ToList();
         var alivePlayers = players.Where(player => !player.IsDead()).ToList();
+
+        foreach (var player in players)
+        {
+            player.DrawObjects(spriteBatch, font);
+        }
 
         foreach (var bot in deadBots)
         {

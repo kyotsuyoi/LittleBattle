@@ -43,7 +43,7 @@ namespace LittleBattle
 
         protected override void Draw(GameTime gameTime)
         {
-            _gameManager.Draw(_spriteBatch);
+            _gameManager.Draw(Globals.SpriteBatch);
             base.Draw(gameTime);
         }
     }

@@ -4,7 +4,6 @@ using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Linq;
 
 public class Sprite
@@ -12,6 +11,9 @@ public class Sprite
     public int ID { get; }
     protected Texture2D texture;
     public Vector2 Position { get; set; }
+    public Vector2 CenterPosition { get; set; }
+
+    //Needs change to Size Type
     public Vector2 Size { get; }
     public bool Walk { get; set; }
     public bool Run { get; set; }
@@ -26,6 +28,7 @@ public class Sprite
     public float RelativeX { get; set; }
 
     private List<SpriteFX> spriteFXs;
+    private List<SpriteObject> spriteObjects;
 
     private readonly AnimationManager _anims = new AnimationManager();
     public Attribute Attribute { get; set; }
@@ -83,19 +86,9 @@ public class Sprite
         _anims.AddAnimation(Enums.Direction.StuntLeft, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 5, true, false));
 
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
-        GroundLevel = Globals.Size.Height - Size.Y - 30;
         spriteFXs = new List<SpriteFX>();
-        Team = team;
-
-        //Debug
-        //if (ID == 1)
-        //{
-        //    Attribute.BaseHP = 200;
-        //    Attribute.BaseJumpPower = 20;
-        //    Attribute.Attack = 10;
-        //    Attribute.Defense = 10;
-        //    Attribute.BaseAttackCooldown = 0.02f;
-        //}
+        spriteObjects = new List<SpriteObject>();
+        CalcGroundLevel();
     }
 
     public void Update()
@@ -386,7 +379,7 @@ public class Sprite
     {
         if (!spriteFX.Active) return;
         var Owner = spriteFX.Owner;
-        var res = (Owner.Attribute.Attack + spriteFX.AttributeFX.Damage) - Attribute.Defense;
+        var res = (Owner.Attribute.Attack + spriteFX.AttributeFX.Damage + Owner.Attribute.BuffAttack) - Attribute.Defense;
         if (res < 1) res = 1;
 
         Attribute.HP -= res;
@@ -406,7 +399,7 @@ public class Sprite
         }
 
         Attribute.StuntTime = spriteFX.AttributeFX.StuntTime;
-        Attribute.Knockback = spriteFX.AttributeFX.Knockback;
+        Attribute.Knockback = spriteFX.AttributeFX.Knockback + Owner.Attribute.BuffKnockback;
         Attribute.KnockbackSide = spriteFX.GetSide();
         if (spriteType == Enums.SpriteType.Player1)
         {
@@ -419,13 +412,34 @@ public class Sprite
     public void UpdateSpriteFXDamage(List<Sprite> targets)
     {
         var inner_targets = targets.Where(target => target.Team != Team && !target.IsDead()).ToList();
-        foreach (var target in inner_targets)
+        //foreach (var target in inner_targets)
+        //{
+        //    foreach (var damage in spriteFXs)
+        //    {
+        //        damage.Damage(target); 
+        //        damage.DamageObject(target.spriteObjects);
+        //    }
+        //}
+
+        foreach (var damage in spriteFXs)
         {
-            foreach (var damage in spriteFXs)
+            foreach (var target in inner_targets)
             {
                 damage.Damage(target);
+                foreach (var _object in target.spriteObjects)
+                {
+                    damage.DamageObject(_object);
+                }
             }
-        }        
+        }
+    }
+
+    public void UpdateSpriteObjects()
+    {
+        foreach (var _object in spriteObjects)
+        {
+            _object.Update();
+        }
     }
 
     public Enums.Side GetSide()
@@ -578,14 +592,99 @@ public class Sprite
         BotPatrol = true;
     }
 
+    public void SetObject(Enums.SpriteType spriteType)
+    {
+        spriteObjects = new List<SpriteObject>();
+        spriteObjects.Add(new SpriteObject(this, GetSide(), spriteType, 1, 1));
+        //var _object = spriteObjects[spriteObjects.Count - 1];
+        //_object.CenterX_Adjust();
+        //_object.SetToGroundLevel(0);
+    }
+
+    public void InteractObjects(List<SpriteObject> spriteObjects)
+    {
+        Collision collision = new Collision();
+        SpriteObject _object = null;
+        foreach (var inner_object in this.spriteObjects)
+        {
+            if(collision.SquareCollision(Position, new Vector2(Size.X * 0.8f, Size.Y),
+                inner_object.Position, new Vector2(inner_object.Size.X * 0.8f, inner_object.Size.Y)))
+            {
+                _object = inner_object;
+                break;
+            }
+        }
+        if(_object != null)
+        {
+            if(_object.spriteType == Enums.SpriteType.ArcherTower)
+            {
+                GroundLevel = (int)(_object.Position.Y - Size.Y);
+            }
+            else
+            {
+                GroundLevel = Globals.GroundLevel - Size.Y;
+            }
+        }
+        else
+        {
+            GroundLevel = Globals.GroundLevel - Size.Y;
+        }
+    }
+
+    public void UpdateInteraction()
+    {
+        //Attribute.BaseJumpPower = 5;
+        Collision collision = new Collision();
+        SpriteObject _object = null;
+        spriteObjects = spriteObjects.Where(_spriteobject => _spriteobject.Active).ToList();
+        foreach (var inner_object in spriteObjects)
+        {
+            if (collision.SquareCollision(Position, new Vector2(Size.X * 0.8f, Size.Y), 
+                inner_object.Position, new Vector2(inner_object.Size.X * 0.8f, inner_object.Size.Y * 20000f)))
+            {
+                _object = inner_object;
+                break;
+            }
+        }
+
+        var calcGroundLevel = (int)Position.Y + Size.Y - 3;
+        if (_object != null && calcGroundLevel < _object.Position.Y)
+        {
+            GroundLevel = _object.Position.Y - Size.Y;
+        }
+
+        //Needs buff list
+        if (_object != null && (int)(_object.Position.Y - Size.Y/2) <= (int)GroundLevel && classType == Enums.ClassType.Archer)
+        {
+            Attribute.BuffAttack = 5;
+            Attribute.BuffKnockback = 2;
+        }
+        else
+        {
+            Attribute.BuffAttack = 0;
+            Attribute.BuffKnockback = 0;
+        }
+
+        if (_object == null || _object.Position.Y - Size.Y != GroundLevel)
+        {
+            GroundLevel = Globals.GroundLevel - Size.Y;
+        }
+    }
+
+    private float CalcGroundLevel()
+    {
+        return GroundLevel = Globals.GroundLevel - Size.Y;
+    }
+
     public void Draw(SpriteBatch spriteBatch, SpriteFont font)
     {
         //if (ID == 0) return;
-        _anims.Draw(Position);
+
+        _anims.Draw(Position, 0.9999f);
 
         foreach (var attack in spriteFXs)
         {
-            attack.Draw();
+            attack.Draw(0.1f);
         }
 
         if (ID == 01) spriteBatch.DrawString(font, "*", new Vector2(Position.X + 18, Position.Y - 20), Color.Red, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
@@ -604,5 +703,16 @@ public class Sprite
         spriteBatch.DrawString(font, mark, new Vector2(Position.X + 18, Position.Y - 20), Color.Red, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y-2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+    }
+
+    public void DrawObjects(SpriteBatch spriteBatch, SpriteFont font)
+    {
+        foreach (var _object in spriteObjects)
+        {
+            _object.Draw(spriteBatch, font, 1);
+        }
+
+        spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
     }
 }

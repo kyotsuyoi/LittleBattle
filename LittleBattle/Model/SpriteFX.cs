@@ -51,7 +51,7 @@ public class SpriteFX
         if (spriteType == SpriteType.ArrowEffect)
         {
             Walk = true;
-            texture = Globals.Content.Load<Texture2D>("Sprites/ArrowEffect"); framesX = 1; framesY = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprites/ArrowEffectSmall"); framesX = 1; framesY = 1;
         }
 
         _anims.AddAnimation(Enums.Direction.StandRight, new Animation(texture, framesX, framesY, 0, 11, 0.01f, 1, false, false));
@@ -179,6 +179,17 @@ public class SpriteFX
         }
     }
 
+    public void DamageObject(SpriteObject target)
+    {
+        Collision collision = new Collision();
+        var collide = collision.SquareCollision(Position, Size, target.Position, target.Size);
+        if (collide && !DamagedIDs.Any(id => id == target.ID))
+        {
+            target.TakeDamage(this);
+            DamagedIDs.Add(target.ID);
+        }
+    }
+
     public float DirectionSpeed()
     {
         if (Direction == Enums.Direction.WalkLeft && Walk) return Speed;
@@ -215,7 +226,7 @@ public class SpriteFX
         this.combo = combo;
     }
 
-    public void Draw()
+    public void Draw(float layerDepth)
     {
         _anims.Draw(Position);
     }

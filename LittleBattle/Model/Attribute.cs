@@ -20,6 +20,10 @@ namespace LittleBattle.Model
         public float BaseComboTimeLimit { get; set; }
         public float StuntTime { get; set; }
 
+
+        public int BuffAttack { get; set; }
+        public int BuffKnockback { get; set; }
+
         public Attribute(Enums.ClassType classType)
         {
             BaseHP = 100;
@@ -29,7 +33,7 @@ namespace LittleBattle.Model
             Defense = 1;
 
             Speed = 2;
-            JumpPower = 5;
+            JumpPower = 0;
             BaseJumpPower = 5;
             AttackCooldown = 0;
             BaseAttackCooldown = 0.5f;
@@ -52,6 +56,9 @@ namespace LittleBattle.Model
                 Attack = 4;
                 Defense = 2;
             }
+
+            BuffAttack = 0;
+            BuffKnockback = 0;
         }
     }
 }

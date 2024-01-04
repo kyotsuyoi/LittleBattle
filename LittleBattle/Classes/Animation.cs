@@ -94,9 +94,9 @@ namespace LittleBattle.Classes
             }
         }
 
-        public void Draw(Vector2 pos)
+        public void Draw(Vector2 pos, float layerdepth)
         {
-            Globals.SpriteBatch.Draw(_texture, pos, _sourceRectangles[_frame], Color.White, 0, Vector2.Zero, Vector2.One, spriteEffects, 0.9f);
+            Globals.SpriteBatch.Draw(_texture, pos, _sourceRectangles[_frame], Color.White, 0, Vector2.Zero, Vector2.One, spriteEffects, layerdepth);
         }
 
         public Rectangle instantRect()

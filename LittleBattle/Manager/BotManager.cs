@@ -1,11 +1,8 @@
 ﻿using LittleBattle.Classes;
-using SharpDX.Direct2D1;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
-using Windows.UI.Xaml.Controls;
 
 namespace LittleBattle.Manager
 {

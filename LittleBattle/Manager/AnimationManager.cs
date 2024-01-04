@@ -28,9 +28,9 @@ public class AnimationManager
         return _anims[key];
     }
 
-    public void Draw(Vector2 position)
+    public void Draw(Vector2 position, float layerdepth = 0.9f)
     {
-        _anims[_lastKey].Draw(position);
+        _anims[_lastKey].Draw(position, layerdepth);
     }
 
     public Rectangle instantRect()

@@ -214,7 +214,6 @@ public static class InputManager
             ClearBot = true;
         }
 
-
         if (IsKeyPressed(Keys.N))
         {
             CommandBot = true;
@@ -233,6 +232,16 @@ public static class InputManager
                     bot.BotPatrol = false;
                 }
             }
+        }
+
+        if (IsKeyPressed(Keys.T))
+        {
+            players[0].SetObject(Enums.SpriteType.ArcherTower);
+        }
+
+        if (IsKeyPressed(Keys.Y))
+        {
+            players[0].InteractObjects(null);
         }
     }
 

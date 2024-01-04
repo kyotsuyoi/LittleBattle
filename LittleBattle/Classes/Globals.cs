@@ -18,11 +18,19 @@ namespace LittleBattle.Classes
         public static float GroundX { get; set; }
         public static float CameraMovement { get; set; }
         public static int SpriteFrame { get; set; }
+        public static float GroundLevel { get; set; }
+
+        private static int LastID = 10;
 
         public static void Update(GameTime gameTime)
         {
             ElapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             TotalSeconds = (float)gameTime.TotalGameTime.TotalSeconds;
+        }
+
+        public static int GetNewID()
+        {
+            return LastID += 1;
         }
 
     }
