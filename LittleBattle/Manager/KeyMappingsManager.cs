@@ -1,14 +1,9 @@
-﻿using LittleBattle.Classes;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Text.Json;
 using Windows.Storage;
-using System.Text.Json.Serialization;
 using System.Diagnostics;
 
 namespace LittleBattle.Model
@@ -21,15 +16,19 @@ namespace LittleBattle.Model
 
         public Keys MoveRight { get; set; }
         public Keys MoveLeft { get; set; }
+        public Keys MoveUp { get; set; }
+        public Keys MoveDown{ get; set; }
         public Keys Jump { get; set; }
         public Keys Attack { get; set; }
 
 
         public KeyMappingsManager() {
-            this.MoveRight = Keys.D;
-            this.MoveLeft = Keys.A;
-            this.Jump = Keys.Space;
-            this.Attack = Keys.M;
+            MoveRight = Keys.D;
+            MoveLeft = Keys.A;
+            MoveUp = Keys.W;
+            MoveDown = Keys.S;
+            Jump = Keys.Space;
+            Attack = Keys.M;
         }
 
         public void SaveCustomConfig(KeyMappingsManager customConfig)
@@ -47,10 +46,12 @@ namespace LittleBattle.Model
                 {
                     string jsonConfig = await GetJsonConfig();
                     keyMappings = JsonSerializer.Deserialize<KeyMappingsManager>(jsonConfig);
-                    this.MoveRight = keyMappings.MoveRight;
-                    this.MoveLeft = keyMappings.MoveLeft;
-                    this.Jump = keyMappings.Jump;
-                    this.Attack = keyMappings.Attack;
+                    MoveRight = keyMappings.MoveRight;
+                    MoveLeft = keyMappings.MoveLeft;
+                    MoveUp = keyMappings.MoveUp;
+                    MoveDown = keyMappings.MoveDown;
+                    Jump = keyMappings.Jump;
+                    Attack = keyMappings.Attack;
                     return;
                 }
 

@@ -102,6 +102,7 @@ public class SpriteObject
 
         AttributeObject.HP -= res;
         if (IsDead()) return;
+        spriteFX.Active = false;
     }
     public bool IsDead()
     {

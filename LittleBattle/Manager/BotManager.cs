@@ -60,6 +60,10 @@ namespace LittleBattle.Manager
 
         public void UpdateCamerman(Sprite Cameraman, List<Sprite> players)
         {
+            var stop = false;
+            if (players[0].Climb) {
+                stop = true;
+            }
             var player_position_side = players[0].Position;
             if (Cameraman.GetSide() != players[0].GetSide())
             {
@@ -77,7 +81,6 @@ namespace LittleBattle.Manager
                 player_position_side /= new Vector2(1.25f, 1);
             }
 
-            var stop = false;
             if (players[0].GetSide() == Enums.Side.Right)
             {
                 //if (players[0].Position.X - Globals.Size.Width / 2 <= Cameraman.Position.X + Cameraman.Size.X /2)

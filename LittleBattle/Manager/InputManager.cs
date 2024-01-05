@@ -34,39 +34,42 @@ public static class InputManager
         return _currentKeyboard.IsKeyDown(key) && _lastKeyboard.IsKeyUp(key);
     }
 
-    public static void Update(Sprite player, List<Sprite> bots, KeyMappingsManager keyMappings)
+    public static void Update(List<Sprite> players, List<Sprite> bots, Resolution resolution, KeyMappingsManager keyMappings)
     {
         _lastKeyboard = _currentKeyboard;
         _currentKeyboard = Keyboard.GetState();
         KeyboardState keyboard = Keyboard.GetState();
         var gamepad = GamePad.GetState(PlayerIndex.One);
 
-        if (player.spriteType == Enums.SpriteType.Player1) 
+        if (players[0].spriteType == Enums.SpriteType.Player1) 
         { 
             if (gamepad.IsConnected)
             {
-                Player1_Gamepad(gamepad, player);
+                Player1_Gamepad(gamepad, players[0]);
             }
             else
             {
-                Player1_Keybord(keyboard, player, keyMappings);
+                Player1_Keybord(players, bots, keyboard, players[0], keyMappings);
             }
         }
 
-        if (player.spriteType == Enums.SpriteType.Player2)
+        if (players[1].spriteType == Enums.SpriteType.Player2)
         {
             if (false /*gamepad.IsConnected*/)
             {
-                Player1_Gamepad(gamepad, player);
+                Player1_Gamepad(gamepad, players[1]);
             }
             else
             {
-                Player2_Keybord(keyboard, player);
+                Player2_Keybord(players, bots, keyboard, players[1]);
             }
         }
+
+        UpdateResolution(resolution);
+        DebugCommand(players, bots);
     }
 
-    private static void Player1_Keybord(KeyboardState keyboard, Sprite player, KeyMappingsManager keyMappings)
+    private static void Player1_Keybord(List<Sprite> players, List<Sprite> bots, KeyboardState keyboard, Sprite player, KeyMappingsManager keyMappings)
     {    
         if (keyboard.IsKeyDown(keyMappings.MoveLeft))
         {
@@ -77,7 +80,17 @@ public static class InputManager
             player.SetMovement(true, Enums.Side.Right);
         }
 
-        if (keyboard.IsKeyUp(keyMappings.MoveLeft) && keyboard.IsKeyUp(keyMappings.MoveRight))
+        if (keyboard.IsKeyDown(keyMappings.MoveUp))
+        {
+            player.SetMovement(true, Enums.Side.Up);
+        }
+        else if (keyboard.IsKeyDown(keyMappings.MoveDown))
+        {
+            player.SetMovement(true, Enums.Side.Down);
+        }
+
+        if (keyboard.IsKeyUp(keyMappings.MoveLeft) && keyboard.IsKeyUp(keyMappings.MoveRight)
+            && keyboard.IsKeyUp(keyMappings.MoveUp) && keyboard.IsKeyUp(keyMappings.MoveDown))
         {
             player.SetMovement(false, Enums.Side.None);
         }
@@ -107,6 +120,10 @@ public static class InputManager
             p1_attack_key_pressed = false;
         }
 
+        if (IsKeyPressed(Keys.K))
+        {
+            player.InteractObjects(players, bots);
+        }
     }
 
     private static void Player1_Gamepad(GamePadState gamepad, Sprite player)
@@ -150,7 +167,7 @@ public static class InputManager
         }
     }
 
-    private static void Player2_Keybord(KeyboardState keyboard, Sprite player)
+    private static void Player2_Keybord(List<Sprite> players, List<Sprite> bots, KeyboardState keyboard, Sprite player)
     {
         if (keyboard.IsKeyDown(Keys.Left))
         {
@@ -161,9 +178,19 @@ public static class InputManager
             player.SetMovement(true, Enums.Side.Right);
         }
 
-        if (keyboard.IsKeyUp(Keys.Left) && keyboard.IsKeyUp(Keys.Right))
+        if (keyboard.IsKeyDown(Keys.Up))
         {
-            player.Walk = false;
+            player.SetMovement(true, Enums.Side.Up);
+        }
+        else if (keyboard.IsKeyDown(Keys.Down))
+        {
+            player.SetMovement(true, Enums.Side.Down);
+        }
+
+        if (keyboard.IsKeyUp(Keys.Left) && keyboard.IsKeyUp(Keys.Right)
+            && keyboard.IsKeyUp(Keys.Up) && keyboard.IsKeyUp(Keys.Down))
+        {
+            player.SetMovement(false, Enums.Side.None);
         }
 
         if (keyboard.IsKeyDown(Keys.NumPad0) && !p2_jump_key_pressed
@@ -189,12 +216,17 @@ public static class InputManager
         {
             p2_attack_key_pressed = false;
         }
+
+        if (IsKeyPressed(Keys.NumPad4))
+        {
+            player.InteractObjects(players, bots);
+        }
     }
 
     public static void UpdateResolution(Resolution resolution)
     {
-        _lastKeyboard = _currentKeyboard;
-        _currentKeyboard = Keyboard.GetState();
+        //_lastKeyboard = _currentKeyboard;
+        //_currentKeyboard = Keyboard.GetState();
         if (IsKeyPressed(Keys.F1)) resolution.SetResolution(new Size(600, 400));
         if (IsKeyPressed(Keys.F2)) resolution.SetResolution(new Size(800, 600));
         if (IsKeyPressed(Keys.F3)) resolution.SetResolution(new Size(1280, 720));
@@ -211,11 +243,6 @@ public static class InputManager
         if (IsKeyPressed(Keys.F9))
         {
             Globals.Debug = !Globals.Debug;
-        }
-
-        if (IsKeyPressed(Keys.Y))
-        {
-            players[0].InteractObjects(null);
         }
 
         if (!Globals.Debug) return;

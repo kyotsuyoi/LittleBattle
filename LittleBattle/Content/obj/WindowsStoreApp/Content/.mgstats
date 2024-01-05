@@ -1,1 +1,4 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
+"C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite02_x3.png","C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/bin/WindowsStoreApp/Content/Sprites/Sprite02_x3.xnb","TextureProcessor","Texture2DContent",4678,304213,0,5303604
+"C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite03_x3.png","C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/bin/WindowsStoreApp/Content/Sprites/Sprite03_x3.xnb","TextureProcessor","Texture2DContent",4947,306517,0,0669387
+"C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite04_x3.png","C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/bin/WindowsStoreApp/Content/Sprites/Sprite04_x3.xnb","TextureProcessor","Texture2DContent",4982,306517,0,0493247

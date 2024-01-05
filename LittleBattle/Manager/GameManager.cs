@@ -46,8 +46,8 @@ public class GameManager
 
         players = new List<Sprite>
         {
-            new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.Player1, 4, 5, Enums.Team.Team1, Enums.ClassType.Warrior),
-            new Sprite(02, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.Player2, 4, 5, Enums.Team.Team2, Enums.ClassType.Archer),
+            new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.Player1, 4, 6, Enums.Team.Team1, Enums.ClassType.Archer),
+            new Sprite(02, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.Player2, 4, 6, Enums.Team.Team2, Enums.ClassType.Archer),
         };
         foreach (var player in players)
         {
@@ -82,8 +82,8 @@ public class GameManager
 
     public void Update()
     {
-        InputManager.UpdateResolution(resolution);
-        InputManager.DebugCommand(players, bots);
+        //InputManager.UpdateResolution(resolution);
+        //InputManager.DebugCommand(players, bots);
         Globals.CameraMovement = Cameraman.CameraDirectionSpeed();
         backgroundManager.Update();
 
@@ -91,11 +91,12 @@ public class GameManager
         botManager.UpdateCamerman(Cameraman, players);
         foreach (var player in players)
         {
-            InputManager.Update(player, bots, keyMappings);
+            InputManager.Update(players, bots, resolution, keyMappings);
             player.Update();
             player.UpdateSpriteFXDamage(players);
             player.UpdateSpriteFXDamage(bots);
             player.UpdateSpriteObjects();
+            player.UpdateInteraction(players, bots);
         }
 
         //Debug Command

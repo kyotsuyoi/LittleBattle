@@ -20,13 +20,17 @@ namespace LittleBattle.Classes
             public static Vector2 DeadLeft = new Vector2(-0.3f, 0);
             public static Vector2 StuntRight = new Vector2(0.4f, 0);
             public static Vector2 StuntLeft = new Vector2(-0.4f, 0);
+            public static Vector2 ClimbUp = new Vector2(0, -0.1f);
+            public static Vector2 ClimbDown= new Vector2(0, 0.1f);
         }
 
         public enum Side
         {
             None = 0,
             Right = 1,
-            Left = -1,
+            Left = 2,
+            Up = 3,
+            Down = 4,
         }
 
         public enum ControlType

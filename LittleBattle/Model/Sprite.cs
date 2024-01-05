@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
+using static LittleBattle.Classes.Enums;
 
 public class Sprite
 {
@@ -20,6 +21,7 @@ public class Sprite
     public bool Jump { get; set; }
     public bool Attack { get; set; }
     public bool Ground { get; set; }
+    public bool Climb { get; set; }
     public float GroundLevel { get; set; }
     public float FallingSpeed { get; set; }
     public Vector2 Direction { get; set; }
@@ -55,8 +57,12 @@ public class Sprite
         if (spriteType == Enums.SpriteType.Bot) Attribute.Speed = 0.5f;
         if (spriteType == Enums.SpriteType.Player2) Attribute.Speed /=2;
 
+        Walk = false;
+        Run = false;
         Jump = false;
+        Attack = false;
         Ground = false;
+        Climb = false;
         FallingSpeed = 0;
         Direction = Enums.Direction.StandRight;
 
@@ -85,6 +91,8 @@ public class Sprite
         _anims.AddAnimation(Enums.Direction.DeadLeft, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 4, true, false));
         _anims.AddAnimation(Enums.Direction.StuntRight, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 5, false, false));
         _anims.AddAnimation(Enums.Direction.StuntLeft, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 5, true, false));
+        _anims.AddAnimation(Enums.Direction.ClimbUp, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 6, false, true));
+        _anims.AddAnimation(Enums.Direction.ClimbDown, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 6, false, true));
 
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
         spriteFXs = new List<SpriteFX>();
@@ -94,7 +102,7 @@ public class Sprite
 
     public void Update()
     {
-        UpdateInteraction();
+        //UpdateInteraction(); 
         AnimationResolve();
         AttackResolve();
         UpdateCooldown();
@@ -149,6 +157,24 @@ public class Sprite
             }
         }
 
+        if (Climb)
+        {
+            if (GetSide() == Enums.Side.Up)
+            {
+                Direction = Enums.Direction.ClimbUp;
+                Position += new Vector2(0, -speed);
+            }
+            else if (GetSide() == Enums.Side.Down)
+            {
+                Direction = Enums.Direction.ClimbDown;
+                Position += new Vector2(0, speed);
+            }
+            else
+            {
+                _anims.Update(Enums.Direction.ClimbUp, false, 1);
+            }
+        }
+
         if(Attribute.Knockback > 0)
         {
             if(Attribute.KnockbackSide == Enums.Side.Right)
@@ -186,6 +212,7 @@ public class Sprite
 
     private void FallingResolve()
     {
+        if (Climb) return;
         if (!Ground && !Jump && FallingSpeed <= Globals.Gravity)
         {
             FallingSpeed += 0.25f;
@@ -282,10 +309,28 @@ public class Sprite
         var PositiveLimit = Globals.PositiveLimit.Width;
         var NegativeLimit = Globals.NegativeLimit.Width;
 
+        //Cameraman only
         if (ID == 0)
         {
             PositiveLimit = Globals.PositiveLimit.Width - Globals.Size.Width / 2;
             NegativeLimit = Globals.NegativeLimit.Width + Globals.Size.Width / 2;
+        }
+
+        if (Climb)
+        {
+            if (side == Enums.Side.Up && Position.Y > 0)
+            {
+                Direction = Enums.Direction.ClimbUp;
+            }
+            else if (side == Enums.Side.Down && Position.Y + Size.Y < GroundLevel)
+            {
+                Direction = Enums.Direction.ClimbDown;
+            }
+            else
+            {
+                Direction = Enums.Direction.None;
+            }
+            return;
         }
 
         if (move){
@@ -320,6 +365,7 @@ public class Sprite
 
     public void SetAttack()
     {
+        if (Climb) return;
         if (IsDead() || Attribute.StuntTime > 0) return;
         if (Attribute.AttackCooldown > 0) return; 
 
@@ -363,6 +409,23 @@ public class Sprite
     {
         if (IsDead()) return;
         Jump = true;
+        Climb = false;
+        SetRandomSide();
+    }
+
+    private void SetRandomSide()
+    {
+        System.Random random = new System.Random();
+        var randomVal = random.Next(9);
+
+        if (randomVal >= 5)
+        {
+            Direction = Enums.Direction.StandRight;
+        }
+        else
+        {
+            Direction = Enums.Direction.StandLeft;
+        }
     }
 
     private void UpdateCooldown()
@@ -456,6 +519,16 @@ public class Sprite
         )
         {
             return Enums.Side.Left;
+        }
+
+        if (Direction == Enums.Direction.ClimbUp)
+        {
+            return Enums.Side.Up;
+        }
+
+        if (Direction == Enums.Direction.ClimbDown)
+        {
+            return Enums.Side.Down;
         }
 
         return Enums.Side.None;
@@ -556,6 +629,7 @@ public class Sprite
         }
         Walk = false;
         Attack = false;
+        Climb = false;
         Attribute.Knockback = 0;
         combo = false;
     }
@@ -595,21 +669,39 @@ public class Sprite
         //_object.SetToGroundLevel(0);
     }
 
-    public void InteractObjects(List<SpriteObject> spriteObjects)
+    public void InteractObjects(List<Sprite> players, List<Sprite> bots)
     {
         Collision collision = new Collision();
-        SpriteObject _object = null;
-        foreach (var inner_object in this.spriteObjects)
+        List<SpriteObject> localObjects = new List<SpriteObject>();
+
+        foreach (var player in players)
         {
-            var PosB = new Point((int)inner_object.Position.X, (int)inner_object.Position.Y);
-            var SizB = new Point((int)inner_object.Size.X, (int)inner_object.Size.Y);
+            foreach (var p_object in player.spriteObjects)
+            {
+                localObjects.Add(p_object);
+            }
+        }
+
+        foreach (var bot in bots)
+        {
+            foreach (var b_object in bot.spriteObjects)
+            {
+                localObjects.Add(b_object);
+            }
+        }
+
+        SpriteObject _object = null;
+        foreach (var local_object in localObjects)
+        {
+            var PosB = new Point((int)local_object.Position.X, (int)local_object.Position.Y);
+            var SizB = new Point((int)local_object.Size.X, (int)local_object.Size.Y);
 
             var RectB = new Rectangle(PosB, SizB);
             var isCollide = collision.IsCollide(GetRectangle(), RectB);
 
             if (isCollide)
             {
-                _object = inner_object;
+                _object = local_object;
                 break;
             }
         }
@@ -617,7 +709,10 @@ public class Sprite
         {
             if (_object.spriteType == Enums.SpriteType.ArcherTower)
             {
-                GroundLevel = (int)(_object.Position.Y);
+                Climb = true;
+                Walk = false;
+                Position = new Vector2(_object.Position.X + _object.Size.X/2 - Size.X / 2, Position.Y);
+                //GroundLevel = (int)_object.Position.Y;
             }
             else
             {
@@ -630,21 +725,39 @@ public class Sprite
         }
     }
 
-    public void UpdateInteraction()
+    public void UpdateInteraction(List<Sprite> players, List<Sprite> bots)
     {
         Collision collision = new Collision();
+        List<SpriteObject> localObjects = new List<SpriteObject>();
+
+        foreach (var player in players)
+        {
+            foreach (var p_object in player.spriteObjects)
+            {
+                localObjects.Add(p_object);
+            }
+        }
+
+        foreach (var bot in bots)
+        {
+            foreach (var b_object in bot.spriteObjects)
+            {
+                localObjects.Add(b_object);
+            }
+        }
+
         SpriteObject _object = null;
         spriteObjects = spriteObjects.Where(_spriteobject => _spriteobject.Active).ToList();
-        foreach (var inner_object in spriteObjects)
+        foreach (var local_object in localObjects)
         {
-            var PosB = new Point((int)inner_object.Position.X, (int)inner_object.Position.Y);
-            var SizB = new Point((int)inner_object.Size.X, (int)inner_object.Size.Y);
+            var PosB = new Point((int)local_object.Position.X, (int)local_object.Position.Y);
+            var SizB = new Point((int)local_object.Size.X, (int)local_object.Size.Y);
             var RectB = new Rectangle(PosB, SizB);
             var isCollide = collision.IsCollide(GetRectangle(), RectB);
 
             if (isCollide)
             {
-                _object = inner_object;
+                _object = local_object;
                 break;
             }
         }
@@ -654,9 +767,18 @@ public class Sprite
             GroundLevel = (int)(_object.Position.Y);
         }
 
-        //Needs buff list
-        if (_object != null && (int)(_object.Position.Y) == GroundLevel && classType == Enums.ClassType.Archer)
+        var test = (int)(Position.Y + Size.Y);
+        if (_object != null && Climb && (int)(Position.Y + Size.Y -4) <= (int)_object.Position.Y)
         {
+            GroundLevel = (int)(_object.Position.Y);
+            Climb = false;
+            SetRandomSide();
+        }
+
+        //Needs buff list
+        if (_object != null && (int)(_object.Position.Y) == GroundLevel /*&& classType == Enums.ClassType.Archer*/)
+        {
+            Climb = false;
             Attribute.BuffAttack = 5;
             Attribute.BuffKnockback = 2;
         }
