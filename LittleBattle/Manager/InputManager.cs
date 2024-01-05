@@ -67,23 +67,18 @@ public static class InputManager
     }
 
     private static void Player1_Keybord(KeyboardState keyboard, Sprite player, KeyMappingsManager keyMappings)
-    {
-      
-
+    {    
         if (keyboard.IsKeyDown(keyMappings.MoveLeft))
         {
-            //player.SetMovement(Enums.Direction.WalkLeft);
             player.SetMovement(true, Enums.Side.Left);
         }
         else if (keyboard.IsKeyDown(keyMappings.MoveRight))
         {
-            //player.SetMovement(Enums.Direction.WalkRight);
             player.SetMovement(true, Enums.Side.Right);
         }
 
         if (keyboard.IsKeyUp(keyMappings.MoveLeft) && keyboard.IsKeyUp(keyMappings.MoveRight))
         {
-            //player.Walk = false;
             player.SetMovement(false, Enums.Side.None);
         }
 
@@ -118,18 +113,15 @@ public static class InputManager
     {
         if (gamepad.DPad.Left == ButtonState.Pressed)
         {
-            //player.SetMovement(Enums.Direction.WalkLeft);
             player.SetMovement(true, Enums.Side.Left);
         }
         else if (gamepad.DPad.Right == ButtonState.Pressed)
         {
-            //player.SetMovement(Enums.Direction.WalkRight);
             player.SetMovement(true, Enums.Side.Right);
         }
 
         if (gamepad.DPad.Left == ButtonState.Released && gamepad.DPad.Right == ButtonState.Released)
         {
-            //player.Walk = false;
             player.SetMovement(false, Enums.Side.None);
         }
 
@@ -158,11 +150,72 @@ public static class InputManager
         }
     }
 
+    private static void Player2_Keybord(KeyboardState keyboard, Sprite player)
+    {
+        if (keyboard.IsKeyDown(Keys.Left))
+        {
+            player.SetMovement(true, Enums.Side.Left);
+        }
+        else if (keyboard.IsKeyDown(Keys.Right))
+        {
+            player.SetMovement(true, Enums.Side.Right);
+        }
+
+        if (keyboard.IsKeyUp(Keys.Left) && keyboard.IsKeyUp(Keys.Right))
+        {
+            player.Walk = false;
+        }
+
+        if (keyboard.IsKeyDown(Keys.NumPad0) && !p2_jump_key_pressed
+        && !player.Jump && player.Ground
+             && player.Position.Y > 0)
+        {
+            p2_jump_key_pressed = true;
+            player.SetJump();
+        }
+
+        if (keyboard.IsKeyUp(Keys.NumPad0) )
+        {
+            p2_jump_key_pressed = false;
+        }
+
+        if (keyboard.IsKeyDown(Keys.NumPad1) && !p2_attack_key_pressed)
+        {
+            p2_attack_key_pressed = true;
+            player.SetAttack();
+        }
+
+        if (keyboard.IsKeyUp(Keys.NumPad1))
+        {
+            p2_attack_key_pressed = false;
+        }
+    }
+
+    public static void UpdateResolution(Resolution resolution)
+    {
+        _lastKeyboard = _currentKeyboard;
+        _currentKeyboard = Keyboard.GetState();
+        if (IsKeyPressed(Keys.F1)) resolution.SetResolution(new Size(600, 400));
+        if (IsKeyPressed(Keys.F2)) resolution.SetResolution(new Size(800, 600));
+        if (IsKeyPressed(Keys.F3)) resolution.SetResolution(new Size(1280, 720));
+        if (IsKeyPressed(Keys.F4)) resolution.SetResolution(new Size(1920, 1080));
+        //if (InputManager.IsKeyPressed(Keys.F4)) SetBorderlessScreen();
+        if (IsKeyPressed(Keys.F5)) { 
+            resolution.SetFullScreen(); 
+        }
+    }
+
+    //Debug
     public static void DebugCommand(List<Sprite> players, List<Sprite> bots)
     {
         if (IsKeyPressed(Keys.F9))
         {
             Globals.Debug = !Globals.Debug;
+        }
+
+        if (IsKeyPressed(Keys.Y))
+        {
+            players[0].InteractObjects(null);
         }
 
         if (!Globals.Debug) return;
@@ -177,11 +230,12 @@ public static class InputManager
             visibleCamerman = true;
         }
 
-        if (IsKeyPressed(Keys.P)) {
+        if (IsKeyPressed(Keys.P))
+        {
             foreach (var player in players)
             {
                 player.Revive();
-            }         
+            }
         }
 
         if (IsKeyPressed(Keys.O))
@@ -243,10 +297,10 @@ public static class InputManager
         if (IsKeyPressed(Keys.B))
         {
             var alliedBots = players.Where(bot => players[0].Team == bot.Team).ToList();
-            foreach(var bot in bots)
+            foreach (var bot in bots)
             {
                 bot.BotPatrol = !bot.BotPatrol;
-                if(!bot.BotPatrol && !bot.BotGoTo)
+                if (!bot.BotPatrol && !bot.BotGoTo)
                 {
                     bot.SetMovement(false, bot.GetSide());
                     bot.BotPatrolWait = 0;
@@ -260,69 +314,9 @@ public static class InputManager
             players[0].SetObject(Enums.SpriteType.ArcherTower);
         }
 
-        if (IsKeyPressed(Keys.Y))
-        {
-            players[0].InteractObjects(null);
-        }
-
         if (IsKeyPressed(Keys.F8))
         {
             Globals.DebugArea = !Globals.DebugArea;
-        }
-    }
-
-    private static void Player2_Keybord(KeyboardState keyboard, Sprite player)
-    {
-        if (keyboard.IsKeyDown(Keys.Left))
-        {
-            player.SetMovement(true, Enums.Side.Left);
-        }
-        else if (keyboard.IsKeyDown(Keys.Right))
-        {
-            player.SetMovement(true, Enums.Side.Right);
-        }
-
-        if (keyboard.IsKeyUp(Keys.Left) && keyboard.IsKeyUp(Keys.Right))
-        {
-            player.Walk = false;
-        }
-
-        if (keyboard.IsKeyDown(Keys.NumPad0) && !p2_jump_key_pressed
-        && !player.Jump && player.Ground
-             && player.Position.Y > 0)
-        {
-            p2_jump_key_pressed = true;
-            player.SetJump();
-        }
-
-        if (keyboard.IsKeyUp(Keys.NumPad0) )
-        {
-            p2_jump_key_pressed = false;
-        }
-
-        if (keyboard.IsKeyDown(Keys.NumPad1) && !p2_attack_key_pressed)
-        {
-            p2_attack_key_pressed = true;
-            player.SetAttack();
-        }
-
-        if (keyboard.IsKeyUp(Keys.NumPad1))
-        {
-            p2_attack_key_pressed = false;
-        }
-    }
-
-    public static void UpdateResolution(Resolution resolution)
-    {
-        _lastKeyboard = _currentKeyboard;
-        _currentKeyboard = Keyboard.GetState();
-        if (IsKeyPressed(Keys.F1)) resolution.SetResolution(new Size(600, 400));
-        if (IsKeyPressed(Keys.F2)) resolution.SetResolution(new Size(800, 600));
-        if (IsKeyPressed(Keys.F3)) resolution.SetResolution(new Size(1280, 720));
-        if (IsKeyPressed(Keys.F4)) resolution.SetResolution(new Size(1920, 1080));
-        //if (InputManager.IsKeyPressed(Keys.F4)) SetBorderlessScreen();
-        if (IsKeyPressed(Keys.F5)) { 
-            resolution.SetFullScreen(); 
         }
     }
 }

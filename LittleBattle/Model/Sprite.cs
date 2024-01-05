@@ -43,8 +43,6 @@ public class Sprite
 
     private bool combo = false;
 
-    private readonly GraphicsDevice graphicsDevice;
-
     public Sprite(int ID, Vector2 position, Enums.SpriteType spriteType, int framesX, int framesY, Enums.Team team, Enums.ClassType classType)
     {
         this.ID = ID;
@@ -55,6 +53,7 @@ public class Sprite
         Team = team;
 
         if (spriteType == Enums.SpriteType.Bot) Attribute.Speed = 0.5f;
+        if (spriteType == Enums.SpriteType.Player2) Attribute.Speed /=2;
 
         Jump = false;
         Ground = false;
@@ -262,15 +261,15 @@ public class Sprite
 
     public float CameraDirectionSpeed()
     {
-        var value = Attribute.Knockback;
-        if(Attribute.KnockbackSide == Enums.Side.Right)
-        {
-            value = -value;
-        }
+        //var value = Attribute.Knockback;
+        //if(Attribute.KnockbackSide == Enums.Side.Right)
+        //{
+        //    value = -value;
+        //}
         if (IsDead()) return 0;
-        if (GetSide() == Enums.Side.Left && Walk && !(RelativeX < Globals.NegativeLimit.Width)) value = Attribute.Speed + value;
-        if (GetSide() == Enums.Side.Right && Walk && !(RelativeX + Size.X > Globals.PositiveLimit.Width)) value = -Attribute.Speed + value;
-        return value;
+        if (GetSide() == Enums.Side.Left && Walk /*&& !(RelativeX < Globals.NegativeLimit.Width)*/) return Attribute.Speed; //value = Attribute.Speed + value;
+        if (GetSide() == Enums.Side.Right && Walk /*&& !(RelativeX + Size.X > Globals.PositiveLimit.Width)*/) return -Attribute.Speed; //value = -Attribute.Speed + value;
+        return 0; //return value;
     }
 
     public void SetMovement(bool move, Enums.Side side)
@@ -290,12 +289,12 @@ public class Sprite
         }
 
         if (move){
-            if(side == Enums.Side.Right /*&& !Attack*/ && RelativeX + Size.X < PositiveLimit)
+            if(side == Enums.Side.Right && RelativeX + Size.X/2 < PositiveLimit)
             {
                 Direction = Enums.Direction.WalkRight;
                 Walk = true;
             }
-            else if (side == Enums.Side.Left /*&& !Attack*/ && RelativeX > NegativeLimit)
+            else if (side == Enums.Side.Left && RelativeX > NegativeLimit)
             {
                 Direction = Enums.Direction.WalkLeft;
                 Walk = true;
@@ -336,7 +335,7 @@ public class Sprite
             //Jump to position into combo
             if (spFX.spriteType == Enums.SpriteType.SwordEffect)
             {
-                if (spFX.GetSide() == Enums.Side.Left) Position = new Vector2(spFX.Position.X + spFX.Size.X / 2, spFX.Position.Y);
+                if (spFX.GetSide() == Enums.Side.Right) Position = new Vector2(spFX.Position.X + spFX.Size.X / 2, spFX.Position.Y);
                 if (spFX.GetSide() == Enums.Side.Left) Position = new Vector2(spFX.Position.X, spFX.Position.Y);
 
                 spFX.AttributeFX.Damage += 8;
@@ -388,7 +387,8 @@ public class Sprite
         Attribute.HP -= res;
         if(IsDead()) return;
 
-        if (Owner.spriteType == Enums.SpriteType.Player1 && !Owner.combo && !spriteFX.GetCombo())
+        if (Owner.spriteType == Enums.SpriteType.Player1 || Owner.spriteType == Enums.SpriteType.Player2
+            && !Owner.combo && !spriteFX.GetCombo())
         {
             Owner.Attribute.AttackCooldown = Owner.Attribute.AttackCooldown / 3;
             Owner.Attribute.ComboTimeLimit = Owner.Attribute.BaseComboTimeLimit;
@@ -404,7 +404,7 @@ public class Sprite
         Attribute.StuntTime = spriteFX.AttributeFX.StuntTime;
         Attribute.Knockback = spriteFX.AttributeFX.Knockback + Owner.Attribute.BuffKnockback;
         Attribute.KnockbackSide = spriteFX.GetSide();
-        if (spriteType == Enums.SpriteType.Player1)
+        if (spriteType == Enums.SpriteType.Player1 || Owner.spriteType == Enums.SpriteType.Player2)
         {
             Attribute.Knockback = Attribute.Knockback / 2;
         }
@@ -415,15 +415,6 @@ public class Sprite
     public void UpdateSpriteFXDamage(List<Sprite> targets)
     {
         var inner_targets = targets.Where(target => target.Team != Team && !target.IsDead()).ToList();
-        //foreach (var target in inner_targets)
-        //{
-        //    foreach (var damage in spriteFXs)
-        //    {
-        //        damage.Damage(target); 
-        //        damage.DamageObject(target.spriteObjects);
-        //    }
-        //}
-
         foreach (var damage in spriteFXs)
         {
             foreach (var target in inner_targets)
@@ -656,13 +647,6 @@ public class Sprite
                 _object = inner_object;
                 break;
             }
-
-            //if (collision.SquareCollision(Position, new Vector2(Size.X * 0.8f, Size.Y),
-            //    new Vector2(inner_object.Position.X, inner_object.Position.Y-1), new Vector2(inner_object.Size.X * 0.8f, inner_object.Size.Y)))
-            //{
-            //    _object = inner_object;
-            //    break;
-            //}
         }
 
         if (_object != null && GroundLevel < (int)_object.Position.Y)
@@ -719,7 +703,7 @@ public class Sprite
             attack.Draw(spriteBatch, font, graphics, 0.1f);
         }
 
-        if (ID == 01) spriteBatch.DrawString(font, "*", new Vector2(Position.X + 18, Position.Y - 20), Color.Red, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        if (ID == 01 || ID == 02) spriteBatch.DrawString(font, "*", new Vector2(Position.X + 18, Position.Y - 20), Color.Red, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
 
         if (IsDead() || ID==0) return;
         string mark = "";
@@ -733,12 +717,28 @@ public class Sprite
         }
 
         spriteBatch.DrawString(font, mark, new Vector2(Position.X + 18, Position.Y - 20), Color.Red, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-        spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-        spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y-2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+        //spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        //spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y-2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+        Texture2D _texture;
+        _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
+        _texture.SetData(new Color[] { Color.Black });
+        spriteBatch.Draw(_texture, new Rectangle((int)Position.X, (int)(Position.Y + Size.Y), (int)Size.X, 4), Color.Black * 0.6f);
+
+        var _hp_percent = Attribute.HP * 100 / Attribute.BaseHP;
+        var hp_val = Size.X * _hp_percent / 100;
+
+        var _color = Color.GreenYellow;
+        if (_hp_percent < 75) _color = Color.Yellow;
+        if (_hp_percent < 50) _color = Color.Orange;
+        if (_hp_percent < 25) _color = Color.Red;
+
+        _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
+        _texture.SetData(new Color[] { _color });
+        spriteBatch.Draw(_texture, new Rectangle((int)Position.X, (int)(Position.Y + Size.Y), (int)hp_val, 4), _color * 0.6f);
 
         if (Globals.Debug && Globals.DebugArea)
         {
-            Texture2D _texture;
             _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
             _texture.SetData(new Color[] { Color.Blue });
             spriteBatch.Draw(_texture, GetRectangle(), Color.Blue * 0.4f);

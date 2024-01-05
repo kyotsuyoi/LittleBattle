@@ -144,9 +144,9 @@ public class SpriteObject
 
     public void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics, float layerDepth)
     {
+        Texture2D _texture;
         if (Globals.Debug && Globals.DebugArea)
         {
-            Texture2D _texture;
             _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
             _texture.SetData(new Color[] { Color.Red });
             spriteBatch.Draw(_texture, GetRectangle(), Color.Red * 0.4f);
@@ -155,5 +155,28 @@ public class SpriteObject
         _anims.Draw(Position, layerDepth);
         //spriteBatch.DrawString(font, "HP:" + AttributeObject.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         //spriteBatch.DrawString(font, "HP:" + AttributeObject.HP.ToString(), new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+        _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
+        _texture.SetData(new Color[] { Color.Black });
+        spriteBatch.Draw(_texture, new Rectangle((int)Position.X, (int)(Position.Y + Size.Y), (int)Size.X, 4), Color.Black * 0.6f);
+
+        var _hp_percent = AttributeObject.HP * 100 / AttributeObject.BaseHP;
+        var hp_val = Size.X * _hp_percent / 100;
+
+        var _color = Color.GreenYellow;
+        if (_hp_percent < 75) _color = Color.Yellow;
+        if (_hp_percent < 50) _color = Color.Orange;
+        if (_hp_percent < 25) _color = Color.Red;
+
+        _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
+        _texture.SetData(new Color[] { _color });
+        spriteBatch.Draw(_texture, new Rectangle((int)Position.X, (int)(Position.Y + Size.Y), (int)hp_val, 4), _color * 0.6f);
+
+        if (Globals.Debug && Globals.DebugArea)
+        {
+            _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
+            _texture.SetData(new Color[] { Color.Blue });
+            spriteBatch.Draw(_texture, GetRectangle(), Color.Blue * 0.4f);
+        }
     }
 }
