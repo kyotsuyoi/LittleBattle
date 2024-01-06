@@ -94,14 +94,19 @@ namespace LittleBattle.Classes
             }
         }
 
-        public void Draw(Vector2 pos, float layerdepth)
+        public void Draw(Vector2 pos, float layerdepth, float alpha)
         {
-            Globals.SpriteBatch.Draw(_texture, pos, _sourceRectangles[_frame], Color.White, 0, Vector2.Zero, Vector2.One, spriteEffects, layerdepth);
+            Globals.SpriteBatch.Draw(_texture, pos, _sourceRectangles[_frame], Color.White * alpha, 0, Vector2.Zero, Vector2.One, spriteEffects, layerdepth);
         }
 
         public Rectangle instantRect()
         {
             return _sourceRectangles[_frame];
+        }
+
+        public void SetLoop(bool loop)
+        {
+            this.loop = loop;
         }
     }
 }

@@ -10,24 +10,26 @@ namespace LittleBattle.Classes
         private List<Vector2> positions;
         private readonly float _depth;
         private readonly float _moveScale;
-        private readonly float _defaultSpeed;
-        private readonly bool _movementY;
+        private readonly float defaultSpeed;
+        private readonly bool movementX;
+        private readonly float alpha;
 
         private float _rotate = 0;
 
-        public Layer(Texture2D texture, float depth, float moveScale, bool movementY, float defaultSpeed = 0.0f)
+        public Layer(Texture2D texture, float depth, float moveScale, bool movementX = false, float defaultSpeed = 1f, float alpha = 1f)
         {
             _texture = texture;
             _depth = depth;
             _moveScale = moveScale;
-            _defaultSpeed = defaultSpeed;
+            this.defaultSpeed = defaultSpeed;
+            this.alpha = alpha;
             Vector2 _position = new Vector2(Globals.Size.Width/2, Globals.Size.Height - texture.Height);
             positions = new List<Vector2>
             {
                 _position
             };
 
-            _movementY = movementY;
+            this.movementX = movementX;
         }
 
         public void Update()
@@ -35,6 +37,7 @@ namespace LittleBattle.Classes
             Vector2 _position = positions[0];
             Globals.GroundX = _position.X;
             _position.X += (Globals.CameraMovement * _moveScale);
+            if (movementX) _position.X += Globals.ElapsedSeconds * defaultSpeed;
             positions = new List<Vector2>
             {
                 _position
@@ -63,7 +66,7 @@ namespace LittleBattle.Classes
         {
             foreach(var position in positions)
             {
-                Globals.SpriteBatch.Draw(_texture, position, null, Color.White, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, _depth);
+                Globals.SpriteBatch.Draw(_texture, position, null, Color.White * alpha, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, _depth);
             };
         }
     }

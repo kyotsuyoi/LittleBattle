@@ -9,7 +9,7 @@ namespace LittleBattle.Model
 
         public AttributeObject()
         {
-            BaseHP = 150;
+            BaseHP = 15;
             HP = BaseHP;
         }
     }

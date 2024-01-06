@@ -28,14 +28,19 @@ public class AnimationManager
         return _anims[key];
     }
 
-    public void Draw(Vector2 position, float layerdepth = 0.9f)
+    public void Draw(Vector2 position, float layerdepth = 0.9f, float alpha = 1f)
     {
-        _anims[_lastKey].Draw(position, layerdepth);
+        _anims[_lastKey].Draw(position, layerdepth, alpha);
     }
 
     public Rectangle instantRect()
     {
         return _anims[_lastKey].instantRect();
+    }
+
+    public void SetLoop(bool loop)
+    {
+        _anims[_lastKey].SetLoop(loop);
     }
 }
 

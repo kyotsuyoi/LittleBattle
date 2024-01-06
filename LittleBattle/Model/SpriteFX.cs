@@ -9,9 +9,11 @@ using static LittleBattle.Classes.Enums;
 
 public class SpriteFX
 {
+    public bool Active { get; set; }
+
     protected Texture2D texture;
     public Vector2 Position { get; set; }
-    public Vector2 Size { get; }
+    private Vector2 Size { get; set; }
     public float Speed { get; set; }
     public bool Walk { get; set; }
     public bool Ground { get; set; }
@@ -21,7 +23,6 @@ public class SpriteFX
     private Enums.Side Side { get; set; }
     public Enums.SpriteType spriteType { get; }
     public float RelativeX { get; set; }
-    public bool Active { get; set; }
 
     private readonly AnimationManager _anims = new AnimationManager();
     public Sprite Owner { get; set; }
@@ -31,8 +32,12 @@ public class SpriteFX
 
     private bool combo = false;
 
-    public SpriteFX(Sprite Owner, Enums.Side side, Enums.SpriteType spriteType, int framesX, int framesY)
+    private float deadAlpha = 1f;
+    private bool dead = false;
+
+    public SpriteFX(Sprite Owner, Side side, SpriteType spriteType)
     {
+        Active = true;
         this.Owner = Owner;
         this.spriteType = spriteType;
         Active = true;
@@ -47,25 +52,38 @@ public class SpriteFX
         if (side == Side.Left) Direction = Enums.Direction.StandLeft;
         AttributeFX.Range += Owner.Attribute.Range;
 
-        if (spriteType == SpriteType.SwordEffect) texture = Globals.Content.Load<Texture2D>("Sprites/SwordEffect");
+        SetTexture();
+        GroundLevel = Globals.GroundLevel + Size.Y - 20;
+
+        CenterX_Adjust();
+        InitialPosition();
+        DamagedIDs = new List<int>();        
+    }
+
+    private void SetTexture()
+    {
+        int framesX = 12;
+        int framesY = 1;
+        if (spriteType == SpriteType.SwordEffect) { 
+            texture = Globals.Content.Load<Texture2D>("Sprites/SwordEffect"); 
+        }
+
         if (spriteType == SpriteType.ArrowEffect)
         {
             Walk = true;
-            texture = Globals.Content.Load<Texture2D>("Sprites/ArrowEffectSmall"); framesX = 1; framesY = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprites/ArrowEffectSmall01"); 
+            framesX = 1; 
+            framesY = 1;
+            Texture2D texture2 = Globals.Content.Load<Texture2D>("Sprites/ArrowEffectSmall02");
+            _anims.AddAnimation(Enums.Direction.DeadRight, new Animation(texture2, framesX, framesY, 0, 1, 0.01f, 1, false, false));
+            _anims.AddAnimation(Enums.Direction.DeadLeft, new Animation(texture2, framesX, framesY, 0, 1, 0.01f, 1, true, false));
         }
 
         _anims.AddAnimation(Enums.Direction.StandRight, new Animation(texture, framesX, framesY, 0, 11, 0.01f, 1, false, false));
         _anims.AddAnimation(Enums.Direction.StandLeft, new Animation(texture, framesX, framesY, 0, 11, 0.01f, 1, true, false));
         _anims.AddAnimation(Enums.Direction.WalkRight, new Animation(texture, framesX, framesY, 0, 11, 0.01f, 1, false, false));
         _anims.AddAnimation(Enums.Direction.WalkLeft, new Animation(texture, framesX, framesY, 0, 11, 0.01f, 1, true, false));
-
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
-        GroundLevel = Globals.Size.Height - Size.Y -30;
-
-        this.Position = Position;
-        CenterX_Adjust();
-        InitialPosition();
-        DamagedIDs = new List<int>();        
     }
 
     public void Update()
@@ -81,6 +99,25 @@ public class SpriteFX
 
     private void AnimationResolve()
     {
+        if (dead)
+        {            
+            deadAlpha -= 0.1f * Globals.ElapsedSeconds;
+            if (deadAlpha <= 0) Active = false;            
+
+            if (GetSide() == Side.Right && spriteType == SpriteType.ArrowEffect)
+            {
+                Direction = Enums.Direction.DeadRight;
+                GroundLevel = Globals.GroundLevel - 30; 
+            }
+
+            if (GetSide() == Side.Left && spriteType == SpriteType.ArrowEffect)
+            {
+                Direction = Enums.Direction.DeadLeft;
+                GroundLevel = Globals.GroundLevel - 30;
+            }
+            return;
+        }
+
         var speed = Speed;
         speed = Speed * 10;
         if ((Position.X <= 0 && Direction == Enums.Direction.WalkLeft)
@@ -142,7 +179,7 @@ public class SpriteFX
         {
             Position = new Vector2(Position.X, GroundLevel);
             Ground = true;
-            if(spriteType == SpriteType.ArrowEffect) Active = false;
+            if(spriteType == SpriteType.ArrowEffect) dead = true;
         }
         else
         {
@@ -152,8 +189,8 @@ public class SpriteFX
 
     public void InitialPosition()
     {
-        var oCenterX = Owner.Position.X + Owner.Size.X /2;
-        var oCenterY = Owner.Position.Y + Owner.Size.Y / 2;
+        var oCenterX = Owner.Position.X + Owner.GetSize().X /2;
+        var oCenterY = Owner.Position.Y + Owner.GetSize().Y / 2;
         var centerX = Size.X / 2;
         var centerY = Size.Y / 2;
 
@@ -171,7 +208,7 @@ public class SpriteFX
     public void Damage(Sprite target)
     {
         Collision collision = new Collision();
-        var collide = collision.SquareCollision(Position, Size, target.Position, target.Size);
+        var collide = collision.SquareCollision(Position, Size, target.Position, target.GetSize());
         if (collide && !DamagedIDs.Any(id=> id == target.ID))
         {
             target.TakeDamage(this);
@@ -182,7 +219,7 @@ public class SpriteFX
     public void DamageObject(SpriteObject target)
     {
         Collision collision = new Collision();
-        var collide = collision.SquareCollision(Position, Size, target.Position, target.Size);
+        var collide = collision.SquareCollision(Position, Size, target.Position, target.GetSize());
         if (collide && !DamagedIDs.Any(id => id == target.ID))
         {
             target.TakeDamage(this);
@@ -225,12 +262,23 @@ public class SpriteFX
     {
         this.combo = combo;
     }
+    
     private Rectangle GetRectangle()
     {
         var Pos = new Point((int)Position.X, (int)Position.Y);
         var Siz = new Point((int)Size.X, (int)Size.Y);
 
         return new Rectangle(Pos, Siz);
+    }
+
+    public Vector2 GetSize()
+    {
+        return Size;
+    }
+
+    public bool IsDead()
+    {
+        return dead;
     }
 
     public void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics, float layerDepth)
@@ -243,6 +291,6 @@ public class SpriteFX
             spriteBatch.Draw(_texture, GetRectangle(), Color.Red * 0.4f);
         }
 
-        _anims.Draw(Position);
+        _anims.Draw(Position,0.9f, deadAlpha);
     }
 }

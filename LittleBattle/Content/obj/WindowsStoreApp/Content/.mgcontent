@@ -4,14 +4,17 @@
   <Platform>WindowsStoreApp</Platform>
   <Config />
   <SourceFiles>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Background/Fog.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Background/Ground.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Background/Mountain.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Background/Trees.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Font/fontMedium.spritefont</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/ArcherTower.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/ArcherTower01_x3.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/ArcherTower02_x3.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/ArrowEffectBig.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/ArrowEffectSmall.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/ArrowEffectSmall01.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/ArrowEffectSmall02.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Pixel_x1/ArcherTower.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite01_x3.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite02_x3.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite03_x3.png</File>
@@ -20,6 +23,9 @@
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/SwordEffect.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

@@ -9,24 +9,26 @@ using static LittleBattle.Classes.Enums;
 
 public class Sprite
 {
+    public bool Active { get; set; }
     public int ID { get; }
     protected Texture2D texture;
     public Vector2 Position { get; set; }
     public Vector2 CenterPosition { get; set; }
 
     //Needs change to Size Type
-    public Vector2 Size { get; }
+    private Vector2 Size { get; set; }
     public bool Walk { get; set; }
     public bool Run { get; set; }
     public bool Jump { get; set; }
     public bool Attack { get; set; }
     public bool Ground { get; set; }
+    private bool Combo { get; set; }
     public bool Climb { get; set; }
     public float GroundLevel { get; set; }
     public float FallingSpeed { get; set; }
     public Vector2 Direction { get; set; }
-    public Enums.SpriteType spriteType { get; }
-    public Enums.ClassType classType { get; }
+    public SpriteType spriteType { get; }
+    public ClassType classType { get; }
     public float RelativeX { get; set; }
 
     private List<SpriteFX> spriteFXs;
@@ -35,18 +37,18 @@ public class Sprite
     private readonly AnimationManager _anims = new AnimationManager();
     public Attribute Attribute { get; set; }
 
-    public Enums.Team Team;
+    public Team Team;
 
     public bool BotPatrol = false;
     public float BotPatrolX;
     public float BotPatrolX_Area;
     public float BotPatrolWait;
     public bool BotGoTo = false;
+    private float deadAlpha = 1f;
 
-    private bool combo = false;
-
-    public Sprite(int ID, Vector2 position, Enums.SpriteType spriteType, int framesX, int framesY, Enums.Team team, Enums.ClassType classType)
+    public Sprite(int ID, Vector2 position, SpriteType spriteType, Team team, ClassType classType)
     {
+        Active = true;
         this.ID = ID;
         Position = position;
         this.spriteType = spriteType;
@@ -54,31 +56,45 @@ public class Sprite
         Attribute = new Attribute(classType);
         Team = team;
 
-        if (spriteType == Enums.SpriteType.Bot) Attribute.Speed = 0.5f;
-        if (spriteType == Enums.SpriteType.Player2) Attribute.Speed /=2;
+        if (spriteType == SpriteType.Bot) Attribute.Speed = 0.5f;
+        if (spriteType == SpriteType.Player2) Attribute.Speed /=2;
 
         Walk = false;
         Run = false;
         Jump = false;
         Attack = false;
         Ground = false;
+        Combo = false;
         Climb = false;
         FallingSpeed = 0;
         Direction = Enums.Direction.StandRight;
 
-        if (spriteType == Enums.SpriteType.Cameraman)
+        SetTexture();
+
+        spriteFXs = new List<SpriteFX>();
+        spriteObjects = new List<SpriteObject>();
+        CalcGroundLevel();
+    }
+
+    private void SetTexture()
+    {
+        int framesX = 4;
+        int framesY = 6;
+
+        if (spriteType == SpriteType.Cameraman)
         {
+            framesY = 4;
             texture = Globals.Content.Load<Texture2D>("Sprites/SpriteCameraman_x3");
         }
-        else if(team == Enums.Team.Team1)
+        else if (Team == Team.Team1)
         {
-            if (classType == Enums.ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3");
-            if (classType == Enums.ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite03_x3");
+            if (classType == ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3");
+            if (classType == ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite03_x3");
         }
-        else if(team == Enums.Team.Team2)
+        else if (Team == Team.Team2)
         {
-            if (classType == Enums.ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3");
-            if (classType == Enums.ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite04_x3");
+            if (classType == ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3");
+            if (classType == ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite04_x3");
         }
 
         _anims.AddAnimation(Enums.Direction.StandRight, new Animation(texture, framesX, framesY, 0, 3, 0.25f, 1, false, true));
@@ -95,9 +111,6 @@ public class Sprite
         _anims.AddAnimation(Enums.Direction.ClimbDown, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 6, false, true));
 
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
-        spriteFXs = new List<SpriteFX>();
-        spriteObjects = new List<SpriteObject>();
-        CalcGroundLevel();
     }
 
     public void Update()
@@ -109,15 +122,15 @@ public class Sprite
         JumpResolve();
         FallingResolve();
 
-        if (spriteType != Enums.SpriteType.Cameraman)
+        if (spriteType != SpriteType.Cameraman)
         {
             Position += new Vector2(Globals.CameraMovement,0);
         }
         RelativeX = Position.X - Globals.GroundX;
 
-        if (combo && Attribute.ComboTimeLimit == 0)
+        if (Combo && Attribute.ComboTimeLimit == 0)
         {
-            combo = false;
+            Combo = false;
         }
 
         _anims.Update(Direction, Walk);
@@ -125,33 +138,42 @@ public class Sprite
 
     private void AnimationResolve()
     {
-        if (IsDead()) return;
+        if (IsDead())
+        {
+            if(spriteType == SpriteType.Bot)
+            {
+                deadAlpha -= 0.1f * Globals.ElapsedSeconds;
+                if (deadAlpha <= 0) Active = false;
+            }
+            return;
+        }
+
         var speed = Attribute.Speed;
-        if (spriteType != Enums.SpriteType.Player1) speed = Attribute.Speed * 2;
-        //if ((Position.X <= 0 && GetSide() == Enums.Side.Left)
-        //    || (Position.X >= Globals.Size.Width - Size.X && GetSide() == Enums.Side.Right)) Walk = false;
+        if (spriteType != SpriteType.Player1) speed = Attribute.Speed * 2;
+        //if ((Position.X <= 0 && GetSide() == Side.Left)
+        //    || (Position.X >= Globals.Size.Width - Size.X && GetSide() == Side.Right)) Walk = false;
 
         //Cameraman ID
         if (ID == 0) speed = 0;
 
         if (Walk)
         {
-            if (GetSide() == Enums.Side.Left /*&& Globals.NegativeLimit.Width < RelativeX*/)
+            if (GetSide() == Side.Left /*&& Globals.NegativeLimit.Width < RelativeX*/)
             {
                 Position += new Vector2(-speed, 0);
             }
-            else if (GetSide() == Enums.Side.Right /*&& Globals.PositiveLimit.Width > RelativeX + Size.X*/)
+            else if (GetSide() == Side.Right /*&& Globals.PositiveLimit.Width > RelativeX + Size.X*/)
             {
                 Position += new Vector2(speed, 0);
             }
         }
         else
         {
-            if (GetSide() == Enums.Side.Left )
+            if (GetSide() == Side.Left )
             {
                 Direction = Enums.Direction.StandLeft;
             }
-            else if (GetSide() == Enums.Side.Right)
+            else if (GetSide() == Side.Right)
             {
                 Direction = Enums.Direction.StandRight;
             }
@@ -159,12 +181,12 @@ public class Sprite
 
         if (Climb)
         {
-            if (GetSide() == Enums.Side.Up)
+            if (GetSide() == Side.Up)
             {
                 Direction = Enums.Direction.ClimbUp;
                 Position += new Vector2(0, -speed);
             }
-            else if (GetSide() == Enums.Side.Down)
+            else if (GetSide() == Side.Down)
             {
                 Direction = Enums.Direction.ClimbDown;
                 Position += new Vector2(0, speed);
@@ -177,11 +199,11 @@ public class Sprite
 
         if(Attribute.Knockback > 0)
         {
-            if(Attribute.KnockbackSide == Enums.Side.Right)
+            if(Attribute.KnockbackSide == Side.Right)
             {
                 Position += new Vector2(Attribute.Knockback, 0);
             }
-            if (Attribute.KnockbackSide == Enums.Side.Left)
+            if (Attribute.KnockbackSide == Side.Left)
             {
                 Position += new Vector2(-Attribute.Knockback, 0);
             }
@@ -191,11 +213,11 @@ public class Sprite
 
         if(Attribute.StuntTime > 0)
         {
-            if (GetSide() == Enums.Side.Right)
+            if (GetSide() == Side.Right)
             {
                 Direction = Enums.Direction.StuntRight;
             }
-            if (GetSide() == Enums.Side.Left)
+            if (GetSide() == Side.Left)
             {
                 Direction = Enums.Direction.StuntLeft;
             }
@@ -252,11 +274,11 @@ public class Sprite
     {
         if (Attack)
         {
-            if (GetSide() == Enums.Side.Right)
+            if (GetSide() == Side.Right)
             {
                 Direction = Enums.Direction.AttackRight;
             }
-            if (GetSide() == Enums.Side.Left)
+            if (GetSide() == Side.Left)
             {
                 Direction = Enums.Direction.AttackLeft;
             }
@@ -288,18 +310,13 @@ public class Sprite
 
     public float CameraDirectionSpeed()
     {
-        //var value = Attribute.Knockback;
-        //if(Attribute.KnockbackSide == Enums.Side.Right)
-        //{
-        //    value = -value;
-        //}
         if (IsDead()) return 0;
-        if (GetSide() == Enums.Side.Left && Walk /*&& !(RelativeX < Globals.NegativeLimit.Width)*/) return Attribute.Speed; //value = Attribute.Speed + value;
-        if (GetSide() == Enums.Side.Right && Walk /*&& !(RelativeX + Size.X > Globals.PositiveLimit.Width)*/) return -Attribute.Speed; //value = -Attribute.Speed + value;
-        return 0; //return value;
+        if (GetSide() == Side.Left && Walk) return Attribute.Speed; 
+        if (GetSide() == Side.Right && Walk) return -Attribute.Speed;
+        return 0;
     }
 
-    public void SetMovement(bool move, Enums.Side side)
+    public void SetMovement(bool move, Side side)
     {
         if (IsDead() || Attribute.StuntTime > 0) {
             Walk = false;
@@ -318,11 +335,11 @@ public class Sprite
 
         if (Climb)
         {
-            if (side == Enums.Side.Up && Position.Y > 0)
+            if (side == Side.Up && Position.Y > 0)
             {
                 Direction = Enums.Direction.ClimbUp;
             }
-            else if (side == Enums.Side.Down && Position.Y + Size.Y < GroundLevel)
+            else if (side == Side.Down && Position.Y + Size.Y < GroundLevel)
             {
                 Direction = Enums.Direction.ClimbDown;
             }
@@ -334,12 +351,12 @@ public class Sprite
         }
 
         if (move){
-            if(side == Enums.Side.Right && RelativeX + Size.X/2 < PositiveLimit)
+            if(side == Side.Right && RelativeX + Size.X/2 < PositiveLimit)
             {
                 Direction = Enums.Direction.WalkRight;
                 Walk = true;
             }
-            else if (side == Enums.Side.Left && RelativeX > NegativeLimit)
+            else if (side == Side.Left && RelativeX > NegativeLimit)
             {
                 Direction = Enums.Direction.WalkLeft;
                 Walk = true;
@@ -351,11 +368,11 @@ public class Sprite
         }
         else
         {
-            if (side == Enums.Side.Right)
+            if (side == Side.Right)
             {
                 Direction = Enums.Direction.StandRight;
             }
-            else if (side == Enums.Side.Left)
+            else if (side == Side.Left)
             {
                 Direction = Enums.Direction.StandLeft;
             }
@@ -366,23 +383,23 @@ public class Sprite
     public void SetAttack()
     {
         if (Climb) return;
-        if (IsDead() || Attribute.StuntTime > 0) return;
+        //if (IsDead() || Attribute.StuntTime > 0) return;
         if (Attribute.AttackCooldown > 0) return; 
 
-        if (classType == Enums.ClassType.Warrior) spriteFXs.Add(new SpriteFX(this, GetSide(), Enums.SpriteType.SwordEffect, 12, 1));
-        if (classType == Enums.ClassType.Archer) spriteFXs.Add(new SpriteFX(this, GetSide(), Enums.SpriteType.ArrowEffect, 12, 1));
+        if (classType == ClassType.Warrior) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.SwordEffect));
+        if (classType == ClassType.Archer) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.ArrowEffect));
 
-        if (combo)
+        if (Combo)
         {
             var spFX = spriteFXs[spriteFXs.Count() - 1];
             spFX.InitialPosition();
-            combo = false;
+            Combo = false;
 
             //Jump to position into combo
-            if (spFX.spriteType == Enums.SpriteType.SwordEffect)
+            if (spFX.spriteType == SpriteType.SwordEffect)
             {
-                if (spFX.GetSide() == Enums.Side.Right) Position = new Vector2(spFX.Position.X + spFX.Size.X / 2, spFX.Position.Y);
-                if (spFX.GetSide() == Enums.Side.Left) Position = new Vector2(spFX.Position.X, spFX.Position.Y);
+                if (spFX.GetSide() == Side.Right) Position = new Vector2(spFX.Position.X + spFX.GetSize().X / 2, spFX.Position.Y);
+                if (spFX.GetSide() == Side.Left) Position = new Vector2(spFX.Position.X, spFX.Position.Y);
 
                 spFX.AttributeFX.Damage += 8;
                 spFX.AttributeFX.Range += 8;
@@ -390,7 +407,7 @@ public class Sprite
                 spFX.AttributeFX.StuntTime = 1f;
             }
 
-            if (spFX.spriteType == Enums.SpriteType.ArrowEffect)
+            if (spFX.spriteType == SpriteType.ArrowEffect)
             {
                 spFX.AttributeFX.Damage += 4;
                 spFX.AttributeFX.Range += 0;
@@ -407,10 +424,13 @@ public class Sprite
 
     public void SetJump()
     {
-        if (IsDead()) return;
+        //if (IsDead()) return;
         Jump = true;
-        Climb = false;
-        SetRandomSide();
+        if (Climb)
+        {
+            SetRandomSide();
+            Climb = false;
+        }
     }
 
     private void SetRandomSide()
@@ -434,7 +454,7 @@ public class Sprite
         if (Attribute.AttackCooldown < 0) Attribute.AttackCooldown = 0;
 
         Attribute.ComboTimeLimit -= Globals.ElapsedSeconds;
-        if (Attribute.ComboTimeLimit < 0 || !combo) Attribute.ComboTimeLimit = 0;
+        if (Attribute.ComboTimeLimit < 0 || !Combo) Attribute.ComboTimeLimit = 0;
 
         Attribute.StuntTime -= Globals.ElapsedSeconds;
         if (Attribute.StuntTime < 0) Attribute.StuntTime = 0;
@@ -448,44 +468,46 @@ public class Sprite
         if (res < 1) res = 1;
 
         Attribute.HP -= res;
-        if(IsDead()) return;
+        //if(IsDead()) return;
 
-        if (Owner.spriteType == Enums.SpriteType.Player1 || Owner.spriteType == Enums.SpriteType.Player2
-            && !Owner.combo && !spriteFX.GetCombo())
+        if (Owner.spriteType == SpriteType.Player1 || Owner.spriteType == SpriteType.Player2
+            && !Owner.Combo && !spriteFX.GetCombo())
         {
             Owner.Attribute.AttackCooldown = Owner.Attribute.AttackCooldown / 3;
             Owner.Attribute.ComboTimeLimit = Owner.Attribute.BaseComboTimeLimit;
-            Owner.combo = true;
+            Owner.Combo = true;
         }
 
-        if (Owner.spriteType == Enums.SpriteType.Bot && !Owner.combo && !spriteFX.GetCombo())
+        if (Owner.spriteType == SpriteType.Bot && !Owner.Combo && !spriteFX.GetCombo())
         {
             Owner.Attribute.ComboTimeLimit = Owner.Attribute.BaseComboTimeLimit;
-            Owner.combo = true;
+            Owner.Combo = true;
         }
 
         Attribute.StuntTime = spriteFX.AttributeFX.StuntTime;
         Attribute.Knockback = spriteFX.AttributeFX.Knockback + Owner.Attribute.BuffKnockback;
         Attribute.KnockbackSide = spriteFX.GetSide();
-        if (spriteType == Enums.SpriteType.Player1 || Owner.spriteType == Enums.SpriteType.Player2)
+        if (spriteType == SpriteType.Player1 || Owner.spriteType == SpriteType.Player2)
         {
             Attribute.Knockback = Attribute.Knockback / 2;
         }
 
-        if (spriteFX.spriteType == Enums.SpriteType.ArrowEffect) spriteFX.Active = false;
+        if (Attribute.Knockback > 0 && Climb) { Climb = false; SetRandomSide(); }
+
+        if (spriteFX.spriteType == SpriteType.ArrowEffect) spriteFX.Active = false;
     }
 
     public void UpdateSpriteFXDamage(List<Sprite> targets)
     {
-        var inner_targets = targets.Where(target => target.Team != Team && !target.IsDead()).ToList();
+        //var inner_targets = targets.Where(target => target.Team != Team && !target.IsDead()).ToList();
         foreach (var damage in spriteFXs)
         {
-            foreach (var target in inner_targets)
+            foreach (var target in targets)
             {
-                damage.Damage(target);
+                if (!target.IsDead() && target.Team != Team && !damage.IsDead()) damage.Damage(target);
                 foreach (var _object in target.spriteObjects)
                 {
-                    damage.DamageObject(_object);
+                    if (target.Team != Team) damage.DamageObject(_object);
                 }
             }
         }
@@ -499,7 +521,7 @@ public class Sprite
         }
     }
 
-    public Enums.Side GetSide()
+    public Side GetSide()
     {
         if (Direction == Enums.Direction.StandRight
             || Direction == Enums.Direction.WalkRight
@@ -508,7 +530,7 @@ public class Sprite
             || Direction == Enums.Direction.StuntRight
         )
         {
-            return Enums.Side.Right;
+            return Side.Right;
         }
 
         if (Direction == Enums.Direction.StandLeft 
@@ -518,25 +540,25 @@ public class Sprite
             || Direction == Enums.Direction.StuntLeft
         )
         {
-            return Enums.Side.Left;
+            return Side.Left;
         }
 
         if (Direction == Enums.Direction.ClimbUp)
         {
-            return Enums.Side.Up;
+            return Side.Up;
         }
 
         if (Direction == Enums.Direction.ClimbDown)
         {
-            return Enums.Side.Down;
+            return Side.Down;
         }
 
-        return Enums.Side.None;
+        return Side.None;
     }
 
-    public void SetSide(Enums.Side side)
+    public void SetSide(Side side)
     {
-        if (side == Enums.Side.Left)
+        if (side == Side.Left)
         {
             if (Direction == Enums.Direction.StandLeft)
             {
@@ -560,7 +582,7 @@ public class Sprite
             }
         }
 
-        if (side == Enums.Side.Right)
+        if (side == Side.Right)
         {
             if (Direction == Enums.Direction.StandRight)
             {
@@ -603,6 +625,8 @@ public class Sprite
             animLeft.Reset();
             Direction = Enums.Direction.StandLeft;
         }
+
+        deadAlpha = 1f;
     }
 
     public bool IsDead()
@@ -619,19 +643,19 @@ public class Sprite
         Attribute.HP = 0;
         spriteFXs = new List<SpriteFX>();
 
-        if (GetSide() == Enums.Side.Right)
-        {
-            Direction = Enums.Direction.DeadRight;
-        }
-        if (GetSide() == Enums.Side.Left)
-        {
-            Direction = Enums.Direction.DeadLeft;
-        }
+        var side = GetSide();
+        if (side == Side.Right) Direction = Enums.Direction.DeadRight;
+        if (side == Side.Left) Direction = Enums.Direction.DeadLeft;
+        if (side == Side.Up) SetRandomSide();
+        if (side == Side.Down) SetRandomSide();
+        if (side == Side.None) SetRandomSide();
+
         Walk = false;
         Attack = false;
         Climb = false;
         Attribute.Knockback = 0;
-        combo = false;
+        Combo = false;
+        Jump = false;
     }
 
     public int GetSpriteFXCount()
@@ -646,7 +670,7 @@ public class Sprite
 
     public bool GetCombo()
     {
-        return combo;
+        return Combo;
     }
 
     public void SetToGroundLevel(float positionX)
@@ -660,10 +684,10 @@ public class Sprite
         BotPatrol = true;
     }
 
-    public void SetObject(Enums.SpriteType spriteType)
+    public void SetObject(SpriteType spriteType)
     {
-        spriteObjects = new List<SpriteObject>();
-        spriteObjects.Add(new SpriteObject(this, GetSide(), spriteType, 1, 1));
+        //spriteObjects = new List<SpriteObject>();
+        spriteObjects.Add(new SpriteObject(this, GetSide(), spriteType));
         //var _object = spriteObjects[spriteObjects.Count - 1];
         //_object.CenterX_Adjust();
         //_object.SetToGroundLevel(0);
@@ -671,47 +695,15 @@ public class Sprite
 
     public void InteractObjects(List<Sprite> players, List<Sprite> bots)
     {
-        Collision collision = new Collision();
-        List<SpriteObject> localObjects = new List<SpriteObject>();
+        var _object = GetInteractObject(players, bots);
 
-        foreach (var player in players)
-        {
-            foreach (var p_object in player.spriteObjects)
-            {
-                localObjects.Add(p_object);
-            }
-        }
-
-        foreach (var bot in bots)
-        {
-            foreach (var b_object in bot.spriteObjects)
-            {
-                localObjects.Add(b_object);
-            }
-        }
-
-        SpriteObject _object = null;
-        foreach (var local_object in localObjects)
-        {
-            var PosB = new Point((int)local_object.Position.X, (int)local_object.Position.Y);
-            var SizB = new Point((int)local_object.Size.X, (int)local_object.Size.Y);
-
-            var RectB = new Rectangle(PosB, SizB);
-            var isCollide = collision.IsCollide(GetRectangle(), RectB);
-
-            if (isCollide)
-            {
-                _object = local_object;
-                break;
-            }
-        }
         if (_object != null)
         {
-            if (_object.spriteType == Enums.SpriteType.ArcherTower)
+            if (_object.spriteType == SpriteType.ArcherTower)
             {
                 Climb = true;
                 Walk = false;
-                Position = new Vector2(_object.Position.X + _object.Size.X/2 - Size.X / 2, Position.Y);
+                Position = new Vector2(_object.Position.X + _object.GetSize().X/2 - Size.X / 2, Position.Y);
                 //GroundLevel = (int)_object.Position.Y;
             }
             else
@@ -727,40 +719,9 @@ public class Sprite
 
     public void UpdateInteraction(List<Sprite> players, List<Sprite> bots)
     {
-        Collision collision = new Collision();
-        List<SpriteObject> localObjects = new List<SpriteObject>();
-
-        foreach (var player in players)
-        {
-            foreach (var p_object in player.spriteObjects)
-            {
-                localObjects.Add(p_object);
-            }
-        }
-
-        foreach (var bot in bots)
-        {
-            foreach (var b_object in bot.spriteObjects)
-            {
-                localObjects.Add(b_object);
-            }
-        }
-
-        SpriteObject _object = null;
         spriteObjects = spriteObjects.Where(_spriteobject => _spriteobject.Active).ToList();
-        foreach (var local_object in localObjects)
-        {
-            var PosB = new Point((int)local_object.Position.X, (int)local_object.Position.Y);
-            var SizB = new Point((int)local_object.Size.X, (int)local_object.Size.Y);
-            var RectB = new Rectangle(PosB, SizB);
-            var isCollide = collision.IsCollide(GetRectangle(), RectB);
 
-            if (isCollide)
-            {
-                _object = local_object;
-                break;
-            }
-        }
+        var _object = GetInteractObject(players, bots);
 
         if (_object != null && GroundLevel < (int)_object.Position.Y)
         {
@@ -776,7 +737,7 @@ public class Sprite
         }
 
         //Needs buff list
-        if (_object != null && (int)(_object.Position.Y) == GroundLevel /*&& classType == Enums.ClassType.Archer*/)
+        if (_object != null && (int)(_object.Position.Y) == GroundLevel /*&& classType == ClassType.Archer*/)
         {
             Climb = false;
             Attribute.BuffAttack = 5;
@@ -793,6 +754,45 @@ public class Sprite
         {
             GroundLevel = Globals.GroundLevel ;
         }
+    }
+
+    private SpriteObject GetInteractObject(List<Sprite> players, List<Sprite> bots)
+    {
+        Collision collision = new Collision();
+        List<SpriteObject> localObjects = new List<SpriteObject>();
+
+        foreach (var player in players)
+        {
+            foreach (var p_object in player.spriteObjects)
+            {
+                localObjects.Add(p_object);
+            }
+        }
+
+        foreach (var bot in bots)
+        {
+            foreach (var b_object in bot.spriteObjects)
+            {
+                localObjects.Add(b_object);
+            }
+        }
+
+        SpriteObject _object = null;
+        localObjects = localObjects.Where(_spriteobject => !_spriteobject.IsDead()).ToList();
+        foreach (var local_object in localObjects)
+        {
+            var PosB = new Point((int)local_object.Position.X, (int)local_object.Position.Y);
+            var SizB = new Point((int)local_object.GetSize().X, (int)local_object.GetSize().Y);
+            var RectB = new Rectangle(PosB, SizB);
+            var isCollide = collision.IsCollide(GetRectangle(), RectB);
+
+            if (isCollide)
+            {
+                _object = local_object;
+                break;
+            }
+        }
+        return _object;
     }
 
     private Rectangle GetRectangle()
@@ -814,11 +814,16 @@ public class Sprite
         return GroundLevel = Globals.GroundLevel;
     }
 
+    public Vector2 GetSize()
+    {
+        return Size;
+    }
+
     public void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics)
     {
         //if (ID == 0) return;
 
-        _anims.Draw(Position, 0.9999f);
+        _anims.Draw(Position, 0.9999f, deadAlpha);
 
         foreach (var attack in spriteFXs)
         {
@@ -843,12 +848,20 @@ public class Sprite
         //spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y-2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
         Texture2D _texture;
+        if (Globals.Debug && Globals.DebugArea)
+        {
+            _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
+            _texture.SetData(new Color[] { Color.Blue });
+            spriteBatch.Draw(_texture, GetRectangle(), Color.Blue * 0.4f);
+        }
+
+        var _hp_percent = Attribute.HP * 100 / Attribute.BaseHP;
+        if (_hp_percent >= 100) return;
+        var hp_val = Size.X * _hp_percent / 100;
+
         _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
         _texture.SetData(new Color[] { Color.Black });
         spriteBatch.Draw(_texture, new Rectangle((int)Position.X, (int)(Position.Y + Size.Y), (int)Size.X, 4), Color.Black * 0.6f);
-
-        var _hp_percent = Attribute.HP * 100 / Attribute.BaseHP;
-        var hp_val = Size.X * _hp_percent / 100;
 
         var _color = Color.GreenYellow;
         if (_hp_percent < 75) _color = Color.Yellow;
@@ -859,12 +872,6 @@ public class Sprite
         _texture.SetData(new Color[] { _color });
         spriteBatch.Draw(_texture, new Rectangle((int)Position.X, (int)(Position.Y + Size.Y), (int)hp_val, 4), _color * 0.6f);
 
-        if (Globals.Debug && Globals.DebugArea)
-        {
-            _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
-            _texture.SetData(new Color[] { Color.Blue });
-            spriteBatch.Draw(_texture, GetRectangle(), Color.Blue * 0.4f);
-        }
     }
 
     public void DrawObjects(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics)

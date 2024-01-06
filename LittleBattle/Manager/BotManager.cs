@@ -204,7 +204,7 @@ namespace LittleBattle.Manager
                     && (bot.RelativeX < target.RelativeX))
                 {
                     //Needs to get Range using a method (calc Attack Range)
-                    if(bot.RelativeX + bot.Size.X + bot.Attribute.Range > target.RelativeX)
+                    if(bot.RelativeX + bot.GetSize().X + bot.Attribute.Range > target.RelativeX)
                     {
                         bot.SetMovement(false, Enums.Side.Right);
                     }
@@ -216,13 +216,13 @@ namespace LittleBattle.Manager
                 }
             }
 
-            if (bot.RelativeX + bot.Size.X >= target.RelativeX)
+            if (bot.RelativeX + bot.GetSize().X >= target.RelativeX)
             {
                 if ((bot.RelativeX - (target.RelativeX) < 400)
                     && (target.RelativeX) * 1 < bot.RelativeX)
                 {
                     //Needs to get Range using a method (calc Attack Range)
-                    if (bot.RelativeX - bot.Size.X - bot.Attribute.Range < target.RelativeX)
+                    if (bot.RelativeX - bot.GetSize().X - bot.Attribute.Range < target.RelativeX)
                     {
                         bot.SetMovement(false, Enums.Side.Left);
                     }
@@ -251,9 +251,9 @@ namespace LittleBattle.Manager
 
             var collide = collision.SquareCollision(
                 new Vector2((int)bot.RelativeX * d, 0),
-                bot.Size * new Vector2(m, 1),
+                bot.GetSize() * new Vector2(m, 1),
                 new Vector2((int)player.RelativeX * d, 0),
-                player.Size * new Vector2(m, 1)
+                player.GetSize() * new Vector2(m, 1)
             );
 
             if (collide)

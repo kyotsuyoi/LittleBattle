@@ -13,6 +13,18 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Background/Fog.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Background/Fog.png
+
 #begin Background/Ground.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -56,7 +68,7 @@
 /processorParam:TextureFormat=Compressed
 /build:Font/fontMedium.spritefont
 
-#begin Sprites/ArcherTower.png
+#begin Sprites/ArcherTower01_x3.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -66,7 +78,19 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/ArcherTower.png
+/build:Sprites/ArcherTower01_x3.png
+
+#begin Sprites/ArcherTower02_x3.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/ArcherTower02_x3.png
 
 #begin Sprites/ArrowEffectBig.png
 /importer:TextureImporter
@@ -80,7 +104,7 @@
 /processorParam:TextureFormat=Color
 /build:Sprites/ArrowEffectBig.png
 
-#begin Sprites/ArrowEffectSmall.png
+#begin Sprites/ArrowEffectSmall01.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -90,9 +114,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/ArrowEffectSmall.png
+/build:Sprites/ArrowEffectSmall01.png
 
-#begin Sprites/Sprite.png
+#begin Sprites/ArrowEffectSmall02.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -102,7 +126,19 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/Sprite.png
+/build:Sprites/ArrowEffectSmall02.png
+
+#begin Sprites/Pixel_x1/ArcherTower.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/Pixel_x1/ArcherTower.png
 
 #begin Sprites/Sprite01_x3.png
 /importer:TextureImporter

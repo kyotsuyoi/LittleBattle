@@ -1,11 +1,11 @@
 using LittleBattle.Classes;
 using LittleBattle.Model;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using static LittleBattle.Classes.Enums;
 
 public static class InputManager
 {
@@ -41,7 +41,7 @@ public static class InputManager
         KeyboardState keyboard = Keyboard.GetState();
         var gamepad = GamePad.GetState(PlayerIndex.One);
 
-        if (players[0].spriteType == Enums.SpriteType.Player1) 
+        if (players[0].spriteType == SpriteType.Player1) 
         { 
             if (gamepad.IsConnected)
             {
@@ -53,7 +53,7 @@ public static class InputManager
             }
         }
 
-        if (players[1].spriteType == Enums.SpriteType.Player2)
+        if (players[1].spriteType == SpriteType.Player2)
         {
             if (false /*gamepad.IsConnected*/)
             {
@@ -73,26 +73,26 @@ public static class InputManager
     {    
         if (keyboard.IsKeyDown(keyMappings.MoveLeft))
         {
-            player.SetMovement(true, Enums.Side.Left);
+            player.SetMovement(true, Side.Left);
         }
         else if (keyboard.IsKeyDown(keyMappings.MoveRight))
         {
-            player.SetMovement(true, Enums.Side.Right);
+            player.SetMovement(true, Side.Right);
         }
 
         if (keyboard.IsKeyDown(keyMappings.MoveUp))
         {
-            player.SetMovement(true, Enums.Side.Up);
+            player.SetMovement(true, Side.Up);
         }
         else if (keyboard.IsKeyDown(keyMappings.MoveDown))
         {
-            player.SetMovement(true, Enums.Side.Down);
+            player.SetMovement(true, Side.Down);
         }
 
         if (keyboard.IsKeyUp(keyMappings.MoveLeft) && keyboard.IsKeyUp(keyMappings.MoveRight)
             && keyboard.IsKeyUp(keyMappings.MoveUp) && keyboard.IsKeyUp(keyMappings.MoveDown))
         {
-            player.SetMovement(false, Enums.Side.None);
+            player.SetMovement(false, Side.None);
         }
 
         if (keyboard.IsKeyDown(keyMappings.Jump) && !p1_jump_key_pressed
@@ -130,16 +130,16 @@ public static class InputManager
     {
         if (gamepad.DPad.Left == ButtonState.Pressed)
         {
-            player.SetMovement(true, Enums.Side.Left);
+            player.SetMovement(true, Side.Left);
         }
         else if (gamepad.DPad.Right == ButtonState.Pressed)
         {
-            player.SetMovement(true, Enums.Side.Right);
+            player.SetMovement(true, Side.Right);
         }
 
         if (gamepad.DPad.Left == ButtonState.Released && gamepad.DPad.Right == ButtonState.Released)
         {
-            player.SetMovement(false, Enums.Side.None);
+            player.SetMovement(false, Side.None);
         }
 
         if (gamepad.Buttons.A == ButtonState.Pressed && !p1_jump_key_pressed
@@ -171,26 +171,26 @@ public static class InputManager
     {
         if (keyboard.IsKeyDown(Keys.Left))
         {
-            player.SetMovement(true, Enums.Side.Left);
+            player.SetMovement(true, Side.Left);
         }
         else if (keyboard.IsKeyDown(Keys.Right))
         {
-            player.SetMovement(true, Enums.Side.Right);
+            player.SetMovement(true, Side.Right);
         }
 
         if (keyboard.IsKeyDown(Keys.Up))
         {
-            player.SetMovement(true, Enums.Side.Up);
+            player.SetMovement(true, Side.Up);
         }
         else if (keyboard.IsKeyDown(Keys.Down))
         {
-            player.SetMovement(true, Enums.Side.Down);
+            player.SetMovement(true, Side.Down);
         }
 
         if (keyboard.IsKeyUp(Keys.Left) && keyboard.IsKeyUp(Keys.Right)
             && keyboard.IsKeyUp(Keys.Up) && keyboard.IsKeyUp(Keys.Down))
         {
-            player.SetMovement(false, Enums.Side.None);
+            player.SetMovement(false, Side.None);
         }
 
         if (keyboard.IsKeyDown(Keys.NumPad0) && !p2_jump_key_pressed
@@ -277,7 +277,7 @@ public static class InputManager
         {
             botID++;
             var val = Globals.NegativeLimit.Width + Globals.GroundX;
-            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, 4, 5, Enums.Team.Team1, Enums.ClassType.Warrior));
+            bots.Add(new Sprite(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team1, ClassType.Warrior));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
             bot.SetToGroundLevel(0);
@@ -286,7 +286,7 @@ public static class InputManager
         {
             botID++;
             var val = Globals.NegativeLimit.Width + Globals.GroundX;
-            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, 4, 5, Enums.Team.Team1, Enums.ClassType.Archer));
+            bots.Add(new Sprite(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team1, ClassType.Archer));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
             bot.SetToGroundLevel(0);
@@ -296,7 +296,7 @@ public static class InputManager
         {
             botID++;
             var val = Globals.PositiveLimit.Width + Globals.GroundX;
-            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, 4, 5, Enums.Team.Team2, Enums.ClassType.Warrior));
+            bots.Add(new Sprite(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team2, ClassType.Warrior));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
             bot.SetToGroundLevel(0);
@@ -305,7 +305,7 @@ public static class InputManager
         {
             botID++;
             var val = Globals.PositiveLimit.Width + Globals.GroundX;
-            bots.Add(new Sprite(botID, new Vector2(val, 0), Enums.SpriteType.Bot, 4, 5, Enums.Team.Team2, Enums.ClassType.Archer));
+            bots.Add(new Sprite(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team2, ClassType.Archer));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
             bot.SetToGroundLevel(0);
@@ -338,7 +338,11 @@ public static class InputManager
 
         if (IsKeyPressed(Keys.T))
         {
-            players[0].SetObject(Enums.SpriteType.ArcherTower);
+            players[0].SetObject(SpriteType.ArcherTower);
+        }
+        if (IsKeyPressed(Keys.Y))
+        {
+            players[1].SetObject(SpriteType.ArcherTower);
         }
 
         if (IsKeyPressed(Keys.F8))

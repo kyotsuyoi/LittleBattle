@@ -3,54 +3,88 @@ using LittleBattle.Manager;
 using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Windows.UI.Xaml.Controls;
 using static LittleBattle.Classes.Enums;
 
 public class SpriteObject
 {
+    public bool Active { get; set; }
     protected Texture2D texture;
     private readonly AnimationManager _anims = new AnimationManager();
 
     public Vector2 Position { get; set; }
-    public Vector2 Size { get; }
+    private Vector2 Size { get; set; }
     public bool Ground { get; set; }
     public float GroundLevel { get; set; }
     public float FallingSpeed { get; set; }
-    private Enums.Side Side { get; set; }
-    public Enums.SpriteType spriteType { get; }
+    private Side Side { get; set; }
+    public SpriteType spriteType { get; }
     public float RelativeX { get; set; }
-    public bool Active { get; set; }
     public Sprite Owner { get; set; }
     public AttributeObject AttributeObject { get; set; }
     public int ID { get; }
+    private float deadAlpha = 1f;
 
-    public SpriteObject(Sprite Owner, Enums.Side side, Enums.SpriteType spriteType, int framesX, int framesY)
+    public SpriteObject(Sprite Owner, Side side, SpriteType spriteType)
     {
+        Active = true;
         ID = Globals.GetNewID();
         this.Owner = Owner;
         this.spriteType = spriteType;
-        Active = true;
 
         AttributeObject = new AttributeObject();
 
         Ground = false;
         FallingSpeed = -1;
-        this.Side = side;
+        Side = side;
 
-        if (spriteType == SpriteType.ArcherTower) texture = Globals.Content.Load<Texture2D>("Sprites/ArcherTower");
+        SetTexture();
 
-        _anims.AddAnimation(Enums.Direction.StandRight, new Animation(texture, framesX, framesY, 0, 11, 0.01f, 1, false, false));
-        _anims.AddAnimation(Enums.Direction.StandLeft, new Animation(texture, framesX, framesY, 0, 11, 0.01f, 1, true, false));
-
-        Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
         InitialPosition();      
+    }
+
+    private void SetTexture()
+    {
+        int framesX = 4;
+        int framesY = 1;
+
+        if (spriteType == SpriteType.ArcherTower) { 
+            if (Owner.Team == Team.Team1) texture = Globals.Content.Load<Texture2D>("Sprites/ArcherTower01_x3");
+            if (Owner.Team == Team.Team2) texture = Globals.Content.Load<Texture2D>("Sprites/ArcherTower02_x3");
+        }
+
+        _anims.AddAnimation(Direction.StandRight, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 1, false, false));
+        _anims.AddAnimation(Direction.StandLeft, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 1, true, false));
+        Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
     }
 
     public void Update()
     {
+        AnimationResolve();
         FallingResolve();
 
         Position += new Vector2(Globals.CameraMovement,0);
         RelativeX = Position.X - Globals.GroundX;
+
+        if (IsDead())
+        {
+            _anims.Update(Direction.StandRight, false, -1);
+        }
+        else
+        {
+            _anims.Update(Direction.StandRight, false, 0);
+        }
+    }
+
+    private void AnimationResolve()
+    {
+        if (IsDead())
+        {
+            deadAlpha -= 0.1f * Globals.ElapsedSeconds;
+            if (deadAlpha <= 0) Active = false;
+            return;
+        }
+
     }
 
     private void FallingResolve()
@@ -70,7 +104,7 @@ public class SpriteObject
         {
             Position = new Vector2(Position.X, GroundLevel);
             Ground = true;
-            if(spriteType == SpriteType.ArrowEffect) Active = false;
+            //if(spriteType == SpriteType.ArrowEffect) Active = false;
         }
         else
         {
@@ -80,8 +114,8 @@ public class SpriteObject
 
     private void InitialPosition()
     {
-        var oCenterX = Owner.Position.X + Owner.Size.X /2;
-        var oCenterY = Owner.Position.Y + Owner.Size.Y /2;
+        var oCenterX = Owner.Position.X + Owner.GetSize().X /2;
+        var oCenterY = Owner.Position.Y + Owner.GetSize().Y /2;
         var centerX = Size.X / 2;
         var centerY = Size.Y / 2;
 
@@ -104,6 +138,7 @@ public class SpriteObject
         if (IsDead()) return;
         spriteFX.Active = false;
     }
+    
     public bool IsDead()
     {
         if (AttributeObject.HP <= 0)
@@ -117,7 +152,7 @@ public class SpriteObject
     private void Dead()
     {
         AttributeObject.HP = 0;
-        Active = false;
+        //Active = false;
     }
 
     public void CenterX_Adjust()
@@ -142,6 +177,10 @@ public class SpriteObject
 
         return new Rectangle(Pos, Siz);
     }
+    public Vector2 GetSize()
+    {
+        return Size;
+    }
 
     public void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics, float layerDepth)
     {
@@ -153,16 +192,18 @@ public class SpriteObject
             spriteBatch.Draw(_texture, GetRectangle(), Color.Red * 0.4f);
         }
 
-        _anims.Draw(Position, layerDepth);
-        //spriteBatch.DrawString(font, "HP:" + AttributeObject.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-        //spriteBatch.DrawString(font, "HP:" + AttributeObject.HP.ToString(), new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+        _anims.Draw(Position, layerDepth, deadAlpha);
+
+        //spriteBatch.DrawString(font, "frame:" + Globals.SpriteFrame.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        //spriteBatch.DrawString(font, "frame:" + Globals.SpriteFrame.ToString(), new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+        var _hp_percent = AttributeObject.HP * 100 / AttributeObject.BaseHP;
+        if (_hp_percent >= 100 || _hp_percent <= 0) return;
+        var hp_val = Size.X * _hp_percent / 100;
 
         _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
         _texture.SetData(new Color[] { Color.Black });
         spriteBatch.Draw(_texture, new Rectangle((int)Position.X, (int)(Position.Y + Size.Y), (int)Size.X, 4), Color.Black * 0.6f);
-
-        var _hp_percent = AttributeObject.HP * 100 / AttributeObject.BaseHP;
-        var hp_val = Size.X * _hp_percent / 100;
 
         var _color = Color.GreenYellow;
         if (_hp_percent < 75) _color = Color.Yellow;

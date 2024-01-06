@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using static LittleBattle.Classes.Enums;
 
 public class GameManager
 {
@@ -31,23 +32,24 @@ public class GameManager
         Globals.DebugArea = false;
 
         backgroundManager = new BackgroundManager();
-        backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Mountain"), 0.6f, 0.6f, false));
-        backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Trees"), 0.8f, 0.8f, false));
+        backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Mountain"), 0.4f, 0.4f, false));
+        backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Trees"), 0.6f, 0.6f, false));
+        backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Fog"), 0.8f, 0.8f, true, 20f, 0.2f));
         backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Ground"), 1f, 1f, false));
 
         resolution = new Resolution(game, graphics, _canvas);
         resolution.SetResolution(Globals.Size);
         resolution.SetFullScreen();
-        Globals.GroundLevel = Globals.Size.Height - 30;
+        Globals.GroundLevel = Globals.Size.Height - 60;
 
-        Cameraman = new Sprite(00, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.Cameraman, 4, 4, Enums.Team.None, Enums.ClassType.None);
+        Cameraman = new Sprite(00, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Cameraman, Team.None, ClassType.None);
         Cameraman.CenterX_Adjust();
         Cameraman.SetToGroundLevel(0);
 
         players = new List<Sprite>
         {
-            new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.Player1, 4, 6, Enums.Team.Team1, Enums.ClassType.Archer),
-            new Sprite(02, new Vector2((Globals.Size.Width / 2), 504), Enums.SpriteType.Player2, 4, 6, Enums.Team.Team2, Enums.ClassType.Archer),
+            new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player1, Team.Team1, ClassType.Archer),
+            new Sprite(02, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player2, Team.Team2, ClassType.Archer),
         };
         foreach (var player in players)
         {
@@ -82,6 +84,8 @@ public class GameManager
 
     public void Update()
     {
+
+        Globals.GroundLevel = Globals.Size.Height - 62;
         //InputManager.UpdateResolution(resolution);
         //InputManager.DebugCommand(players, bots);
         Globals.CameraMovement = Cameraman.CameraDirectionSpeed();
@@ -106,6 +110,7 @@ public class GameManager
             InputManager.ClearBot = false;
         }
 
+        bots = bots.Where(bot => bot.Active).ToList();
         foreach (var bot in bots)
         {
             bot.Update();
