@@ -47,7 +47,7 @@ public class SpriteFX
         Speed = 1;
 
         Ground = false;
-        FallingSpeed = -1;
+        FallingSpeed = 0;
         Direction = Enums.Direction.StandRight;
         if (side == Side.Left) Direction = Enums.Direction.StandLeft;
         AttributeFX.Range += Owner.Attribute.Range;
@@ -77,6 +77,8 @@ public class SpriteFX
             Texture2D texture2 = Globals.Content.Load<Texture2D>("Sprites/ArrowEffectSmall02");
             _anims.AddAnimation(Enums.Direction.DeadRight, new Animation(texture2, framesX, framesY, 0, 1, 0.01f, 1, false, false));
             _anims.AddAnimation(Enums.Direction.DeadLeft, new Animation(texture2, framesX, framesY, 0, 1, 0.01f, 1, true, false));
+
+            FallingSpeed = 2;
         }
 
         _anims.AddAnimation(Enums.Direction.StandRight, new Animation(texture, framesX, framesY, 0, 11, 0.01f, 1, false, false));
@@ -107,22 +109,18 @@ public class SpriteFX
             if (GetSide() == Side.Right && spriteType == SpriteType.ArrowEffect)
             {
                 Direction = Enums.Direction.DeadRight;
-                GroundLevel = Globals.GroundLevel - 30; 
+                GroundLevel = Globals.GroundLevel - 20; 
             }
 
             if (GetSide() == Side.Left && spriteType == SpriteType.ArrowEffect)
             {
                 Direction = Enums.Direction.DeadLeft;
-                GroundLevel = Globals.GroundLevel - 30;
+                GroundLevel = Globals.GroundLevel - 20;
             }
             return;
         }
 
-        var speed = Speed;
-        speed = Speed * 10;
-        if ((Position.X <= 0 && Direction == Enums.Direction.WalkLeft)
-            || (Position.X >= Globals.Size.Width - Size.X && Direction == Enums.Direction.WalkRight)) Walk = false;
-
+        var speed = Speed * 10;
         if (Walk)
         {
             if (Direction == Enums.Direction.StandLeft)
@@ -170,10 +168,10 @@ public class SpriteFX
             Position += new Vector2(0, FallingSpeed);
             if (FallingSpeed >= Globals.Gravity) FallingSpeed = Globals.Gravity;
         }
-        else
-        {
-            FallingSpeed = -2;
-        }
+        //else
+        //{
+        //    FallingSpeed = -200;
+        //}
 
         if (Position.Y >= GroundLevel)
         {
@@ -281,6 +279,11 @@ public class SpriteFX
         return dead;
     }
 
+    public void SetFallingSpeed(float fallingSpeed)
+    {
+        FallingSpeed = fallingSpeed;
+    }
+
     public void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics, float layerDepth)
     {
         if (Globals.Debug && Globals.DebugArea)
@@ -291,6 +294,6 @@ public class SpriteFX
             spriteBatch.Draw(_texture, GetRectangle(), Color.Red * 0.4f);
         }
 
-        _anims.Draw(Position,0.9f, deadAlpha);
+        _anims.Draw(Position, 1f, deadAlpha);
     }
 }

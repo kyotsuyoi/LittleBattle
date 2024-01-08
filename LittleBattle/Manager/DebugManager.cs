@@ -1,4 +1,5 @@
 ﻿using LittleBattle.Classes;
+using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ namespace LittleBattle.Manager
 {
     public class DebugManager
     {
-        public void Draw(SpriteBatch spriteBatch, SpriteFont font, Sprite player1, Sprite player2, List<Sprite> bots) {
+        public void Draw(SpriteBatch spriteBatch, SpriteFont font, Sprite player1, Sprite player2, List<SpriteBot> bots) {
 
             spriteBatch.DrawString(font, "Time:" + Globals.TotalSeconds, new Vector2(10, 0), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "Time:" + Globals.TotalSeconds, new Vector2(12, 2), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
@@ -27,10 +28,10 @@ namespace LittleBattle.Manager
             spriteBatch.DrawString(font, "player1.GroundLevel:" + player1.GroundLevel.ToString(), new Vector2(10, 100), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "player1.GroundLevel:" + player1.GroundLevel.ToString(), new Vector2(12, 102), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-            //spriteBatch.DrawString(font, "bot1.RelativeX:" + (bots[0].RelativeX).ToString(), new Vector2(10, 120), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            //spriteBatch.DrawString(font, "bot1.RelativeX:" + (bots[0].RelativeX).ToString(), new Vector2(12, 122), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
-            //spriteBatch.DrawString(font, "bot2.RelativeX:" + (bots[1].RelativeX).ToString(), new Vector2(10, 140), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            //spriteBatch.DrawString(font, "bot2.RelativeX:" + (bots[1].RelativeX).ToString(), new Vector2(12, 142), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            spriteBatch.DrawString(font, "player1.HoldUp:" + player1.HoldUp, new Vector2(10, 120), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "player1.HoldUp:" + player1.HoldUp, new Vector2(12, 122), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            spriteBatch.DrawString(font, "player1.HoldDown:" + player1.HoldDown, new Vector2(10, 140), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "player1.HoldDown:" + player1.HoldDown, new Vector2(12, 142), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
             spriteBatch.DrawString(font, "player1.Jump:" + player1.Jump, new Vector2(10, 160), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "player1.Jump:" + player1.Jump, new Vector2(12, 162), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);

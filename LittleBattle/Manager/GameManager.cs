@@ -17,7 +17,7 @@ public class GameManager
     private readonly BackgroundManager backgroundManager;
     private readonly SpriteFont font;
     private DebugManager debugManager;
-    private List<Sprite> bots;
+    private List<SpriteBot> bots;
     private BotManager botManager;
     private Sprite Cameraman;
     public static KeyMappingsManager keyMappings;
@@ -32,19 +32,18 @@ public class GameManager
         Globals.DebugArea = false;
 
         backgroundManager = new BackgroundManager();
-        backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Mountain"), 0.4f, 0.4f, false));
-        backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Trees"), 0.6f, 0.6f, false));
-        backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Fog"), 0.8f, 0.8f, true, 20f, 0.2f));
-        backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Ground"), 1f, 1f, false));
+        backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Mountain"), 0, 0.4f, false));
+        backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Trees"), 0.1f, 0.6f, false));
+        backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Fog"), 0.2f, 0.8f, true, 20f, 0.2f));
+        backgroundManager.AddLayer(new Layer(Globals.Content.Load<Texture2D>("Background/Ground"), 0.3f, 1f, false));
 
         resolution = new Resolution(game, graphics, _canvas);
         resolution.SetResolution(Globals.Size);
         resolution.SetFullScreen();
         Globals.GroundLevel = Globals.Size.Height - 60;
 
-        Cameraman = new Sprite(00, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Cameraman, Team.None, ClassType.None);
+        Cameraman = new SpriteCameraman(00, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Cameraman, Team.None, ClassType.None);
         Cameraman.CenterX_Adjust();
-        Cameraman.SetToGroundLevel(0);
 
         players = new List<Sprite>
         {
@@ -54,15 +53,13 @@ public class GameManager
         foreach (var player in players)
         {
             player.CenterX_Adjust();
-            player.SetToGroundLevel(0);
         }
 
-        bots = new List<Sprite>();
+        bots = new List<SpriteBot>();
 
         foreach (var bot in bots)
         {
             bot.CenterX_Adjust();
-            bot.SetToGroundLevel(0);
         }
 
         Globals.Gravity = 10;

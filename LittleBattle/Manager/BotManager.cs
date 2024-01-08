@@ -1,4 +1,5 @@
 ﻿using LittleBattle.Classes;
+using LittleBattle.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace LittleBattle.Manager
             //this.players = players;
         }
 
-        public void Update(List<Sprite> bots, List<Sprite> players, bool goToCommand = false)
+        public void Update(List<SpriteBot> bots, List<Sprite> players, bool goToCommand = false)
         {
             var aliveBots = bots.Where(bot => !bot.IsDead()).ToList();
             var test = bots.Where(bot => bot.Team != Enums.Team.Team1).ToList();
@@ -37,15 +38,15 @@ namespace LittleBattle.Manager
                 {
                     if (goToCommand && bot.Team == players[0].Team)
                     {
-                        bot.BotPatrolX_Area = players[0].RelativeX;
-                        bot.BotGoTo = true;
+                        bot.PatrolX_Area = players[0].RelativeX;
+                        bot.GoTo = true;
                     }
                     else if (bot.Team != players[0].Team)
                     {
-                        bot.BotPatrol = true;
+                        bot.Patrol = true;
                     }
 
-                    if (bot.BotGoTo)
+                    if (bot.GoTo)
                     {
                         GoTo(bot);
                     }
@@ -148,16 +149,16 @@ namespace LittleBattle.Manager
             }
         }
 
-        private Sprite SetTarget(Sprite bot, List<Sprite> players, List<Sprite> bots)
+        private Sprite SetTarget(SpriteBot bot, List<Sprite> players, List<SpriteBot> bots)
         {
             Sprite target = null;
             var alivePlayers = players.Where(player => !player.IsDead() && player.Team != bot.Team).ToList();
             var aliveBots_enemy = bots.Where(enemyBot => !enemyBot.IsDead() && enemyBot.Team != bot.Team).ToList();
-            var allEnemies = aliveBots_enemy;
+            var allEnemies = alivePlayers;
 
-            foreach (var player in alivePlayers)
+            foreach (var _bot in aliveBots_enemy)
             {
-                allEnemies.Add(player);
+                allEnemies.Add(_bot);
             }
 
             if (allEnemies.Count() <= 0) return target;
@@ -265,63 +266,63 @@ namespace LittleBattle.Manager
             return collide;
         }
 
-        private void Patrol(Sprite bot)
+        private void Patrol(SpriteBot bot)
         {
-            if (!bot.BotPatrol) return;
-            if (bot.BotPatrolWait > 0)
+            if (!bot.Patrol) return;
+            if (bot.PatrolWait > 0)
             {
-                bot.BotPatrolWait -= Globals.ElapsedSeconds;
+                bot.PatrolWait -= Globals.ElapsedSeconds;
                 return;
             }
 
-            if (bot.BotPatrolX == 0)
+            if (bot.PatrolX == 0)
             {
                 int randomVal;
                 Random random = new Random();
                 randomVal = random.Next(400) * 1 - 200;
-                bot.BotPatrolX = randomVal;
+                bot.PatrolX = randomVal;
                 bot.SetMovement(false, Enums.Side.None);
                 
-                bot.BotPatrolX = randomVal;
+                bot.PatrolX = randomVal;
                 bot.SetMovement(false, Enums.Side.None);
             }
             else
             {
-                if (bot.RelativeX > bot.BotPatrolX)
+                if (bot.RelativeX > bot.PatrolX)
                 {
                     bot.SetMovement(true, Enums.Side.Left);
                 }
 
-                if (bot.RelativeX < bot.BotPatrolX)
+                if (bot.RelativeX < bot.PatrolX)
                 {
                     bot.SetMovement(true, Enums.Side.Right);
                 }
 
-                if ((int)bot.RelativeX == (int)bot.BotPatrolX)
+                if ((int)bot.RelativeX == (int)bot.PatrolX)
                 {
                     bot.SetMovement(false, Enums.Side.None);
-                    bot.BotPatrolX = 0;
-                    bot.BotPatrolWait = 5;
+                    bot.PatrolX = 0;
+                    bot.PatrolWait = 5;
                 }
             }
         }
 
-        private void GoTo(Sprite bot)
+        private void GoTo(SpriteBot bot)
         {
-            if (bot.RelativeX > bot.BotPatrolX_Area)
+            if (bot.RelativeX > bot.PatrolX_Area)
             {
                 bot.SetMovement(true, Enums.Side.Left);
             }
 
-            if (bot.RelativeX < bot.BotPatrolX_Area)
+            if (bot.RelativeX < bot.PatrolX_Area)
             {
                 bot.SetMovement(true, Enums.Side.Right);
             }
 
-            if ((int)bot.RelativeX == (int)bot.BotPatrolX_Area)
+            if ((int)bot.RelativeX == (int)bot.PatrolX_Area)
             {
                 bot.SetMovement(false, Enums.Side.None);
-                bot.BotGoTo = false;
+                bot.GoTo = false;
             }
         }
     }

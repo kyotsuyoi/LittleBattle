@@ -30,9 +30,4 @@ public class BackgroundManager
             layer.Draw();
         }
     }
-
-    public Layer GetLayer3()
-    {
-        return _layers[3];
-    }
 }

@@ -34,7 +34,7 @@ public static class InputManager
         return _currentKeyboard.IsKeyDown(key) && _lastKeyboard.IsKeyUp(key);
     }
 
-    public static void Update(List<Sprite> players, List<Sprite> bots, Resolution resolution, KeyMappingsManager keyMappings)
+    public static void Update(List<Sprite> players, List<SpriteBot> bots, Resolution resolution, KeyMappingsManager keyMappings)
     {
         _lastKeyboard = _currentKeyboard;
         _currentKeyboard = Keyboard.GetState();
@@ -69,7 +69,7 @@ public static class InputManager
         DebugCommand(players, bots);
     }
 
-    private static void Player1_Keybord(List<Sprite> players, List<Sprite> bots, KeyboardState keyboard, Sprite player, KeyMappingsManager keyMappings)
+    private static void Player1_Keybord(List<Sprite> players, List<SpriteBot> bots, KeyboardState keyboard, Sprite player, KeyMappingsManager keyMappings)
     {    
         if (keyboard.IsKeyDown(keyMappings.MoveLeft))
         {
@@ -82,11 +82,11 @@ public static class InputManager
 
         if (keyboard.IsKeyDown(keyMappings.MoveUp))
         {
-            player.SetMovement(true, Side.Up);
+            player.SetMovement(false, Side.Up);
         }
         else if (keyboard.IsKeyDown(keyMappings.MoveDown))
         {
-            player.SetMovement(true, Side.Down);
+            player.SetMovement(false, Side.Down);
         }
 
         if (keyboard.IsKeyUp(keyMappings.MoveLeft) && keyboard.IsKeyUp(keyMappings.MoveRight)
@@ -167,7 +167,7 @@ public static class InputManager
         }
     }
 
-    private static void Player2_Keybord(List<Sprite> players, List<Sprite> bots, KeyboardState keyboard, Sprite player)
+    private static void Player2_Keybord(List<Sprite> players, List<SpriteBot> bots, KeyboardState keyboard, Sprite player)
     {
         if (keyboard.IsKeyDown(Keys.Left))
         {
@@ -180,11 +180,11 @@ public static class InputManager
 
         if (keyboard.IsKeyDown(Keys.Up))
         {
-            player.SetMovement(true, Side.Up);
+            player.SetMovement(false, Side.Up);
         }
         else if (keyboard.IsKeyDown(Keys.Down))
         {
-            player.SetMovement(true, Side.Down);
+            player.SetMovement(false, Side.Down);
         }
 
         if (keyboard.IsKeyUp(Keys.Left) && keyboard.IsKeyUp(Keys.Right)
@@ -238,7 +238,7 @@ public static class InputManager
     }
 
     //Debug
-    public static void DebugCommand(List<Sprite> players, List<Sprite> bots)
+    public static void DebugCommand(List<Sprite> players, List<SpriteBot> bots)
     {
         if (IsKeyPressed(Keys.F9))
         {
@@ -277,38 +277,34 @@ public static class InputManager
         {
             botID++;
             var val = Globals.NegativeLimit.Width + Globals.GroundX;
-            bots.Add(new Sprite(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team1, ClassType.Warrior));
+            bots.Add(new SpriteBot(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team1, ClassType.Warrior));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
-            bot.SetToGroundLevel(0);
         }
         if (IsKeyPressed(Keys.D7))
         {
             botID++;
             var val = Globals.NegativeLimit.Width + Globals.GroundX;
-            bots.Add(new Sprite(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team1, ClassType.Archer));
+            bots.Add(new SpriteBot(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team1, ClassType.Archer));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
-            bot.SetToGroundLevel(0);
         }
 
         if (IsKeyPressed(Keys.D9))
         {
             botID++;
             var val = Globals.PositiveLimit.Width + Globals.GroundX;
-            bots.Add(new Sprite(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team2, ClassType.Warrior));
+            bots.Add(new SpriteBot(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team2, ClassType.Warrior));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
-            bot.SetToGroundLevel(0);
         }
         if (IsKeyPressed(Keys.D8))
         {
             botID++;
             var val = Globals.PositiveLimit.Width + Globals.GroundX;
-            bots.Add(new Sprite(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team2, ClassType.Archer));
+            bots.Add(new SpriteBot(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team2, ClassType.Archer));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
-            bot.SetToGroundLevel(0);
         }
 
         if (IsKeyPressed(Keys.D0))
@@ -326,12 +322,12 @@ public static class InputManager
             var alliedBots = players.Where(bot => players[0].Team == bot.Team).ToList();
             foreach (var bot in bots)
             {
-                bot.BotPatrol = !bot.BotPatrol;
-                if (!bot.BotPatrol && !bot.BotGoTo)
+                bot.Patrol = !bot.Patrol;
+                if (!bot.Patrol && !bot.GoTo)
                 {
                     bot.SetMovement(false, bot.GetSide());
-                    bot.BotPatrolWait = 0;
-                    bot.BotPatrol = false;
+                    bot.PatrolWait = 0;
+                    bot.Patrol = false;
                 }
             }
         }

@@ -16,13 +16,14 @@ public class Sprite
     public Vector2 CenterPosition { get; set; }
 
     //Needs change to Size Type
-    private Vector2 Size { get; set; }
+    protected Vector2 Size { get; set; }
+
     public bool Walk { get; set; }
     public bool Run { get; set; }
     public bool Jump { get; set; }
     public bool Attack { get; set; }
     public bool Ground { get; set; }
-    private bool Combo { get; set; }
+    protected bool Combo { get; set; }
     public bool Climb { get; set; }
     public float GroundLevel { get; set; }
     public float FallingSpeed { get; set; }
@@ -31,20 +32,18 @@ public class Sprite
     public ClassType classType { get; }
     public float RelativeX { get; set; }
 
-    private List<SpriteFX> spriteFXs;
+    protected List<SpriteFX> spriteFXs;
     private List<SpriteObject> spriteObjects;
 
-    private readonly AnimationManager _anims = new AnimationManager();
+    protected readonly AnimationManager _anims = new AnimationManager();
     public Attribute Attribute { get; set; }
 
     public Team Team;
 
-    public bool BotPatrol = false;
-    public float BotPatrolX;
-    public float BotPatrolX_Area;
-    public float BotPatrolWait;
-    public bool BotGoTo = false;
-    private float deadAlpha = 1f;
+    protected float deadAlpha = 1f;
+
+    public bool HoldUp = false;
+    public bool HoldDown = false;
 
     public Sprite(int ID, Vector2 position, SpriteType spriteType, Team team, ClassType classType)
     {
@@ -76,17 +75,12 @@ public class Sprite
         CalcGroundLevel();
     }
 
-    private void SetTexture()
+    protected virtual void SetTexture()
     {
         int framesX = 4;
         int framesY = 6;
 
-        if (spriteType == SpriteType.Cameraman)
-        {
-            framesY = 4;
-            texture = Globals.Content.Load<Texture2D>("Sprites/SpriteCameraman_x3");
-        }
-        else if (Team == Team.Team1)
+        if (Team == Team.Team1)
         {
             if (classType == ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3");
             if (classType == ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite03_x3");
@@ -113,19 +107,15 @@ public class Sprite
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
     }
 
-    public void Update()
+    public virtual void Update()
     {
-        //UpdateInteraction(); 
-        AnimationResolve();
+        SetAnimationResolve();
         AttackResolve();
         UpdateCooldown();
         JumpResolve();
         FallingResolve();
 
-        if (spriteType != SpriteType.Cameraman)
-        {
-            Position += new Vector2(Globals.CameraMovement,0);
-        }
+        Position += new Vector2(Globals.CameraMovement, 0);
         RelativeX = Position.X - Globals.GroundX;
 
         if (Combo && Attribute.ComboTimeLimit == 0)
@@ -136,11 +126,11 @@ public class Sprite
         _anims.Update(Direction, Walk);
     }
 
-    private void AnimationResolve()
+    protected virtual void SetAnimationResolve()
     {
         if (IsDead())
         {
-            if(spriteType == SpriteType.Bot)
+            if (spriteType == SpriteType.Bot)
             {
                 deadAlpha -= 0.1f * Globals.ElapsedSeconds;
                 if (deadAlpha <= 0) Active = false;
@@ -150,12 +140,12 @@ public class Sprite
 
         var speed = Attribute.Speed;
         if (spriteType != SpriteType.Player1) speed = Attribute.Speed * 2;
-        //if ((Position.X <= 0 && GetSide() == Side.Left)
-        //    || (Position.X >= Globals.Size.Width - Size.X && GetSide() == Side.Right)) Walk = false;
 
-        //Cameraman ID
-        if (ID == 0) speed = 0;
+        AnimationResolve(speed);
+    }
 
+    protected void AnimationResolve(float speed)
+    {    
         if (Walk)
         {
             if (GetSide() == Side.Left /*&& Globals.NegativeLimit.Width < RelativeX*/)
@@ -232,7 +222,7 @@ public class Sprite
         }
     }
 
-    private void FallingResolve()
+    protected void FallingResolve()
     {
         if (Climb) return;
         if (!Ground && !Jump && FallingSpeed <= Globals.Gravity)
@@ -255,7 +245,7 @@ public class Sprite
         }
     }
 
-    private void JumpResolve()
+    protected void JumpResolve()
     {
         if (Jump)
         {
@@ -270,7 +260,7 @@ public class Sprite
         }
     }
 
-    private void AttackResolve()
+    protected void AttackResolve()
     {
         if (Attack)
         {
@@ -316,7 +306,7 @@ public class Sprite
         return 0;
     }
 
-    public void SetMovement(bool move, Side side)
+    public virtual void SetMovement(bool move, Side side)
     {
         if (IsDead() || Attribute.StuntTime > 0) {
             Walk = false;
@@ -325,13 +315,6 @@ public class Sprite
 
         var PositiveLimit = Globals.PositiveLimit.Width;
         var NegativeLimit = Globals.NegativeLimit.Width;
-
-        //Cameraman only
-        if (ID == 0)
-        {
-            PositiveLimit = Globals.PositiveLimit.Width - Globals.Size.Width / 2;
-            NegativeLimit = Globals.NegativeLimit.Width + Globals.Size.Width / 2;
-        }
 
         if (Climb)
         {
@@ -375,6 +358,20 @@ public class Sprite
             else if (side == Side.Left)
             {
                 Direction = Enums.Direction.StandLeft;
+            }else if (side == Side.Up)
+            {
+                HoldUp = true;
+                HoldDown = false;
+            }
+            else if (side == Side.Down)
+            {
+                HoldUp = false;
+                HoldDown = true;
+            }
+            else
+            {
+                HoldUp = false;
+                HoldDown = false;
             }
             Walk = false;
         }
@@ -389,10 +386,24 @@ public class Sprite
         if (classType == ClassType.Warrior) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.SwordEffect));
         if (classType == ClassType.Archer) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.ArrowEffect));
 
+        var spFX = spriteFXs[spriteFXs.Count() - 1];
+        spFX.InitialPosition();
+
+        if(spFX.spriteType == SpriteType.ArrowEffect && HoldUp)
+        {
+            spFX.SetFallingSpeed(-1.5f);
+        }
+        else if (spFX.spriteType == SpriteType.ArrowEffect && HoldDown)
+        {
+            spFX.SetFallingSpeed(1.2f);
+        }
+        else
+        {
+            spFX.SetFallingSpeed(-1);
+        }
+
         if (Combo)
         {
-            var spFX = spriteFXs[spriteFXs.Count() - 1];
-            spFX.InitialPosition();
             Combo = false;
 
             //Jump to position into combo
@@ -448,7 +459,7 @@ public class Sprite
         }
     }
 
-    private void UpdateCooldown()
+    protected void UpdateCooldown()
     {
         Attribute.AttackCooldown -= Globals.ElapsedSeconds;
         if (Attribute.AttackCooldown < 0) Attribute.AttackCooldown = 0;
@@ -470,7 +481,7 @@ public class Sprite
         Attribute.HP -= res;
         //if(IsDead()) return;
 
-        if (Owner.spriteType == SpriteType.Player1 || Owner.spriteType == SpriteType.Player2
+        if ((Owner.spriteType == SpriteType.Player1 || Owner.spriteType == SpriteType.Player2)
             && !Owner.Combo && !spriteFX.GetCombo())
         {
             Owner.Attribute.AttackCooldown = Owner.Attribute.AttackCooldown / 3;
@@ -499,7 +510,21 @@ public class Sprite
 
     public void UpdateSpriteFXDamage(List<Sprite> targets)
     {
-        //var inner_targets = targets.Where(target => target.Team != Team && !target.IsDead()).ToList();
+        foreach (var damage in spriteFXs)
+        {
+            foreach (var target in targets)
+            {
+                if (!target.IsDead() && target.Team != Team && !damage.IsDead()) damage.Damage(target);
+                foreach (var _object in target.spriteObjects)
+                {
+                    if (target.Team != Team) damage.DamageObject(_object);
+                }
+            }
+        }
+    }
+
+    public void UpdateSpriteFXDamage(List<SpriteBot> targets)
+    {
         foreach (var damage in spriteFXs)
         {
             foreach (var target in targets)
@@ -673,28 +698,14 @@ public class Sprite
         return Combo;
     }
 
-    public void SetToGroundLevel(float positionX)
-    {
-        //Position = new Vector2(Position.X, GroundLevel);
-    }
-
-    public void SetInitialPatrolArea(float positionX)
-    {
-        BotPatrolX_Area = positionX;
-        BotPatrol = true;
-    }
-
     public void SetObject(SpriteType spriteType)
     {
-        //spriteObjects = new List<SpriteObject>();
         spriteObjects.Add(new SpriteObject(this, GetSide(), spriteType));
-        //var _object = spriteObjects[spriteObjects.Count - 1];
-        //_object.CenterX_Adjust();
-        //_object.SetToGroundLevel(0);
     }
 
-    public void InteractObjects(List<Sprite> players, List<Sprite> bots)
+    public void InteractObjects(List<Sprite> players, List<SpriteBot> bots)
     {
+        if (HoldUp) return;
         var _object = GetInteractObject(players, bots);
 
         if (_object != null)
@@ -717,7 +728,7 @@ public class Sprite
         }
     }
 
-    public void UpdateInteraction(List<Sprite> players, List<Sprite> bots)
+    public void UpdateInteraction(List<Sprite> players, List<SpriteBot> bots)
     {
         spriteObjects = spriteObjects.Where(_spriteobject => _spriteobject.Active).ToList();
 
@@ -752,11 +763,11 @@ public class Sprite
         //var nCalc = (int)(_object.Position.Y);
         if (_object == null || (int)(_object.Position.Y) != GroundLevel)
         {
-            GroundLevel = Globals.GroundLevel ;
+            GroundLevel = Globals.GroundLevel;
         }
     }
 
-    private SpriteObject GetInteractObject(List<Sprite> players, List<Sprite> bots)
+    private SpriteObject GetInteractObject(List<Sprite> players, List<SpriteBot> bots)
     {
         Collision collision = new Collision();
         List<SpriteObject> localObjects = new List<SpriteObject>();
@@ -795,7 +806,7 @@ public class Sprite
         return _object;
     }
 
-    private Rectangle GetRectangle()
+    protected Rectangle GetRectangle()
     {
         var AdjustSizX = (int)(Size.X * 0.5);
         var AdjustPosX = (int)(Position.X + ((Size.X - AdjustSizX))/2);
@@ -819,31 +830,21 @@ public class Sprite
         return Size;
     }
 
-    public void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics)
+    public virtual void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics)
     {
         //if (ID == 0) return;
 
-        _anims.Draw(Position, 0.9999f, deadAlpha);
+        _anims.Draw(Position, 0.9f, deadAlpha);
 
         foreach (var attack in spriteFXs)
         {
-            attack.Draw(spriteBatch, font, graphics, 0.1f);
+            attack.Draw(spriteBatch, font, graphics, 1);
         }
 
         if (ID == 01 || ID == 02) spriteBatch.DrawString(font, "*", new Vector2(Position.X + 18, Position.Y - 20), Color.Red, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
 
         if (IsDead() || ID==0) return;
-        string mark = "";
-        if (BotPatrol)
-        {
-            mark += "P ";
-        }
-        if (BotGoTo)
-        {
-            mark += "G ";
-        }
 
-        spriteBatch.DrawString(font, mark, new Vector2(Position.X + 18, Position.Y - 20), Color.Red, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         //spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         //spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y-2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
@@ -878,7 +879,7 @@ public class Sprite
     {
         foreach (var _object in spriteObjects)
         {
-            _object.Draw(spriteBatch, font, graphics, 1);
+            _object.Draw(spriteBatch, font, graphics, 0.8f);
         }
     }
 }
