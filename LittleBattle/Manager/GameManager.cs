@@ -18,6 +18,7 @@ public class GameManager
     private readonly SpriteFont font;
     private DebugManager debugManager;
     private List<SpriteBot> bots;
+    private List<SpriteObject> objects;
     private BotManager botManager;
     private Sprite Cameraman;
     public static KeyMappingsManager keyMappings;
@@ -47,7 +48,7 @@ public class GameManager
 
         players = new List<Sprite>
         {
-            new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player1, Team.Team1, ClassType.Archer),
+            new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player1, Team.Team1, ClassType.Worker),
             new Sprite(02, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player2, Team.Team2, ClassType.Archer),
         };
         foreach (var player in players)
@@ -73,6 +74,11 @@ public class GameManager
         keyMappings = new KeyMappingsManager();
         keyMappings.LoadKeyMappings();
 
+        objects = new List<SpriteObject>
+        {
+            new SpriteObject(null, Side.None, SpriteType.Tree01, new Vector2(100, Globals.GroundLevel)),
+        };
+
         //KeyMappingsManager custom = new KeyMappingsManager();
         //custom.MoveLeft = Microsoft.Xna.Framework.Input.Keys.A;
         //keyMappings.SaveCustomConfig(custom);
@@ -92,12 +98,13 @@ public class GameManager
         botManager.UpdateCamerman(Cameraman, players);
         foreach (var player in players)
         {
-            InputManager.Update(players, bots, resolution, keyMappings);
+            InputManager.Update(players, bots, objects, resolution, keyMappings);
             player.Update();
             player.UpdateSpriteFXDamage(players);
             player.UpdateSpriteFXDamage(bots);
             player.UpdateSpriteObjects();
             player.UpdateInteraction(players, bots);
+            player.UpdateInteraction(objects);
         }
 
         //Debug Command
@@ -124,6 +131,22 @@ public class GameManager
         {
             botManager.Update(bots, players);
         }
+
+        objects = objects.Where(_object => _object.Active).ToList();
+        var new_objects = new List<SpriteObject>();
+        foreach (var _object in objects)
+        {
+            _object.Update();
+            if (_object.WorkingEnd())
+            {
+                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Wood, new Vector2((_object.Position.X + (_object.GetSize().X / 2)), _object.Position.Y)));
+            }                
+        }
+
+        foreach (var _object in new_objects)
+        {
+            objects.Add(_object);
+        }
     }
 
     public void Draw(SpriteBatch spriteBatch)
@@ -138,6 +161,13 @@ public class GameManager
         var aliveBots = bots.Where(bot => !bot.IsDead()).ToList();
         var deadPlayers = players.Where(player => player.IsDead()).ToList();
         var alivePlayers = players.Where(player => !player.IsDead()).ToList();
+
+        var objects_layer0 = objects.Where(objects => objects.layer == 0).ToList();
+        var objects_layer1 = objects.Where(objects => objects.layer == 1).ToList();
+        foreach (var obj in objects_layer0)
+        {
+            obj.Draw(spriteBatch, null, graphics, 0.1f);
+        }
 
         foreach (var player in players)
         {
@@ -162,6 +192,12 @@ public class GameManager
             player.Draw(spriteBatch, font, graphics);
         }
         if (Globals.Debug) debugManager.Draw(spriteBatch, font, players[0], players[0], bots);
+
+        foreach (var obj in objects_layer1)
+        {
+            obj.Draw(spriteBatch, null, graphics, 0.1f);
+        }
+
         spriteBatch.End();
 
         _canvas.Draw(spriteBatch);

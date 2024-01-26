@@ -25,7 +25,11 @@ public class SpriteObject
     public int ID { get; }
     private float deadAlpha = 1f;
 
-    public SpriteObject(Sprite Owner, Side side, SpriteType spriteType)
+    private bool newObject = false;
+
+    public int layer = 0;
+
+    public SpriteObject(Sprite Owner, Side side, SpriteType spriteType, Vector2 initialPosition)
     {
         Active = true;
         ID = Globals.GetNewID();
@@ -40,7 +44,7 @@ public class SpriteObject
 
         SetTexture();
 
-        InitialPosition();      
+        InitialPosition(initialPosition);      
     }
 
     private void SetTexture()
@@ -48,9 +52,23 @@ public class SpriteObject
         int framesX = 4;
         int framesY = 1;
 
-        if (spriteType == SpriteType.ArcherTower) { 
+        if (spriteType == SpriteType.ArcherTower) 
+        { 
             if (Owner.Team == Team.Team1) texture = Globals.Content.Load<Texture2D>("Sprites/ArcherTower01_x3");
             if (Owner.Team == Team.Team2) texture = Globals.Content.Load<Texture2D>("Sprites/ArcherTower02_x3");
+        }
+
+        if(spriteType == SpriteType.Tree01)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprites/Tree01_x3");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.Wood)
+        {
+            framesX = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprites/Pixel_x1/Wood");
+            layer = 1;
         }
 
         _anims.AddAnimation(Direction.StandRight, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 1, false, false));
@@ -112,8 +130,15 @@ public class SpriteObject
         }
     }
 
-    private void InitialPosition()
+    private void InitialPosition(Vector2 center_position)
     {
+        if (Owner == null)
+        {
+            GroundLevel = Globals.GroundLevel - Size.Y;
+            Position =  new Vector2(center_position.X - GetSize().X /2, center_position.Y);
+            return;
+        }
+        
         var oCenterX = Owner.Position.X + Owner.GetSize().X /2;
         var oCenterY = Owner.Position.Y + Owner.GetSize().Y /2;
         var centerX = Size.X / 2;
@@ -138,7 +163,22 @@ public class SpriteObject
         if (IsDead()) return;
         spriteFX.Active = false;
     }
-    
+
+    public void TakeWorkingDamage()
+    {
+        AttributeObject.HP -= 1;
+    }
+
+    public bool WorkingEnd()
+    {
+        if (IsDead() && !newObject)
+        {
+            newObject = true;
+            return true;
+        }
+        return false;
+    }
+
     public bool IsDead()
     {
         if (AttributeObject.HP <= 0)

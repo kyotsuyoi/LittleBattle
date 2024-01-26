@@ -34,7 +34,7 @@ public static class InputManager
         return _currentKeyboard.IsKeyDown(key) && _lastKeyboard.IsKeyUp(key);
     }
 
-    public static void Update(List<Sprite> players, List<SpriteBot> bots, Resolution resolution, KeyMappingsManager keyMappings)
+    public static void Update(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, Resolution resolution, KeyMappingsManager keyMappings)
     {
         _lastKeyboard = _currentKeyboard;
         _currentKeyboard = Keyboard.GetState();
@@ -49,7 +49,7 @@ public static class InputManager
             }
             else
             {
-                Player1_Keybord(players, bots, keyboard, players[0], keyMappings);
+                Player1_Keybord(players, bots, objects, keyboard, players[0], keyMappings);
             }
         }
 
@@ -61,15 +61,15 @@ public static class InputManager
             }
             else
             {
-                Player2_Keybord(players, bots, keyboard, players[1]);
+                Player2_Keybord(players, bots, objects, keyboard, players[1]);
             }
         }
 
         UpdateResolution(resolution);
-        DebugCommand(players, bots);
+        DebugCommand(players, bots, objects);
     }
 
-    private static void Player1_Keybord(List<Sprite> players, List<SpriteBot> bots, KeyboardState keyboard, Sprite player, KeyMappingsManager keyMappings)
+    private static void Player1_Keybord(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, KeyboardState keyboard, Sprite player, KeyMappingsManager keyMappings)
     {    
         if (keyboard.IsKeyDown(keyMappings.MoveLeft))
         {
@@ -122,7 +122,7 @@ public static class InputManager
 
         if (IsKeyPressed(Keys.K))
         {
-            player.InteractObjects(players, bots);
+            player.SetInteractionObjects(players, bots, objects);
         }
     }
 
@@ -167,7 +167,7 @@ public static class InputManager
         }
     }
 
-    private static void Player2_Keybord(List<Sprite> players, List<SpriteBot> bots, KeyboardState keyboard, Sprite player)
+    private static void Player2_Keybord(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, KeyboardState keyboard, Sprite player)
     {
         if (keyboard.IsKeyDown(Keys.Left))
         {
@@ -219,7 +219,7 @@ public static class InputManager
 
         if (IsKeyPressed(Keys.NumPad4))
         {
-            player.InteractObjects(players, bots);
+            player.SetInteractionObjects(players, bots, objects);
         }
     }
 
@@ -238,7 +238,7 @@ public static class InputManager
     }
 
     //Debug
-    public static void DebugCommand(List<Sprite> players, List<SpriteBot> bots)
+    public static void DebugCommand(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects)
     {
         if (IsKeyPressed(Keys.F9))
         {
@@ -339,6 +339,10 @@ public static class InputManager
         if (IsKeyPressed(Keys.Y))
         {
             players[1].SetObject(SpriteType.ArcherTower);
+        }
+        if (IsKeyPressed(Keys.U))
+        {
+            objects.Add(new SpriteObject(null, Side.None, SpriteType.Tree01, players[0].Position));
         }
 
         if (IsKeyPressed(Keys.F8))

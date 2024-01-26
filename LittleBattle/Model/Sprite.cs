@@ -25,6 +25,7 @@ public class Sprite
     public bool Ground { get; set; }
     protected bool Combo { get; set; }
     public bool Climb { get; set; }
+    public bool Work { get; set; }
     public float GroundLevel { get; set; }
     public float FallingSpeed { get; set; }
     public Vector2 Direction { get; set; }
@@ -44,6 +45,8 @@ public class Sprite
 
     public bool HoldUp = false;
     public bool HoldDown = false;
+
+    private int WorkingID = 0;
 
     public Sprite(int ID, Vector2 position, SpriteType spriteType, Team team, ClassType classType)
     {
@@ -65,6 +68,7 @@ public class Sprite
         Ground = false;
         Combo = false;
         Climb = false;
+        Work = false;
         FallingSpeed = 0;
         Direction = Enums.Direction.StandRight;
 
@@ -84,11 +88,13 @@ public class Sprite
         {
             if (classType == ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3");
             if (classType == ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite03_x3");
+            if (classType == ClassType.Worker) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite05_x3");
         }
         else if (Team == Team.Team2)
         {
             if (classType == ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3");
             if (classType == ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite04_x3");
+            if (classType == ClassType.Worker) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite06_x3");
         }
 
         _anims.AddAnimation(Enums.Direction.StandRight, new Animation(texture, framesX, framesY, 0, 3, 0.25f, 1, false, true));
@@ -103,6 +109,9 @@ public class Sprite
         _anims.AddAnimation(Enums.Direction.StuntLeft, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 5, true, false));
         _anims.AddAnimation(Enums.Direction.ClimbUp, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 6, false, true));
         _anims.AddAnimation(Enums.Direction.ClimbDown, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 6, false, true));
+
+        _anims.AddAnimation(Enums.Direction.WorkRight, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 3, false, true));
+        _anims.AddAnimation(Enums.Direction.WorkLeft, new Animation(texture, framesX, framesY, 0, 3, 0.1f, 3, true, true));
 
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
     }
@@ -184,6 +193,18 @@ public class Sprite
             else
             {
                 _anims.Update(Enums.Direction.ClimbUp, false, 1);
+            }
+        }
+
+        if (Work)
+        {
+            if (GetSide() == Side.Right)
+            {
+                Direction = Enums.Direction.WorkRight;
+            }
+            else if (GetSide() == Side.Left)
+            {
+                Direction = Enums.Direction.WorkLeft;
             }
         }
 
@@ -333,6 +354,8 @@ public class Sprite
             return;
         }
 
+        if (Work) return;
+
         if (move){
             if(side == Side.Right && RelativeX + Size.X/2 < PositiveLimit)
             {
@@ -379,11 +402,11 @@ public class Sprite
 
     public void SetAttack()
     {
-        if (Climb) return;
+        if (Climb || Work) return;
         //if (IsDead() || Attribute.StuntTime > 0) return;
         if (Attribute.AttackCooldown > 0) return; 
 
-        if (classType == ClassType.Warrior) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.SwordEffect));
+        if (classType == ClassType.Warrior || classType == ClassType.Worker) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.SwordEffect));
         if (classType == ClassType.Archer) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.ArrowEffect));
 
         var spFX = spriteFXs[spriteFXs.Count() - 1];
@@ -435,7 +458,7 @@ public class Sprite
 
     public void SetJump()
     {
-        //if (IsDead()) return;
+        if (Work) return;
         Jump = true;
         if (Climb)
         {
@@ -553,6 +576,7 @@ public class Sprite
             || Direction == Enums.Direction.AttackRight
             || Direction == Enums.Direction.DeadRight
             || Direction == Enums.Direction.StuntRight
+            || Direction == Enums.Direction.WorkRight
         )
         {
             return Side.Right;
@@ -563,6 +587,7 @@ public class Sprite
             || Direction == Enums.Direction.AttackLeft
             || Direction == Enums.Direction.DeadLeft
             || Direction == Enums.Direction.StuntLeft
+            || Direction == Enums.Direction.WorkLeft
         )
         {
             return Side.Left;
@@ -678,6 +703,7 @@ public class Sprite
         Walk = false;
         Attack = false;
         Climb = false;
+        Work = false;
         Attribute.Knockback = 0;
         Combo = false;
         Jump = false;
@@ -700,16 +726,56 @@ public class Sprite
 
     public void SetObject(SpriteType spriteType)
     {
-        spriteObjects.Add(new SpriteObject(this, GetSide(), spriteType));
+        spriteObjects.Add(new SpriteObject(this, GetSide(), spriteType, new Vector2(0, 0)));
     }
 
-    public void InteractObjects(List<Sprite> players, List<SpriteBot> bots)
+    public void SetInteractionObjects(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects)
     {
-        if (HoldUp) return;
-        var _object = GetInteractObject(players, bots);
+
+        WorkingID = 0;
+        var _object = GetInteractObject(objects);
 
         if (_object != null)
         {
+            if (Work)
+            {
+                Work = false;
+                SetSide(GetSide());
+                return;
+            }
+
+            if (_object.spriteType == SpriteType.Tree01)
+            {
+                WorkingID = _object.ID;
+                Work = true;
+                Walk = false;
+                if(GetSide() == Side.Right)
+                {
+                    Position = new Vector2((_object.Position.X + _object.GetSize().X / 2) - Size.X, Position.Y);
+                }
+                if (GetSide() == Side.Left)
+                {
+                    Position = new Vector2(_object.Position.X + _object.GetSize().X / 2, Position.Y);
+                }
+            }
+            if(_object.spriteType == SpriteType.Wood)
+            {
+                _object.Active = false;
+            }
+        }
+
+        if (HoldUp) return;
+        _object = GetInteractObject(players, bots);
+
+        if (_object != null)
+        {
+            if (Climb)
+            {
+                Climb = false;
+                SetRandomSide();
+                return;
+            }
+
             if (_object.spriteType == SpriteType.ArcherTower)
             {
                 Climb = true;
@@ -767,6 +833,31 @@ public class Sprite
         }
     }
 
+    public void UpdateInteraction(List<SpriteObject> spriteObjects)
+    {
+        spriteObjects = spriteObjects.Where(_spriteobject => _spriteobject.Active && _spriteobject.ID == WorkingID).ToList();
+
+        var _object = GetInteractObject(spriteObjects);
+
+        if (_object != null)
+        {
+            _object.TakeWorkingDamage();
+        }
+        else
+        {
+            Work = false;
+            WorkingID = 0;
+            if (GetSide() == Side.Right)
+            {
+                Direction = Enums.Direction.StandRight;
+            }
+            else if (GetSide() == Side.Left)
+            {
+                Direction = Enums.Direction.StandLeft;
+            }
+        }
+    }
+
     private SpriteObject GetInteractObject(List<Sprite> players, List<SpriteBot> bots)
     {
         Collision collision = new Collision();
@@ -791,6 +882,28 @@ public class Sprite
         SpriteObject _object = null;
         localObjects = localObjects.Where(_spriteobject => !_spriteobject.IsDead()).ToList();
         foreach (var local_object in localObjects)
+        {
+            var PosB = new Point((int)local_object.Position.X, (int)local_object.Position.Y);
+            var SizB = new Point((int)local_object.GetSize().X, (int)local_object.GetSize().Y);
+            var RectB = new Rectangle(PosB, SizB);
+            var isCollide = collision.IsCollide(GetRectangle(), RectB);
+
+            if (isCollide)
+            {
+                _object = local_object;
+                break;
+            }
+        }
+        return _object;
+    }
+
+    private SpriteObject GetInteractObject(List<SpriteObject> objects)
+    {
+        Collision collision = new Collision();
+
+        SpriteObject _object = null;
+        objects = objects.Where(_spriteobject => !_spriteobject.IsDead()).ToList();
+        foreach (var local_object in objects)
         {
             var PosB = new Point((int)local_object.Position.X, (int)local_object.Position.Y);
             var SizB = new Point((int)local_object.GetSize().X, (int)local_object.GetSize().Y);

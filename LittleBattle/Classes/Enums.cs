@@ -22,6 +22,9 @@ namespace LittleBattle.Classes
             public static Vector2 StuntLeft = new Vector2(-0.4f, 0);
             public static Vector2 ClimbUp = new Vector2(0, -0.1f);
             public static Vector2 ClimbDown= new Vector2(0, 0.1f);
+
+            public static Vector2 WorkRight = new Vector2(0.5f, 0);
+            public static Vector2 WorkLeft = new Vector2(-0.5f, 0);
         }
 
         public enum Side
@@ -58,6 +61,8 @@ namespace LittleBattle.Classes
             SwordEffect = 50,
             ArrowEffect = 51,
             ArcherTower = 100,
+            Tree01 = 101,
+            Wood = 105,
         }
 
         public enum Team
@@ -74,6 +79,7 @@ namespace LittleBattle.Classes
             None = 0,
             Warrior = 1,
             Archer = 2,
+            Worker = 3,
         }
     }
 }
