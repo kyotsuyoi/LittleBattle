@@ -68,7 +68,7 @@
 /processorParam:TextureFormat=Compressed
 /build:Font/fontMedium.spritefont
 
-#begin Sprites/ArcherTower01_x3.png
+#begin Sprite_x3/ArcherTower01.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -78,9 +78,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/ArcherTower01_x3.png
+/build:Sprite_x3/ArcherTower01.png
 
-#begin Sprites/ArcherTower02_x3.png
+#begin Sprite_x3/ArcherTower02.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -90,9 +90,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/ArcherTower02_x3.png
+/build:Sprite_x3/ArcherTower02.png
 
-#begin Sprites/ArrowEffectBig.png
+#begin Sprite_x3/ArcherTowerBuild.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -102,9 +102,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/ArrowEffectBig.png
+/build:Sprite_x3/ArcherTowerBuild.png
 
-#begin Sprites/ArrowEffectSmall01.png
+#begin Sprite_x3/GrowingTree.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -114,9 +114,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/ArrowEffectSmall01.png
+/build:Sprite_x3/GrowingTree.png
 
-#begin Sprites/ArrowEffectSmall02.png
+#begin Sprite_x3/Sprite01.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -126,9 +126,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/ArrowEffectSmall02.png
+/build:Sprite_x3/Sprite01.png
 
-#begin Sprites/Pixel_x1/ArcherTower.png
+#begin Sprite_x3/Sprite02.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -138,9 +138,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/Pixel_x1/ArcherTower.png
+/build:Sprite_x3/Sprite02.png
 
-#begin Sprites/Pixel_x1/Sprite05.png
+#begin Sprite_x3/Sprite03.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -150,9 +150,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/Pixel_x1/Sprite05.png
+/build:Sprite_x3/Sprite03.png
 
-#begin Sprites/Pixel_x1/Tree01.png
+#begin Sprite_x3/Sprite04.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -162,9 +162,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/Pixel_x1/Tree01.png
+/build:Sprite_x3/Sprite04.png
 
-#begin Sprites/Pixel_x1/Wood.png
+#begin Sprite_x3/Sprite05.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -174,9 +174,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/Pixel_x1/Wood.png
+/build:Sprite_x3/Sprite05.png
 
-#begin Sprites/Sprite01_x3.png
+#begin Sprite_x3/SpriteCameraman.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -186,9 +186,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/Sprite01_x3.png
+/build:Sprite_x3/SpriteCameraman.png
 
-#begin Sprites/Sprite02_x3.png
+#begin Sprite_x3/Tree01.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -198,9 +198,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/Sprite02_x3.png
+/build:Sprite_x3/Tree01.png
 
-#begin Sprites/Sprite03_x3.png
+#begin Sprite_x3/Wood.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -210,9 +210,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/Sprite03_x3.png
+/build:Sprite_x3/Wood.png
 
-#begin Sprites/Sprite04_x3.png
+#begin Sprite/ArcherTower.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -222,9 +222,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/Sprite04_x3.png
+/build:Sprite/ArcherTower.png
 
-#begin Sprites/Sprite05_x3.png
+#begin Sprite/ArcherTowerBuild.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -234,9 +234,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/Sprite05_x3.png
+/build:Sprite/ArcherTowerBuild.png
 
-#begin Sprites/SpriteCameraman_x3.png
+#begin Sprite/ArrowEffectBig.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -246,9 +246,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/SpriteCameraman_x3.png
+/build:Sprite/ArrowEffectBig.png
 
-#begin Sprites/SwordEffect.png
+#begin Sprite/ArrowEffectSmall01.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -258,9 +258,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/SwordEffect.png
+/build:Sprite/ArrowEffectSmall01.png
 
-#begin Sprites/Tree01_x3.png
+#begin Sprite/ArrowEffectSmall02.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -270,9 +270,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/Tree01_x3.png
+/build:Sprite/ArrowEffectSmall02.png
 
-#begin Sprites/Wood_x3.png
+#begin Sprite/GrowingTree.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -282,5 +282,65 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/Wood_x3.png
+/build:Sprite/GrowingTree.png
+
+#begin Sprite/Seed.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprite/Seed.png
+
+#begin Sprite/Sprite05.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprite/Sprite05.png
+
+#begin Sprite/SwordEffect.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprite/SwordEffect.png
+
+#begin Sprite/Tree01.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprite/Tree01.png
+
+#begin Sprite/Wood.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprite/Wood.png
 

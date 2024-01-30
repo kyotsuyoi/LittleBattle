@@ -60,9 +60,12 @@ namespace LittleBattle.Classes
             Cameraman = 6,
             SwordEffect = 50,
             ArrowEffect = 51,
+            ArcherTowerBuild = 99,
             ArcherTower = 100,
             Tree01 = 101,
             Wood = 105,
+            Seed = 106,
+            GrowingTree = 107,
         }
 
         public enum Team
@@ -80,6 +83,13 @@ namespace LittleBattle.Classes
             Warrior = 1,
             Archer = 2,
             Worker = 3,
+        }
+
+        public enum Action
+        {
+            None = 0,
+            PlantSeed = 1,
+            BuildArcherTower = 2,
         }
     }
 }

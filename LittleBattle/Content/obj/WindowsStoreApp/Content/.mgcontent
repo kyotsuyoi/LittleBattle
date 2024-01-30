@@ -9,26 +9,36 @@
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Background/Mountain.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Background/Trees.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Font/fontMedium.spritefont</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/ArcherTower01_x3.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/ArcherTower02_x3.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/ArrowEffectBig.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/ArrowEffectSmall01.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/ArrowEffectSmall02.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Pixel_x1/ArcherTower.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Pixel_x1/Sprite05.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Pixel_x1/Tree01.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Pixel_x1/Wood.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite01_x3.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite02_x3.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite03_x3.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite04_x3.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Sprite05_x3.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/SpriteCameraman_x3.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/SwordEffect.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Tree01_x3.png</File>
-    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprites/Wood_x3.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/ArcherTower01.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/ArcherTower02.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/ArcherTowerBuild.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/GrowingTree.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/Sprite01.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/Sprite02.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/Sprite03.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/Sprite04.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/Sprite05.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/SpriteCameraman.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/Tree01.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/Wood.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/ArcherTower.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/ArcherTowerBuild.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/ArrowEffectBig.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/ArrowEffectSmall01.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/ArrowEffectSmall02.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/GrowingTree.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/Seed.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/Sprite05.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/SwordEffect.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/Tree01.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/Wood.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

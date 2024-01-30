@@ -65,16 +65,16 @@ public class SpriteFX
         int framesX = 12;
         int framesY = 1;
         if (spriteType == SpriteType.SwordEffect) { 
-            texture = Globals.Content.Load<Texture2D>("Sprites/SwordEffect"); 
+            texture = Globals.Content.Load<Texture2D>("Sprite/SwordEffect"); 
         }
 
         if (spriteType == SpriteType.ArrowEffect)
         {
             Walk = true;
-            texture = Globals.Content.Load<Texture2D>("Sprites/ArrowEffectSmall01"); 
+            texture = Globals.Content.Load<Texture2D>("Sprite/ArrowEffectSmall01"); 
             framesX = 1; 
             framesY = 1;
-            Texture2D texture2 = Globals.Content.Load<Texture2D>("Sprites/ArrowEffectSmall02");
+            Texture2D texture2 = Globals.Content.Load<Texture2D>("Sprite/ArrowEffectSmall02");
             _anims.AddAnimation(Enums.Direction.DeadRight, new Animation(texture2, framesX, framesY, 0, 1, 0.01f, 1, false, false));
             _anims.AddAnimation(Enums.Direction.DeadLeft, new Animation(texture2, framesX, framesY, 0, 1, 0.01f, 1, true, false));
 

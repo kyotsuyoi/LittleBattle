@@ -17,7 +17,7 @@ namespace LittleBattle.Model
             int framesX = 4;
             int framesY = 4;
 
-            texture = Globals.Content.Load<Texture2D>("Sprites/SpriteCameraman_x3");            
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/SpriteCameraman");            
 
             _anims.AddAnimation(Enums.Direction.StandRight, new Animation(texture, framesX, framesY, 0, 3, 0.25f, 1, false, true));
             _anims.AddAnimation(Enums.Direction.StandLeft, new Animation(texture, framesX, framesY, 0, 3, 0.25f, 1, true, true));

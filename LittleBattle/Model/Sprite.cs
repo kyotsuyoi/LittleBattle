@@ -3,6 +3,7 @@ using LittleBattle.Manager;
 using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static LittleBattle.Classes.Enums;
@@ -37,7 +38,7 @@ public class Sprite
     private List<SpriteObject> spriteObjects;
 
     protected readonly AnimationManager _anims = new AnimationManager();
-    public Attribute Attribute { get; set; }
+    public LittleBattle.Model.Attribute Attribute { get; set; }
 
     public Team Team;
 
@@ -48,6 +49,12 @@ public class Sprite
 
     private int WorkingID = 0;
 
+    private Bag _Bag;
+    private List<SpriteObject> objectsBuild;
+    private IconDisplay IconDisplay;
+
+    public Enums.Action SelectedAction = 0;
+
     public Sprite(int ID, Vector2 position, SpriteType spriteType, Team team, ClassType classType)
     {
         Active = true;
@@ -55,7 +62,7 @@ public class Sprite
         Position = position;
         this.spriteType = spriteType;
         this.classType = classType;
-        Attribute = new Attribute(classType);
+        Attribute = new LittleBattle.Model.Attribute(classType);
         Team = team;
 
         if (spriteType == SpriteType.Bot) Attribute.Speed = 0.5f;
@@ -76,6 +83,13 @@ public class Sprite
 
         spriteFXs = new List<SpriteFX>();
         spriteObjects = new List<SpriteObject>();
+        objectsBuild = new List<SpriteObject>();
+        _Bag = new Bag();
+
+        if(classType == ClassType.Worker)
+        {
+            _Bag.AddItem(SpriteType.Seed, 5);
+        }
         CalcGroundLevel();
     }
 
@@ -86,15 +100,15 @@ public class Sprite
 
         if (Team == Team.Team1)
         {
-            if (classType == ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite01_x3");
-            if (classType == ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite03_x3");
-            if (classType == ClassType.Worker) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite05_x3");
+            if (classType == ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite01");
+            if (classType == ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite03");
+            if (classType == ClassType.Worker) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite05");
         }
         else if (Team == Team.Team2)
         {
-            if (classType == ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite02_x3");
-            if (classType == ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite04_x3");
-            if (classType == ClassType.Worker) texture = Globals.Content.Load<Texture2D>("Sprites/Sprite06_x3");
+            if (classType == ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite02");
+            if (classType == ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite04");
+            if (classType == ClassType.Worker) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite06");
         }
 
         _anims.AddAnimation(Enums.Direction.StandRight, new Animation(texture, framesX, framesY, 0, 3, 0.25f, 1, false, true));
@@ -258,6 +272,7 @@ public class Sprite
         }
 
         Ground = false;
+        float p = Position.Y + Size.Y;
         if (Position.Y + Size.Y >= GroundLevel)
         {
             Position = new Vector2(Position.X, GroundLevel - Size.Y);
@@ -329,10 +344,7 @@ public class Sprite
 
     public virtual void SetMovement(bool move, Side side)
     {
-        if (IsDead() || Attribute.StuntTime > 0) {
-            Walk = false;
-            return; 
-        }
+        if (!EnabledAction()) return;        
 
         var PositiveLimit = Globals.PositiveLimit.Width;
         var NegativeLimit = Globals.NegativeLimit.Width;
@@ -402,9 +414,8 @@ public class Sprite
 
     public void SetAttack()
     {
-        if (Climb || Work) return;
-        //if (IsDead() || Attribute.StuntTime > 0) return;
-        if (Attribute.AttackCooldown > 0) return; 
+        if (Climb || Work || Attribute.AttackCooldown > 0) return;
+        if (!EnabledAction()) return; 
 
         if (classType == ClassType.Warrior || classType == ClassType.Worker) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.SwordEffect));
         if (classType == ClassType.Archer) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.ArrowEffect));
@@ -458,6 +469,8 @@ public class Sprite
 
     public void SetJump()
     {
+        if (!EnabledAction()) return;
+
         if (Work) return;
         Jump = true;
         if (Climb)
@@ -505,14 +518,14 @@ public class Sprite
         //if(IsDead()) return;
 
         if ((Owner.spriteType == SpriteType.Player1 || Owner.spriteType == SpriteType.Player2)
-            && !Owner.Combo && !spriteFX.GetCombo())
+            && !Owner.Combo && !spriteFX.GetCombo() && Owner.classType != ClassType.Worker)
         {
             Owner.Attribute.AttackCooldown = Owner.Attribute.AttackCooldown / 3;
             Owner.Attribute.ComboTimeLimit = Owner.Attribute.BaseComboTimeLimit;
             Owner.Combo = true;
         }
 
-        if (Owner.spriteType == SpriteType.Bot && !Owner.Combo && !spriteFX.GetCombo())
+        if (Owner.spriteType == SpriteType.Bot && !Owner.Combo && !spriteFX.GetCombo() && Owner.classType != ClassType.Worker)
         {
             Owner.Attribute.ComboTimeLimit = Owner.Attribute.BaseComboTimeLimit;
             Owner.Combo = true;
@@ -527,6 +540,8 @@ public class Sprite
         }
 
         if (Attribute.Knockback > 0 && Climb) { Climb = false; SetRandomSide(); }
+        if (Attribute.Knockback > 0 && Work) Work = false;
+        if (Attribute.Knockback > 0 && Walk) Walk = false;
 
         if (spriteFX.spriteType == SpriteType.ArrowEffect) spriteFX.Active = false;
     }
@@ -731,6 +746,31 @@ public class Sprite
 
     public void SetInteractionObjects(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects)
     {
+        //_Bag.AddItem(SpriteType.Wood, 9999);
+        if (!EnabledAction()) return;
+
+        //Item collect only        
+        if (HoldDown)
+        {
+            var inner_objects = objects.Where(obj => obj.spriteType == SpriteType.Wood || obj.spriteType == SpriteType.Seed).ToList();
+            var _obj = GetInteractObject(inner_objects);
+
+            if (_obj == null) return;
+
+            if (_obj.spriteType == SpriteType.Wood)
+            {
+                _obj.Active = false;
+                _Bag.AddItem(SpriteType.Wood, 5);
+                IconDisplay = new IconDisplay(SpriteType.Wood, 5, Position.Y);
+            }
+            if (_obj.spriteType == SpriteType.Seed)
+            {
+                _obj.Active = false;
+                _Bag.AddItem(SpriteType.Seed, 1);
+                IconDisplay = new IconDisplay(SpriteType.Seed, 1, Position.Y);
+            }
+            return;
+        }
 
         WorkingID = 0;
         var _object = GetInteractObject(objects);
@@ -758,17 +798,23 @@ public class Sprite
                     Position = new Vector2(_object.Position.X + _object.GetSize().X / 2, Position.Y);
                 }
             }
-            if(_object.spriteType == SpriteType.Wood)
+
+            if (_object.spriteType == SpriteType.ArcherTowerBuild)
             {
-                _object.Active = false;
+                WorkingID = _object.ID;
+                Work = true;
+                Walk = false;
+                if (GetSide() == Side.Right)
+                {
+                    Position = new Vector2((_object.Position.X + _object.GetSize().X / 2) - Size.X, Position.Y);
+                }
+                if (GetSide() == Side.Left)
+                {
+                    Position = new Vector2(_object.Position.X + _object.GetSize().X / 2, Position.Y);
+                }
             }
-        }
 
-        if (HoldUp) return;
-        _object = GetInteractObject(players, bots);
-
-        if (_object != null)
-        {
+            if (HoldUp) return;
             if (Climb)
             {
                 Climb = false;
@@ -778,9 +824,11 @@ public class Sprite
 
             if (_object.spriteType == SpriteType.ArcherTower)
             {
+                if (_object.Position.Y == GroundLevel) return;
                 Climb = true;
                 Walk = false;
-                Position = new Vector2(_object.Position.X + _object.GetSize().X/2 - Size.X / 2, Position.Y);
+                Ground = false;
+                Position = new Vector2(_object.Position.X + _object.GetSize().X / 2 - Size.X / 2, Position.Y);
                 //GroundLevel = (int)_object.Position.Y;
             }
             else
@@ -794,10 +842,72 @@ public class Sprite
         }
     }
 
+    private bool PlantSeed()
+    {
+        if (_Bag.UseItem(SpriteType.Seed, 1)) { 
+            objectsBuild.Add(new SpriteObject(null, Side.None, SpriteType.GrowingTree, new Vector2((Position.X + (GetSize().X / 2)), Position.Y)));
+            return true; 
+        }
+        return false;
+    }
+
+    private bool BuildArcherTower()
+    {
+        if (_Bag.UseItem(SpriteType.Wood, 12))
+        {
+            objectsBuild.Add(new SpriteObject(this, Side.None, SpriteType.ArcherTowerBuild, new Vector2((Position.X + (GetSize().X / 2)), Position.Y)));
+            return true;
+        }
+        return false;
+    }
+
+    public void NextAction()
+    {
+        if(SelectedAction == Enums.Action.BuildArcherTower)
+        {
+            SelectedAction = Enums.Action.None;
+            IconDisplay = new IconDisplay(SelectedAction);
+            return;
+        }
+        SelectedAction++;
+        IconDisplay = new IconDisplay(SelectedAction);
+    }
+
+    public void PreviousAction()
+    {
+        if (SelectedAction == Enums.Action.None)
+        {
+            SelectedAction = Enums.Action.BuildArcherTower;
+            IconDisplay = new IconDisplay(SelectedAction);
+            return;
+        }
+        SelectedAction--;
+        IconDisplay = new IconDisplay(SelectedAction);
+    }
+
+    public void ActionExecute()
+    {
+        switch (SelectedAction)
+        {
+            case Enums.Action.BuildArcherTower:
+                BuildArcherTower();
+            break;
+
+            case Enums.Action.PlantSeed:
+                PlantSeed();
+            break;
+        }
+    }
+
+    public List<SpriteObject> GetObjectsBuild()
+    {
+        var temp_objects = objectsBuild;
+        objectsBuild = new List<SpriteObject>();
+        return temp_objects;
+    }
+
     public void UpdateInteraction(List<Sprite> players, List<SpriteBot> bots)
     {
-        spriteObjects = spriteObjects.Where(_spriteobject => _spriteobject.Active).ToList();
-
         var _object = GetInteractObject(players, bots);
 
         if (_object != null && GroundLevel < (int)_object.Position.Y)
@@ -835,13 +945,26 @@ public class Sprite
 
     public void UpdateInteraction(List<SpriteObject> spriteObjects)
     {
-        spriteObjects = spriteObjects.Where(_spriteobject => _spriteobject.Active && _spriteobject.ID == WorkingID).ToList();
+        var inner_spriteObjects = spriteObjects.Where(_spriteobject => _spriteobject.Active && _spriteobject.ID == WorkingID).ToList();
 
-        var _object = GetInteractObject(spriteObjects);
+        var _object = GetInteractObject(inner_spriteObjects);
 
-        if (_object != null)
+        if (_object != null && Work)
         {
-            _object.TakeWorkingDamage();
+            if(_object.spriteType == SpriteType.Tree01)
+            {
+                _object.UnbuildObject();
+            }
+
+            if (_object.spriteType == SpriteType.ArcherTowerBuild)
+            {
+                _object.BuildObject();
+            }
+
+            if (_object.spriteType == SpriteType.ArcherTower)
+            {
+                Work = false;                
+            }
         }
         else
         {
@@ -856,6 +979,44 @@ public class Sprite
                 Direction = Enums.Direction.StandLeft;
             }
         }
+
+        inner_spriteObjects = spriteObjects.Where(_spriteobject => _spriteobject.Active).ToList();
+        _object = GetInteractObject(inner_spriteObjects);
+
+        if(Climb && _object == null)
+        {
+            Climb = false;
+            SetRandomSide();
+        }
+
+        if(_object == null || _object.AttributeObject.Build < _object.AttributeObject.MaxBuild)
+        {
+            GroundLevel = Globals.GroundLevel;
+        }
+
+        var bottom = (int)Position.Y + Size.Y;
+        if (_object != null && !Ground && bottom < _object.Position.Y * 1.01)
+        {
+            if(_object.spriteType == SpriteType.ArcherTower)
+            {
+                GroundLevel = (int)(_object.Position.Y);
+                Ground = true;
+            }
+        }
+
+        //Needs buff list
+        if (_object != null && (int)(_object.Position.Y) == GroundLevel)
+        {
+            //Climb = false;
+            Attribute.BuffAttack = 5;
+            Attribute.BuffKnockback = 2;
+        }
+        else
+        {
+            Attribute.BuffAttack = 0;
+            Attribute.BuffKnockback = 0;
+        }
+
     }
 
     private SpriteObject GetInteractObject(List<Sprite> players, List<SpriteBot> bots)
@@ -943,6 +1104,17 @@ public class Sprite
         return Size;
     }
 
+    private bool EnabledAction()
+    {
+        if (IsDead() || Attribute.StuntTime > 0) return false;        
+        return true;
+    }
+
+    public int GetBagItem(SpriteType spriteType)
+    {
+        return _Bag.GetItemQuantity(spriteType);
+    }
+
     public virtual void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics)
     {
         //if (ID == 0) return;
@@ -960,6 +1132,29 @@ public class Sprite
 
         //spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         //spriteBatch.DrawString(font, "HP:" + Attribute.HP.ToString(), new Vector2(Position.X - 12, Position.Y-2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+        if(IconDisplay != null && (spriteType == SpriteType.Player1 || spriteType == SpriteType.Player2))
+        {
+            if (IconDisplay.spriteType == SpriteType.Wood && IconDisplay.Time > 0)
+            {
+                spriteBatch.DrawString(font, "Wood +" + IconDisplay.Quantity, new Vector2(Position.X - 14, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+                spriteBatch.DrawString(font, "Wood +" + IconDisplay.Quantity, new Vector2(Position.X - 14, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            }
+
+            if (IconDisplay.spriteType == SpriteType.Seed && IconDisplay.Time > 0)
+            {
+                spriteBatch.DrawString(font, "Seed +" + IconDisplay.Quantity, new Vector2(Position.X - 14, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+                spriteBatch.DrawString(font, "Seed +" + IconDisplay.Quantity, new Vector2(Position.X - 14, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            }
+
+            if (IconDisplay.spriteType == SpriteType.None && IconDisplay.Time > 0)
+            {
+                spriteBatch.DrawString(font, IconDisplay.action.ToString(), new Vector2(Position.X - 12, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+                spriteBatch.DrawString(font, IconDisplay.action.ToString(), new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            }
+
+            IconDisplay.Time--;
+        }        
 
         Texture2D _texture;
         if (Globals.Debug && Globals.DebugArea)
@@ -988,11 +1183,11 @@ public class Sprite
 
     }
 
-    public void DrawObjects(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics)
-    {
-        foreach (var _object in spriteObjects)
-        {
-            _object.Draw(spriteBatch, font, graphics, 0.8f);
-        }
-    }
+    //public void DrawObjects(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics)
+    //{
+    //    foreach (var _object in spriteObjects)
+    //    {
+    //        _object.Draw(spriteBatch, font, graphics, 0.8f);
+    //    }
+    //}
 }

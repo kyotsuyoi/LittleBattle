@@ -53,17 +53,17 @@ public static class InputManager
             }
         }
 
-        if (players[1].spriteType == SpriteType.Player2)
-        {
-            if (false /*gamepad.IsConnected*/)
-            {
-                Player1_Gamepad(gamepad, players[1]);
-            }
-            else
-            {
-                Player2_Keybord(players, bots, objects, keyboard, players[1]);
-            }
-        }
+        //if (players[1].spriteType == SpriteType.Player2)
+        //{
+        //    if (false /*gamepad.IsConnected*/)
+        //    {
+        //        Player1_Gamepad(gamepad, players[1]);
+        //    }
+        //    else
+        //    {
+        //        Player2_Keybord(players, bots, objects, keyboard, players[1]);
+        //    }
+        //}
 
         UpdateResolution(resolution);
         DebugCommand(players, bots, objects);
@@ -123,6 +123,21 @@ public static class InputManager
         if (IsKeyPressed(Keys.K))
         {
             player.SetInteractionObjects(players, bots, objects);
+        }
+
+        if (IsKeyPressed(Keys.Q))
+        {
+            player.PreviousAction();
+        }
+
+        if (IsKeyPressed(Keys.E))
+        {
+            player.NextAction();
+        }
+
+        if (IsKeyPressed(Keys.J))
+        {
+            player.ActionExecute();
         }
     }
 

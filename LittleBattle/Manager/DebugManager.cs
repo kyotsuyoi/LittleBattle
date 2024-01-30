@@ -36,8 +36,8 @@ namespace LittleBattle.Manager
             spriteBatch.DrawString(font, "player1.Jump:" + player1.Jump, new Vector2(10, 160), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "player1.Jump:" + player1.Jump, new Vector2(12, 162), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-            spriteBatch.DrawString(font, "player1.ClimbClimb:" + player1.Climb, new Vector2(10, 180), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            spriteBatch.DrawString(font, "player1.ClimbClimb:" + player1.Climb, new Vector2(12, 182), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            spriteBatch.DrawString(font, "player1.Climb:" + player1.Climb, new Vector2(10, 180), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "player1.Climb:" + player1.Climb, new Vector2(12, 182), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
             spriteBatch.DrawString(font, "player1.Attack:" + player1.Attack, new Vector2(10, 200), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "player1.Attack:" + player1.Attack, new Vector2(12, 202), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
@@ -59,6 +59,15 @@ namespace LittleBattle.Manager
             }
             spriteBatch.DrawString(font, "FXCount:" + count.ToString(), new Vector2(10, 300), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "FXCount:" + count.ToString(), new Vector2(12, 302), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            spriteBatch.DrawString(font, "Wood:" + player1.GetBagItem(Enums.SpriteType.Wood), new Vector2(10, 320), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Wood:" + player1.GetBagItem(Enums.SpriteType.Wood), new Vector2(12, 322), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            spriteBatch.DrawString(font, "Seed:" + player1.GetBagItem(Enums.SpriteType.Seed), new Vector2(10, 340), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Seed:" + player1.GetBagItem(Enums.SpriteType.Seed), new Vector2(12, 342), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            spriteBatch.DrawString(font, "player1.Ground:" + player1.Ground, new Vector2(10, 360), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "player1.Ground:" + player1.Ground, new Vector2(12, 362), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
         }
 
     }

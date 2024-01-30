@@ -9,8 +9,8 @@ using static LittleBattle.Classes.Enums;
 public class SpriteObject
 {
     public bool Active { get; set; }
-    protected Texture2D texture;
-    private readonly AnimationManager _anims = new AnimationManager();
+    private Texture2D texture;
+    private AnimationManager _anims = new AnimationManager();
 
     public Vector2 Position { get; set; }
     private Vector2 Size { get; set; }
@@ -18,11 +18,12 @@ public class SpriteObject
     public float GroundLevel { get; set; }
     public float FallingSpeed { get; set; }
     private Side Side { get; set; }
-    public SpriteType spriteType { get; }
+    public SpriteType spriteType { get; set; }
     public float RelativeX { get; set; }
     public Sprite Owner { get; set; }
     public AttributeObject AttributeObject { get; set; }
     public int ID { get; }
+
     private float deadAlpha = 1f;
 
     private bool newObject = false;
@@ -54,21 +55,40 @@ public class SpriteObject
 
         if (spriteType == SpriteType.ArcherTower) 
         { 
-            if (Owner.Team == Team.Team1) texture = Globals.Content.Load<Texture2D>("Sprites/ArcherTower01_x3");
-            if (Owner.Team == Team.Team2) texture = Globals.Content.Load<Texture2D>("Sprites/ArcherTower02_x3");
+            if (Owner.Team == Team.Team1) texture = Globals.Content.Load<Texture2D>("Sprite_x3/ArcherTower01");
+            if (Owner.Team == Team.Team2) texture = Globals.Content.Load<Texture2D>("Sprite_x3/ArcherTower02");
         }
 
         if(spriteType == SpriteType.Tree01)
         {
-            texture = Globals.Content.Load<Texture2D>("Sprites/Tree01_x3");
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/Tree01");
             layer = 0;
         }
 
         if (spriteType == SpriteType.Wood)
         {
             framesX = 1;
-            texture = Globals.Content.Load<Texture2D>("Sprites/Pixel_x1/Wood");
+            texture = Globals.Content.Load<Texture2D>("Sprite/Wood");
             layer = 1;
+        }
+
+        if (spriteType == SpriteType.Seed)
+        {
+            framesX = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprite/Seed");
+            layer = 1;
+        }
+
+        if (spriteType == SpriteType.GrowingTree)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/GrowingTree");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.ArcherTowerBuild)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/ArcherTowerBuild");
+            layer = 0;
         }
 
         _anims.AddAnimation(Direction.StandRight, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 1, false, false));
@@ -91,6 +111,66 @@ public class SpriteObject
         else
         {
             _anims.Update(Direction.StandRight, false, 0);
+        }
+
+        if(spriteType == SpriteType.GrowingTree)
+        {
+            AttributeObject.Build += 1;
+            if(AttributeObject.Build > AttributeObject.MaxBuild)
+            {
+                AttributeObject.Build = AttributeObject.MaxBuild;
+            }
+
+            double percent = (float)AttributeObject.Build / (float)AttributeObject.MaxBuild * 100;
+
+            if (percent >= 100)
+            {
+                spriteType = SpriteType.Tree01;
+                _anims.Update(Direction.StandRight, false, 0);
+                _anims = new AnimationManager();
+                SetTexture();
+            }
+            else if (percent >= 75)
+            {
+                _anims.Update(Direction.StandRight, false, 3);
+            }else if (percent >= 50)
+            {
+                _anims.Update(Direction.StandRight, false, 2);
+            }
+            else if (percent >= 25)
+            {
+                _anims.Update(Direction.StandRight, false, 1);
+            }
+        }
+
+        if (spriteType == SpriteType.ArcherTowerBuild)
+        {
+            if (AttributeObject.Build > AttributeObject.MaxBuild)
+            {
+                AttributeObject.Build = AttributeObject.MaxBuild;
+            }
+
+            double percent = (float)AttributeObject.Build / (float)AttributeObject.MaxBuild * 100;
+
+            if (percent >= 100)
+            {
+                spriteType = SpriteType.ArcherTower;
+                _anims.Update(Direction.StandRight, false, 0);
+                _anims = new AnimationManager();
+                SetTexture();
+            }
+            else if (percent >= 75)
+            {
+                _anims.Update(Direction.StandRight, false, 3);
+            }
+            else if (percent >= 50)
+            {
+                _anims.Update(Direction.StandRight, false, 2);
+            }
+            else if (percent >= 25)
+            {
+                _anims.Update(Direction.StandRight, false, 1);
+            }
         }
     }
 
@@ -164,9 +244,20 @@ public class SpriteObject
         spriteFX.Active = false;
     }
 
-    public void TakeWorkingDamage()
+    public void UnbuildObject()
     {
         AttributeObject.HP -= 1;
+    }
+
+    public void BuildObject()
+    {
+        AttributeObject.Build += 1;
+    }
+
+    public bool Building()
+    {
+        if (AttributeObject.Build >= AttributeObject.MaxBuild) return false;
+        return true;
     }
 
     public bool WorkingEnd()
@@ -217,6 +308,7 @@ public class SpriteObject
 
         return new Rectangle(Pos, Siz);
     }
+
     public Vector2 GetSize()
     {
         return Size;
@@ -236,6 +328,11 @@ public class SpriteObject
 
         //spriteBatch.DrawString(font, "frame:" + Globals.SpriteFrame.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         //spriteBatch.DrawString(font, "frame:" + Globals.SpriteFrame.ToString(), new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+        //double percent = (float)AttributeObject.Build / (float)AttributeObject.MaxBuild * 100;
+        //spriteBatch.DrawString(font, "Build:" + (int)percent, new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        //spriteBatch.DrawString(font, "Build:" + (int)percent, new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+        
 
         var _hp_percent = AttributeObject.HP * 100 / AttributeObject.BaseHP;
         if (_hp_percent >= 100 || _hp_percent <= 0) return;

@@ -49,7 +49,7 @@ public class GameManager
         players = new List<Sprite>
         {
             new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player1, Team.Team1, ClassType.Worker),
-            new Sprite(02, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player2, Team.Team2, ClassType.Archer),
+            //new Sprite(02, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player2, Team.Team2, ClassType.Archer),
         };
         foreach (var player in players)
         {
@@ -103,8 +103,14 @@ public class GameManager
             player.UpdateSpriteFXDamage(players);
             player.UpdateSpriteFXDamage(bots);
             player.UpdateSpriteObjects();
-            player.UpdateInteraction(players, bots);
+            //player.UpdateInteraction(players, bots);
             player.UpdateInteraction(objects);
+
+            var objBuild = player.GetObjectsBuild();
+            foreach (var obj in objBuild)
+            {
+                objects.Add(obj);
+            }
         }
 
         //Debug Command
@@ -140,6 +146,7 @@ public class GameManager
             if (_object.WorkingEnd())
             {
                 new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Wood, new Vector2((_object.Position.X + (_object.GetSize().X / 2)), _object.Position.Y)));
+                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Seed, new Vector2((_object.Position.X + (_object.GetSize().X / 2)), _object.Position.Y)));
             }                
         }
 
@@ -166,13 +173,13 @@ public class GameManager
         var objects_layer1 = objects.Where(objects => objects.layer == 1).ToList();
         foreach (var obj in objects_layer0)
         {
-            obj.Draw(spriteBatch, null, graphics, 0.1f);
+            obj.Draw(spriteBatch, font, graphics, 0.1f);
         }
 
-        foreach (var player in players)
-        {
-            player.DrawObjects(spriteBatch, font, graphics);
-        }
+        //foreach (var player in players)
+        //{
+        //    player.DrawObjects(spriteBatch, font, graphics);
+        //}
 
         foreach (var bot in deadBots)
         {
@@ -195,7 +202,7 @@ public class GameManager
 
         foreach (var obj in objects_layer1)
         {
-            obj.Draw(spriteBatch, null, graphics, 0.1f);
+            obj.Draw(spriteBatch, font, graphics, 0.1f);
         }
 
         spriteBatch.End();
