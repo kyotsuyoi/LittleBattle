@@ -66,6 +66,9 @@ namespace LittleBattle.Classes
             Wood = 105,
             Seed = 106,
             GrowingTree = 107,
+            Stone = 108,
+            Iron = 109,
+            Resource = 110,
         }
 
         public enum Team

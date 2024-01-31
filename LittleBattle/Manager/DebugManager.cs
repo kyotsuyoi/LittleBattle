@@ -60,14 +60,22 @@ namespace LittleBattle.Manager
             spriteBatch.DrawString(font, "FXCount:" + count.ToString(), new Vector2(10, 300), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "FXCount:" + count.ToString(), new Vector2(12, 302), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-            spriteBatch.DrawString(font, "Wood:" + player1.GetBagItem(Enums.SpriteType.Wood), new Vector2(10, 320), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            spriteBatch.DrawString(font, "Wood:" + player1.GetBagItem(Enums.SpriteType.Wood), new Vector2(12, 322), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            spriteBatch.DrawString(font, "player1.Ground:" + player1.Ground, new Vector2(10, 320), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "player1.Ground:" + player1.Ground, new Vector2(12, 322), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-            spriteBatch.DrawString(font, "Seed:" + player1.GetBagItem(Enums.SpriteType.Seed), new Vector2(10, 340), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            spriteBatch.DrawString(font, "Seed:" + player1.GetBagItem(Enums.SpriteType.Seed), new Vector2(12, 342), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            spriteBatch.DrawString(font, "Wood:" + player1.GetBagItem(Enums.SpriteType.Wood), new Vector2(10, 340), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Wood:" + player1.GetBagItem(Enums.SpriteType.Wood), new Vector2(12, 342), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-            spriteBatch.DrawString(font, "player1.Ground:" + player1.Ground, new Vector2(10, 360), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            spriteBatch.DrawString(font, "player1.Ground:" + player1.Ground, new Vector2(12, 362), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            spriteBatch.DrawString(font, "Seed:" + player1.GetBagItem(Enums.SpriteType.Seed), new Vector2(10, 360), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Seed:" + player1.GetBagItem(Enums.SpriteType.Seed), new Vector2(12, 362), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            spriteBatch.DrawString(font, "Stone:" + player1.GetBagItem(Enums.SpriteType.Stone), new Vector2(10, 380), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Stone:" + player1.GetBagItem(Enums.SpriteType.Stone), new Vector2(12, 382), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            spriteBatch.DrawString(font, "Iron:" + player1.GetBagItem(Enums.SpriteType.Iron), new Vector2(10, 400), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Iron:" + player1.GetBagItem(Enums.SpriteType.Iron), new Vector2(12, 402), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+
         }
 
     }

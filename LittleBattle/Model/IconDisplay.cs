@@ -20,7 +20,7 @@ namespace LittleBattle.Model
         {
             this.spriteType = spriteType;
             this.Quantity = Quantity;
-            Time = 25f;
+            Time = 35f;
             this.PositionY = PositionY;
         }
 

@@ -353,7 +353,8 @@ public static class InputManager
         }
         if (IsKeyPressed(Keys.Y))
         {
-            players[1].SetObject(SpriteType.ArcherTower);
+            //players[1].SetObject(SpriteType.ArcherTower);
+            objects.Add(new SpriteObject(null, Side.None, SpriteType.Resource, players[0].Position));
         }
         if (IsKeyPressed(Keys.U))
         {

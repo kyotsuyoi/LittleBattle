@@ -116,6 +116,18 @@
 /processorParam:TextureFormat=Color
 /build:Sprite_x3/GrowingTree.png
 
+#begin Sprite_x3/Resource.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprite_x3/Resource.png
+
 #begin Sprite_x3/Sprite01.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -200,18 +212,6 @@
 /processorParam:TextureFormat=Color
 /build:Sprite_x3/Tree01.png
 
-#begin Sprite_x3/Wood.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Sprite_x3/Wood.png
-
 #begin Sprite/ArcherTower.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -284,6 +284,30 @@
 /processorParam:TextureFormat=Color
 /build:Sprite/GrowingTree.png
 
+#begin Sprite/Iron.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprite/Iron.png
+
+#begin Sprite/Resource.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprite/Resource.png
+
 #begin Sprite/Seed.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -307,6 +331,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Sprite/Sprite05.png
+
+#begin Sprite/Stone.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprite/Stone.png
 
 #begin Sprite/SwordEffect.png
 /importer:TextureImporter

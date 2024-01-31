@@ -41,12 +41,10 @@ namespace LittleBattle.Classes
             var inner_item = Items.FirstOrDefault(item => item.spriteType == spriteType);
             if (inner_item != null)
             {
-                inner_item.Quantity -= Quantity;
-                if (inner_item.Quantity < 0) {
-                    inner_item.Quantity = 0;
-                    return false; 
+                if (inner_item.Quantity - Quantity >= 0) {
+                    inner_item.Quantity -= Quantity;
+                    return true; 
                 }
-                return true;
             }
             return false;
         }

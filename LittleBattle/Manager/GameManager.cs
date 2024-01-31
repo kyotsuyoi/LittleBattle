@@ -77,6 +77,7 @@ public class GameManager
         objects = new List<SpriteObject>
         {
             new SpriteObject(null, Side.None, SpriteType.Tree01, new Vector2(100, Globals.GroundLevel)),
+            new SpriteObject(null, Side.None, SpriteType.Resource, new Vector2(50, Globals.GroundLevel)),
         };
 
         //KeyMappingsManager custom = new KeyMappingsManager();
@@ -100,10 +101,7 @@ public class GameManager
         {
             InputManager.Update(players, bots, objects, resolution, keyMappings);
             player.Update();
-            player.UpdateSpriteFXDamage(players);
-            player.UpdateSpriteFXDamage(bots);
-            player.UpdateSpriteObjects();
-            //player.UpdateInteraction(players, bots);
+            player.UpdateSpriteFXDamage(players, bots, objects);
             player.UpdateInteraction(objects);
 
             var objBuild = player.GetObjectsBuild();
@@ -124,8 +122,7 @@ public class GameManager
         foreach (var bot in bots)
         {
             bot.Update();
-            bot.UpdateSpriteFXDamage(players);
-            bot.UpdateSpriteFXDamage(bots);
+            bot.UpdateSpriteFXDamage(players, bots, objects);
         }
 
         if (InputManager.CommandBot)
@@ -142,17 +139,27 @@ public class GameManager
         var new_objects = new List<SpriteObject>();
         foreach (var _object in objects)
         {
-            _object.Update();
-            if (_object.WorkingEnd())
+            bool putNewObject = _object.PutNewObject();
+            if (putNewObject && _object.spriteType == SpriteType.Tree01)
             {
                 new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Wood, new Vector2((_object.Position.X + (_object.GetSize().X / 2)), _object.Position.Y)));
                 new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Seed, new Vector2((_object.Position.X + (_object.GetSize().X / 2)), _object.Position.Y)));
-            }                
+            }
+            if (putNewObject && _object.spriteType == SpriteType.Resource)
+            {
+                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Stone, new Vector2((_object.Position.X + (_object.GetSize().X / 2)), _object.Position.Y)));
+                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Iron , new Vector2((_object.Position.X + (_object.GetSize().X / 2)), _object.Position.Y)));
+            }
         }
 
         foreach (var _object in new_objects)
         {
             objects.Add(_object);
+        }
+
+        foreach (var _object in objects)
+        {
+            _object.Update();
         }
     }
 

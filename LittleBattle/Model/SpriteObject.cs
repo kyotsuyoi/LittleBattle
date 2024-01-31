@@ -26,7 +26,7 @@ public class SpriteObject
 
     private float deadAlpha = 1f;
 
-    private bool newObject = false;
+    private bool putNewObject = false;
 
     public int layer = 0;
 
@@ -36,8 +36,6 @@ public class SpriteObject
         ID = Globals.GetNewID();
         this.Owner = Owner;
         this.spriteType = spriteType;
-
-        AttributeObject = new AttributeObject();
 
         Ground = false;
         FallingSpeed = -1;
@@ -91,9 +89,32 @@ public class SpriteObject
             layer = 0;
         }
 
+        if (spriteType == SpriteType.Stone)
+        {
+            framesX = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprite/Stone");
+            layer = 1;
+        }
+
+        if (spriteType == SpriteType.Iron)
+        {
+            framesX = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprite/Iron");
+            layer = 1;
+        }
+
+        if (spriteType == SpriteType.Resource)
+        {
+            framesX = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/Resource");
+            layer = 0;
+        }
+
         _anims.AddAnimation(Direction.StandRight, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 1, false, false));
         _anims.AddAnimation(Direction.StandLeft, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 1, true, false));
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
+
+        AttributeObject = new AttributeObject(spriteType);
     }
 
     public void Update()
@@ -115,7 +136,7 @@ public class SpriteObject
 
         if(spriteType == SpriteType.GrowingTree)
         {
-            AttributeObject.Build += 1;
+            BuildObject();
             if(AttributeObject.Build > AttributeObject.MaxBuild)
             {
                 AttributeObject.Build = AttributeObject.MaxBuild;
@@ -246,12 +267,12 @@ public class SpriteObject
 
     public void UnbuildObject()
     {
-        AttributeObject.HP -= 1;
+        AttributeObject.HP -= Globals.ElapsedSeconds;
     }
 
     public void BuildObject()
     {
-        AttributeObject.Build += 1;
+        AttributeObject.Build += Globals.ElapsedSeconds;
     }
 
     public bool Building()
@@ -260,11 +281,11 @@ public class SpriteObject
         return true;
     }
 
-    public bool WorkingEnd()
+    public bool PutNewObject()
     {
-        if (IsDead() && !newObject)
+        if (IsDead() && !putNewObject)
         {
-            newObject = true;
+            putNewObject = true;
             return true;
         }
         return false;
@@ -329,10 +350,13 @@ public class SpriteObject
         //spriteBatch.DrawString(font, "frame:" + Globals.SpriteFrame.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         //spriteBatch.DrawString(font, "frame:" + Globals.SpriteFrame.ToString(), new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-        //double percent = (float)AttributeObject.Build / (float)AttributeObject.MaxBuild * 100;
-        //spriteBatch.DrawString(font, "Build:" + (int)percent, new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-        //spriteBatch.DrawString(font, "Build:" + (int)percent, new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
-        
+        //float percent = (float)AttributeObject.Build / (float)AttributeObject.MaxBuild * 100;
+        //spriteBatch.DrawString(font, "Build:" + percent, new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        //spriteBatch.DrawString(font, "Build:" + percent, new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+        //spriteBatch.DrawString(font, "HP:" + AttributeObject.HP, new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        //spriteBatch.DrawString(font, "HP:" + AttributeObject.HP, new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
 
         var _hp_percent = AttributeObject.HP * 100 / AttributeObject.BaseHP;
         if (_hp_percent >= 100 || _hp_percent <= 0) return;
