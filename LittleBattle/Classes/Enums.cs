@@ -69,6 +69,9 @@ namespace LittleBattle.Classes
             Stone = 108,
             Iron = 109,
             Resource = 110,
+            Digging = 111,
+            Vine = 112,
+            Rope = 113,
         }
 
         public enum Team
@@ -93,6 +96,7 @@ namespace LittleBattle.Classes
             None = 0,
             PlantSeed = 1,
             BuildArcherTower = 2,
+            Dig = 3,
         }
     }
 }

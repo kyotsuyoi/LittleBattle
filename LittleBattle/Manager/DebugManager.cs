@@ -75,6 +75,9 @@ namespace LittleBattle.Manager
             spriteBatch.DrawString(font, "Iron:" + player1.GetBagItem(Enums.SpriteType.Iron), new Vector2(10, 400), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "Iron:" + player1.GetBagItem(Enums.SpriteType.Iron), new Vector2(12, 402), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
+            spriteBatch.DrawString(font, "Vine:" + player1.GetBagItem(Enums.SpriteType.Vine), new Vector2(10, 420), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Vine:" + player1.GetBagItem(Enums.SpriteType.Vine), new Vector2(12, 422), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
 
         }
 

@@ -12,6 +12,7 @@
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/ArcherTower01.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/ArcherTower02.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/ArcherTowerBuild.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/Digging.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/GrowingTree.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/Resource.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite_x3/Sprite01.png</File>
@@ -26,6 +27,7 @@
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/ArrowEffectBig.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/ArrowEffectSmall01.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/ArrowEffectSmall02.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/Digging.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/GrowingTree.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/Iron.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/Resource.png</File>
@@ -34,9 +36,13 @@
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/Stone.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/SwordEffect.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/Tree01.png</File>
+    <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/Vine.png</File>
     <File>C:/Users/kyots/source/repos/LittleBattle/LittleBattle/Content/Sprite/Wood.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

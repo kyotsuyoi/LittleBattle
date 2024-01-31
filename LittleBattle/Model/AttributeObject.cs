@@ -37,6 +37,10 @@ namespace LittleBattle.Model
                     MaxBuild = 30;
                     break;
 
+                case SpriteType.Digging:
+                    MaxBuild = 4;
+                    break;
+
                 default:
                     MaxBuild = 1;
                     break;

@@ -104,6 +104,18 @@
 /processorParam:TextureFormat=Color
 /build:Sprite_x3/ArcherTowerBuild.png
 
+#begin Sprite_x3/Digging.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprite_x3/Digging.png
+
 #begin Sprite_x3/GrowingTree.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -272,6 +284,18 @@
 /processorParam:TextureFormat=Color
 /build:Sprite/ArrowEffectSmall02.png
 
+#begin Sprite/Digging.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprite/Digging.png
+
 #begin Sprite/GrowingTree.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -367,6 +391,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Sprite/Tree01.png
+
+#begin Sprite/Vine.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprite/Vine.png
 
 #begin Sprite/Wood.png
 /importer:TextureImporter

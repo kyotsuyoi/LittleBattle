@@ -3,9 +3,11 @@ using LittleBattle.Manager;
 using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Windows.Media.Capture.Core;
 using static LittleBattle.Classes.Enums;
 
 public class GameManager
@@ -140,15 +142,24 @@ public class GameManager
         foreach (var _object in objects)
         {
             bool putNewObject = _object.PutNewObject();
+            Vector2 pos = new Vector2();
+            if (putNewObject)
+            {
+                var pX = (_object.Position.X + (_object.GetSize().X / 2));
+                var pY = _object.Position.Y;
+                pos = new Vector2(pX, pY);
+            }
+
             if (putNewObject && _object.spriteType == SpriteType.Tree01)
             {
-                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Wood, new Vector2((_object.Position.X + (_object.GetSize().X / 2)), _object.Position.Y)));
-                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Seed, new Vector2((_object.Position.X + (_object.GetSize().X / 2)), _object.Position.Y)));
+                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Wood, pos + RandomPosition()));
+                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Seed, pos + RandomPosition()));
+                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Vine, pos + RandomPosition()));
             }
             if (putNewObject && _object.spriteType == SpriteType.Resource)
             {
-                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Stone, new Vector2((_object.Position.X + (_object.GetSize().X / 2)), _object.Position.Y)));
-                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Iron , new Vector2((_object.Position.X + (_object.GetSize().X / 2)), _object.Position.Y)));
+                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Stone, pos + RandomPosition()));
+                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Iron, pos + RandomPosition()));
             }
         }
 
@@ -161,6 +172,15 @@ public class GameManager
         {
             _object.Update();
         }
+    }
+
+    private Vector2 RandomPosition()
+    {
+        int randomValX, randomValY;
+        Random random = new Random();
+        randomValX = random.Next(120) * 1 - 60;
+        randomValY = random.Next(60) * 1 - 30;
+        return new Vector2(randomValX, randomValY);
     }
 
     public void Draw(SpriteBatch spriteBatch)

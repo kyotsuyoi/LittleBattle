@@ -28,6 +28,8 @@ public class SpriteObject
 
     private bool putNewObject = false;
 
+    private bool transformed = false;
+
     public int layer = 0;
 
     public SpriteObject(Sprite Owner, Side side, SpriteType spriteType, Vector2 initialPosition)
@@ -42,8 +44,7 @@ public class SpriteObject
         Side = side;
 
         SetTexture();
-
-        InitialPosition(initialPosition);      
+        InitialPosition(initialPosition);
     }
 
     private void SetTexture()
@@ -110,6 +111,19 @@ public class SpriteObject
             layer = 0;
         }
 
+        if (spriteType == SpriteType.Digging)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/Digging");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.Vine)
+        {
+            framesX = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprite/Vine");
+            layer = 1;
+        }
+
         _anims.AddAnimation(Direction.StandRight, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 1, false, false));
         _anims.AddAnimation(Direction.StandLeft, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 1, true, false));
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
@@ -134,51 +148,46 @@ public class SpriteObject
             _anims.Update(Direction.StandRight, false, 0);
         }
 
-        if(spriteType == SpriteType.GrowingTree)
-        {
-            BuildObject();
-            if(AttributeObject.Build > AttributeObject.MaxBuild)
-            {
-                AttributeObject.Build = AttributeObject.MaxBuild;
-            }
+        UpdateBuild();
+    }
 
-            double percent = (float)AttributeObject.Build / (float)AttributeObject.MaxBuild * 100;
-
-            if (percent >= 100)
-            {
-                spriteType = SpriteType.Tree01;
-                _anims.Update(Direction.StandRight, false, 0);
-                _anims = new AnimationManager();
-                SetTexture();
-            }
-            else if (percent >= 75)
-            {
-                _anims.Update(Direction.StandRight, false, 3);
-            }else if (percent >= 50)
-            {
-                _anims.Update(Direction.StandRight, false, 2);
-            }
-            else if (percent >= 25)
-            {
-                _anims.Update(Direction.StandRight, false, 1);
-            }
-        }
-
-        if (spriteType == SpriteType.ArcherTowerBuild)
+    private void UpdateBuild()
+    {
+        if (spriteType == SpriteType.GrowingTree || spriteType == SpriteType.ArcherTowerBuild || spriteType == SpriteType.Digging)
         {
             if (AttributeObject.Build > AttributeObject.MaxBuild)
             {
                 AttributeObject.Build = AttributeObject.MaxBuild;
             }
-
             double percent = (float)AttributeObject.Build / (float)AttributeObject.MaxBuild * 100;
 
             if (percent >= 100)
             {
-                spriteType = SpriteType.ArcherTower;
+                transformed = true;
+                switch (spriteType)
+                {
+                    case SpriteType.GrowingTree:
+                        spriteType = SpriteType.Tree01;
+                        transformed = false;
+                        break;
+
+                    case SpriteType.ArcherTowerBuild:
+                        spriteType = SpriteType.ArcherTower;
+                        break;
+
+                    case SpriteType.Digging:
+                        spriteType = SpriteType.Resource;
+                        break;
+                }
+
                 _anims.Update(Direction.StandRight, false, 0);
                 _anims = new AnimationManager();
                 SetTexture();
+
+                if (spriteType == SpriteType.Resource)
+                {
+                    InitialPosition(Position);
+                }
             }
             else if (percent >= 75)
             {
@@ -191,6 +200,11 @@ public class SpriteObject
             else if (percent >= 25)
             {
                 _anims.Update(Direction.StandRight, false, 1);
+            }
+
+            if (spriteType == SpriteType.GrowingTree)
+            {
+                BuildObject();
             }
         }
     }
@@ -267,12 +281,12 @@ public class SpriteObject
 
     public void UnbuildObject()
     {
-        AttributeObject.HP -= Globals.ElapsedSeconds;
+        AttributeObject.HP -= Globals.ElapsedSeconds*10;
     }
 
     public void BuildObject()
     {
-        AttributeObject.Build += Globals.ElapsedSeconds;
+        AttributeObject.Build += Globals.ElapsedSeconds*10;
     }
 
     public bool Building()
@@ -312,9 +326,19 @@ public class SpriteObject
         Position = new Vector2(Position.X - Size.X / 2, Position.Y - Size.Y / 2);
     }
 
-    public void SetToGroundLevel(float positionX)
+    public void SetToGroundLevel()
     {
-        Position = new Vector2(Position.X, GroundLevel);
+        Position = new Vector2(Position.X, Globals.GroundX);
+    }
+
+    public bool IsTransformed()
+    {
+        if(transformed)
+        {
+            transformed = false;
+            return true;
+        }
+        return false;
     }
 
     public Enums.Side GetSide()

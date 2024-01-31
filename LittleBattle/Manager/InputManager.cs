@@ -2,6 +2,7 @@ using LittleBattle.Classes;
 using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using SharpDX.Direct2D1;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -14,6 +15,11 @@ public static class InputManager
 
     public static bool p1_jump_key_pressed = false;
     public static bool p1_attack_key_pressed = false;
+
+    public static bool p1_interact_key_pressed = false;
+    public static bool p1_action_key_pressed = false;
+    public static bool p1_next_key_pressed = false;
+    public static bool p1_prev_key_pressed = false;
 
     public static bool p2_jump_key_pressed = false;
     public static bool p2_attack_key_pressed = false;
@@ -45,11 +51,11 @@ public static class InputManager
         { 
             if (gamepad.IsConnected)
             {
-                Player1_Gamepad(gamepad, players[0]);
+                Player1_Gamepad(gamepad, players, objects);
             }
             else
             {
-                Player1_Keybord(players, bots, objects, keyboard, players[0], keyMappings);
+                Player1_Keybord(players, objects, keyboard, keyMappings);
             }
         }
 
@@ -69,8 +75,9 @@ public static class InputManager
         DebugCommand(players, bots, objects);
     }
 
-    private static void Player1_Keybord(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, KeyboardState keyboard, Sprite player, KeyMappingsManager keyMappings)
-    {    
+    private static void Player1_Keybord(List<Sprite> players, List<SpriteObject> objects, KeyboardState keyboard, KeyMappingsManager keyMappings)
+    {
+        var player = players[0];
         if (keyboard.IsKeyDown(keyMappings.MoveLeft))
         {
             player.SetMovement(true, Side.Left);
@@ -122,7 +129,7 @@ public static class InputManager
 
         if (IsKeyPressed(Keys.K))
         {
-            player.SetInteractionObjects(players, bots, objects);
+            player.SetInteractionObjects(objects);
         }
 
         if (IsKeyPressed(Keys.Q))
@@ -141,8 +148,9 @@ public static class InputManager
         }
     }
 
-    private static void Player1_Gamepad(GamePadState gamepad, Sprite player)
+    private static void Player1_Gamepad(GamePadState gamepad, List<Sprite> players, List<SpriteObject> objects)
     {
+        var player = players[0];
         if (gamepad.DPad.Left == ButtonState.Pressed)
         {
             player.SetMovement(true, Side.Left);
@@ -152,7 +160,17 @@ public static class InputManager
             player.SetMovement(true, Side.Right);
         }
 
-        if (gamepad.DPad.Left == ButtonState.Released && gamepad.DPad.Right == ButtonState.Released)
+        if (gamepad.DPad.Up == ButtonState.Pressed)
+        {
+            player.SetMovement(false, Side.Up);
+        }
+        else if (gamepad.DPad.Down == ButtonState.Pressed)
+        {
+            player.SetMovement(false, Side.Down);
+        }
+
+        if (gamepad.DPad.Left == ButtonState.Released && gamepad.DPad.Right == ButtonState.Released &&
+            gamepad.DPad.Up == ButtonState.Released && gamepad.DPad.Down == ButtonState.Released)
         {
             player.SetMovement(false, Side.None);
         }
@@ -180,9 +198,49 @@ public static class InputManager
         {
             p1_attack_key_pressed = false;
         }
+
+        if (gamepad.Buttons.Y == ButtonState.Pressed && !p1_interact_key_pressed)
+        {
+            p1_interact_key_pressed = true;
+            player.SetInteractionObjects(objects);
+        }
+        if (gamepad.Buttons.Y == ButtonState.Released)
+        {
+            p1_interact_key_pressed = false;
+        }
+
+        if (gamepad.Buttons.B == ButtonState.Pressed && !p1_action_key_pressed)
+        {
+            p1_action_key_pressed = true;
+            player.ActionExecute();
+        }
+        if (gamepad.Buttons.B == ButtonState.Released)
+        {
+            p1_action_key_pressed = false;
+        }
+
+        if (gamepad.Buttons.LeftShoulder == ButtonState.Pressed && !p1_prev_key_pressed)
+        {
+            p1_prev_key_pressed = true;
+            player.PreviousAction();
+        }
+        if (gamepad.Buttons.LeftShoulder == ButtonState.Released)
+        {
+            p1_prev_key_pressed = false;
+        }
+
+        if (gamepad.Buttons.RightShoulder == ButtonState.Pressed && !p1_next_key_pressed)
+        {
+            p1_next_key_pressed = true;
+            player.NextAction();
+        }
+        if (gamepad.Buttons.RightShoulder == ButtonState.Released)
+        {
+            p1_next_key_pressed = false;
+        }
     }
 
-    private static void Player2_Keybord(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, KeyboardState keyboard, Sprite player)
+    private static void Player2_Keybord(List<SpriteObject> objects, KeyboardState keyboard, Sprite player)
     {
         if (keyboard.IsKeyDown(Keys.Left))
         {
@@ -234,7 +292,7 @@ public static class InputManager
 
         if (IsKeyPressed(Keys.NumPad4))
         {
-            player.SetInteractionObjects(players, bots, objects);
+            player.SetInteractionObjects(objects);
         }
     }
 
