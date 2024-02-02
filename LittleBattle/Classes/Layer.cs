@@ -14,7 +14,7 @@ namespace LittleBattle.Classes
         private readonly bool movementX;
         private readonly float alpha;
 
-        private float _rotate = 0;
+        //private float _rotate = 0;
 
         public Layer(Texture2D texture, float depth, float moveScale, bool movementX = false, float defaultSpeed = 1f, float alpha = 1f)
         {

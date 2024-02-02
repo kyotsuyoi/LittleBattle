@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace LittleBattle
 {
@@ -15,11 +16,15 @@ namespace LittleBattle
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
+            _graphics.IsFullScreen = true;
         }
 
         protected override void Initialize()
         {
+            //60FPS
+            this.TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 60.0f);
+
             Globals.Content = Content;
             _gameManager = new GameManager(this, _graphics);
             base.Initialize();
@@ -36,6 +41,7 @@ namespace LittleBattle
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            IsMouseVisible = false;
             Globals.Update(gameTime);
             _gameManager.Update();
             base.Update(gameTime);

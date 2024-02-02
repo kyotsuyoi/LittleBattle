@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Drawing;
+using Windows.UI.ViewManagement;
 
 namespace LittleBattle.Classes
 {
@@ -20,17 +21,17 @@ namespace LittleBattle.Classes
         {
             graphics.PreferredBackBufferWidth = size.Width;
             graphics.PreferredBackBufferHeight = size.Height;
-            graphics.IsFullScreen = false;
+            //graphics.IsFullScreen = false;
             graphics.ApplyChanges();
             canvas.SetDestinationRectangle();
         }
 
         public void SetBorderlessScreen()
         {
-            game.Window.IsBorderless = !game.Window.IsBorderless;
-            graphics.IsFullScreen = false;
-            graphics.ApplyChanges();
-            canvas.SetDestinationRectangle();
+            //game.Window.IsBorderless = !game.Window.IsBorderless;
+            //graphics.IsFullScreen = false;
+            //graphics.ApplyChanges();
+            //canvas.SetDestinationRectangle();
         }
 
         public void SetFullScreen()

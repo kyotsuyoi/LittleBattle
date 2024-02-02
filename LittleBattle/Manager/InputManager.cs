@@ -40,7 +40,7 @@ public static class InputManager
         return _currentKeyboard.IsKeyDown(key) && _lastKeyboard.IsKeyUp(key);
     }
 
-    public static void Update(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, Resolution resolution, KeyMappingsManager keyMappings)
+    public static void Update(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, Resolution resolution, Canvas _canvas, KeyMappingsManager keyMappings)
     {
         _lastKeyboard = _currentKeyboard;
         _currentKeyboard = Keyboard.GetState();
@@ -72,7 +72,7 @@ public static class InputManager
         //}
 
         UpdateResolution(resolution);
-        DebugCommand(players, bots, objects);
+        DebugCommand(players, bots, objects, _canvas);
     }
 
     private static void Player1_Keybord(List<Sprite> players, List<SpriteObject> objects, KeyboardState keyboard, KeyMappingsManager keyMappings)
@@ -300,18 +300,18 @@ public static class InputManager
     {
         //_lastKeyboard = _currentKeyboard;
         //_currentKeyboard = Keyboard.GetState();
-        if (IsKeyPressed(Keys.F1)) resolution.SetResolution(new Size(600, 400));
+        //if (IsKeyPressed(Keys.F1)) resolution.SetResolution(new Size(600, 400));
         if (IsKeyPressed(Keys.F2)) resolution.SetResolution(new Size(800, 600));
         if (IsKeyPressed(Keys.F3)) resolution.SetResolution(new Size(1280, 720));
         if (IsKeyPressed(Keys.F4)) resolution.SetResolution(new Size(1920, 1080));
-        //if (InputManager.IsKeyPressed(Keys.F4)) SetBorderlessScreen();
+        if (InputManager.IsKeyPressed(Keys.F1)) resolution.SetBorderlessScreen();
         if (IsKeyPressed(Keys.F5)) { 
             resolution.SetFullScreen(); 
         }
     }
 
     //Debug
-    public static void DebugCommand(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects)
+    public static void DebugCommand(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, Canvas _canvas)
     {
         if (IsKeyPressed(Keys.F9))
         {
@@ -422,6 +422,27 @@ public static class InputManager
         if (IsKeyPressed(Keys.F8))
         {
             Globals.DebugArea = !Globals.DebugArea;
+        }
+
+        if (IsKeyPressed(Keys.Left))
+        {
+            _canvas.adjustX++;
+            _canvas.SetDestinationRectangle();
+        }
+        if (IsKeyPressed(Keys.Right))
+        {
+            _canvas.adjustX--;
+            _canvas.SetDestinationRectangle();
+        }
+        if (IsKeyPressed(Keys.Up))
+        {
+            _canvas.adjustY++;
+            _canvas.SetDestinationRectangle();
+        }
+        if (IsKeyPressed(Keys.Down))
+        {
+            _canvas.adjustY--;
+            _canvas.SetDestinationRectangle();
         }
     }
 }

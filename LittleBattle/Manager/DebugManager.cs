@@ -8,7 +8,7 @@ namespace LittleBattle.Manager
 {
     public class DebugManager
     {
-        public void Draw(SpriteBatch spriteBatch, SpriteFont font, Sprite player1, Sprite player2, List<SpriteBot> bots) {
+        public void Draw(SpriteBatch spriteBatch, SpriteFont font, Sprite player1, Sprite player2, List<SpriteBot> bots, Canvas _canvas) {
 
             spriteBatch.DrawString(font, "Time:" + Globals.TotalSeconds, new Vector2(10, 0), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "Time:" + Globals.TotalSeconds, new Vector2(12, 2), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
@@ -78,7 +78,11 @@ namespace LittleBattle.Manager
             spriteBatch.DrawString(font, "Vine:" + player1.GetBagItem(Enums.SpriteType.Vine), new Vector2(10, 420), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "Vine:" + player1.GetBagItem(Enums.SpriteType.Vine), new Vector2(12, 422), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
+            spriteBatch.DrawString(font, "CanvasX:" + _canvas.GetPosition().X.ToString(), new Vector2(10, 440), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "CanvasX:" + _canvas.GetPosition().X.ToString(), new Vector2(12, 442), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
+            spriteBatch.DrawString(font, "CanvasY:" + _canvas.GetPosition().Y.ToString(), new Vector2(10, 460), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "CanvasY:" + _canvas.GetPosition().Y.ToString(), new Vector2(12, 462), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
         }
 
     }

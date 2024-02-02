@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using Windows.Media.Capture.Core;
 using static LittleBattle.Classes.Enums;
 
 public class GameManager
@@ -42,7 +41,7 @@ public class GameManager
 
         resolution = new Resolution(game, graphics, _canvas);
         resolution.SetResolution(Globals.Size);
-        resolution.SetFullScreen();
+        //resolution.SetFullScreen();
         Globals.GroundLevel = Globals.Size.Height - 60;
 
         Cameraman = new SpriteCameraman(00, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Cameraman, Team.None, ClassType.None);
@@ -101,7 +100,7 @@ public class GameManager
         botManager.UpdateCamerman(Cameraman, players);
         foreach (var player in players)
         {
-            InputManager.Update(players, bots, objects, resolution, keyMappings);
+            InputManager.Update(players, bots, objects, resolution, _canvas, keyMappings);
             player.Update();
             player.UpdateSpriteFXDamage(players, bots, objects);
             player.UpdateInteraction(objects);
@@ -203,11 +202,6 @@ public class GameManager
             obj.Draw(spriteBatch, font, graphics, 0.1f);
         }
 
-        //foreach (var player in players)
-        //{
-        //    player.DrawObjects(spriteBatch, font, graphics);
-        //}
-
         foreach (var bot in deadBots)
         {
             bot.Draw(spriteBatch, font, graphics);
@@ -225,7 +219,7 @@ public class GameManager
         {
             player.Draw(spriteBatch, font, graphics);
         }
-        if (Globals.Debug) debugManager.Draw(spriteBatch, font, players[0], players[0], bots);
+        if (Globals.Debug) debugManager.Draw(spriteBatch, font, players[0], players[0], bots, _canvas);
 
         foreach (var obj in objects_layer1)
         {
@@ -233,7 +227,6 @@ public class GameManager
         }
 
         spriteBatch.End();
-
         _canvas.Draw(spriteBatch);
     }
 }

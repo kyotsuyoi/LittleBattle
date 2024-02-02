@@ -8,6 +8,9 @@ public class Canvas
     private readonly GraphicsDevice _graphicsDevice;
     private Rectangle _destinationRectangle;
 
+    public int adjustX { get; set; }
+    public int adjustY { get; set; }
+
     public Canvas(GraphicsDevice graphicsDevice, int width, int height)
     {
         _graphicsDevice = graphicsDevice;
@@ -28,7 +31,7 @@ public class Canvas
         int posX = (screenSize.Width - newWidth) / 2;
         int posY = (screenSize.Height - newHeight) / 2;
 
-        _destinationRectangle = new Rectangle(posX, posY, newWidth, newHeight);
+        _destinationRectangle = new Rectangle(posX - adjustX, posY - adjustY, newWidth, newHeight);
     }
 
     public void Activate()
@@ -37,10 +40,15 @@ public class Canvas
         _graphicsDevice.Clear(Color.DarkGray);
     }
 
+    public Vector2 GetPosition()
+    {
+        return new Vector2(_destinationRectangle.X, _destinationRectangle.Y);
+    }
+
     public void Draw(SpriteBatch spriteBatch)
     {
         _graphicsDevice.SetRenderTarget(null);
-        _graphicsDevice.Clear(Color.Black);
+        //_graphicsDevice.Clear(Color.Black);
         spriteBatch.Begin();
         spriteBatch.Draw(_target, _destinationRectangle, Color.White);
         spriteBatch.End();

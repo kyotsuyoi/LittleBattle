@@ -1138,26 +1138,13 @@ public class Sprite
 
         if (IconDisplay != null && (spriteType == SpriteType.Player1 || spriteType == SpriteType.Player2))
         {
-            //if ((IconDisplay.spriteType == SpriteType.Wood ||
-            //    IconDisplay.spriteType == SpriteType.Seed ||
-            //    IconDisplay.spriteType == SpriteType.Stone ||
-            //    IconDisplay.spriteType == SpriteType.Iron ||
-            //    IconDisplay.spriteType == SpriteType.Vine ) 
-            //    && IconDisplay.Time > 0)
-            //{
-            //    spriteBatch.DrawString(font, IconDisplay.spriteType.ToString() + " +" + IconDisplay.Quantity, new Vector2(Position.X - 14, Position.Y - IconDisplay.PositionY), Color.Black * IconDisplay.Alpha, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            //    spriteBatch.DrawString(font, IconDisplay.spriteType.ToString() + " +" + IconDisplay.Quantity, new Vector2(Position.X - 14, Position.Y - 2 - IconDisplay.PositionY), Color.White * IconDisplay.Alpha, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
-            //}
-
             if (IconDisplay.spriteType == SpriteType.None && IconDisplay.Time > 0)
             {
                 spriteBatch.DrawString(font, IconDisplay.action.ToString(), new Vector2(Position.X - 12, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
                 spriteBatch.DrawString(font, IconDisplay.action.ToString(), new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
             }
 
-            //IconDisplay.Alpha -= 1 * Globals.ElapsedSeconds;
             IconDisplay.Time -= 1 * Globals.ElapsedSeconds;
-            //IconDisplay.PositionY += 20 * Globals.ElapsedSeconds;
         }
 
         Texture2D _texture;
