@@ -2,7 +2,6 @@ using LittleBattle.Classes;
 using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using SharpDX.Direct2D1;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -40,7 +39,7 @@ public static class InputManager
         return _currentKeyboard.IsKeyDown(key) && _lastKeyboard.IsKeyUp(key);
     }
 
-    public static void Update(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, Resolution resolution, Canvas _canvas, KeyMappingsManager keyMappings)
+    public static void Update(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, Sprite cameraman, Resolution resolution, Canvas _canvas, KeyMappingsManager keyMappings)
     {
         _lastKeyboard = _currentKeyboard;
         _currentKeyboard = Keyboard.GetState();
@@ -51,7 +50,7 @@ public static class InputManager
         { 
             if (gamepad.IsConnected)
             {
-                Player1_Gamepad(gamepad, players, objects);
+                Player1_Gamepad(gamepad, players, objects, cameraman);
             }
             else
             {
@@ -148,32 +147,70 @@ public static class InputManager
         }
     }
 
-    private static void Player1_Gamepad(GamePadState gamepad, List<Sprite> players, List<SpriteObject> objects)
+    private static void Player1_Gamepad(GamePadState gamepad, List<Sprite> players, List<SpriteObject> objects, Sprite cameraman)
     {
         var player = players[0];
-        if (gamepad.DPad.Left == ButtonState.Pressed)
+        //if (gamepad.DPad.Left == ButtonState.Pressed)
+        //{
+        //    player.SetMovement(true, Side.Left);
+        //}
+        //else if (gamepad.DPad.Right == ButtonState.Pressed)
+        //{
+        //    player.SetMovement(true, Side.Right);
+        //}
+
+
+        if (gamepad.ThumbSticks.Left.Y < 0)
         {
-            player.SetMovement(true, Side.Left);
+            player.SetMovement(false, Side.Down, -gamepad.ThumbSticks.Left.Y);
         }
-        else if (gamepad.DPad.Right == ButtonState.Pressed)
+        else if (gamepad.ThumbSticks.Left.Y > 0)
         {
-            player.SetMovement(true, Side.Right);
+            player.SetMovement(false, Side.Up, gamepad.ThumbSticks.Left.Y);
         }
 
-        if (gamepad.DPad.Up == ButtonState.Pressed)
+        if (gamepad.ThumbSticks.Left.X > 0)
         {
-            player.SetMovement(false, Side.Up);
+            player.SetMovement(true, Side.Right, gamepad.ThumbSticks.Left.X);
         }
-        else if (gamepad.DPad.Down == ButtonState.Pressed)
+        else if(gamepad.ThumbSticks.Left.X < 0)
         {
-            player.SetMovement(false, Side.Down);
+            player.SetMovement(true, Side.Left, -gamepad.ThumbSticks.Left.X);
         }
 
-        if (gamepad.DPad.Left == ButtonState.Released && gamepad.DPad.Right == ButtonState.Released &&
-            gamepad.DPad.Up == ButtonState.Released && gamepad.DPad.Down == ButtonState.Released)
+        if (gamepad.ThumbSticks.Left.X == 0 && gamepad.ThumbSticks.Left.Y == 0)
         {
             player.SetMovement(false, Side.None);
         }
+
+        if (gamepad.ThumbSticks.Right.X > 0)
+        {
+            cameraman.SetMovement(true, Side.Right, gamepad.ThumbSticks.Right.X);
+        }
+        else if (gamepad.ThumbSticks.Right.X < 0)
+        {
+            cameraman.SetMovement(true, Side.Left, -gamepad.ThumbSticks.Right.X);
+        }
+
+        if (gamepad.ThumbSticks.Right.X == 0 && gamepad.ThumbSticks.Right.Y == 0)
+        {
+            cameraman.Attribute.Speed = 2;
+        }
+
+        //if (gamepad.DPad.Up == ButtonState.Pressed)
+        //{
+        //    player.SetMovement(false, Side.Up);
+        //}
+        //else if (gamepad.DPad.Down == ButtonState.Pressed)
+        //{
+        //    player.SetMovement(false, Side.Down);
+        //}
+
+        //if (gamepad.DPad.Left == ButtonState.Released && gamepad.DPad.Right == ButtonState.Released &&
+        //    gamepad.DPad.Up == ButtonState.Released && gamepad.DPad.Down == ButtonState.Released)
+        //{
+        //    player.SetMovement(false, Side.None);
+        //}
 
         if (gamepad.Buttons.A == ButtonState.Pressed && !p1_jump_key_pressed
         && !player.Jump && player.Ground

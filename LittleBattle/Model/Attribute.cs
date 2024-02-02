@@ -8,6 +8,7 @@ namespace LittleBattle.Model
         public int HP { get; set; }
         public int Attack { get; set; }
         public int Defense { get; set; }
+        public float CurrentSpeed { get; set; }
         public float Speed { get; set; }
         public float JumpPower { get; set; }
         public float BaseJumpPower { get; set; }
@@ -32,6 +33,7 @@ namespace LittleBattle.Model
             Attack = 2;
             Defense = 1;
 
+            CurrentSpeed = 0;
             Speed = 2;
             JumpPower = 0;
             BaseJumpPower = 5;

@@ -2,6 +2,7 @@
 using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 
 namespace LittleBattle.Manager
@@ -83,6 +84,19 @@ namespace LittleBattle.Manager
 
             spriteBatch.DrawString(font, "CanvasY:" + _canvas.GetPosition().Y.ToString(), new Vector2(10, 460), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "CanvasY:" + _canvas.GetPosition().Y.ToString(), new Vector2(12, 462), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            var gamepad = GamePad.GetState(PlayerIndex.One);
+            if (gamepad.IsConnected)
+            {
+                spriteBatch.DrawString(font, "gamepadLTh-X:" + gamepad.ThumbSticks.Left.X.ToString(), new Vector2(10, 480), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+                spriteBatch.DrawString(font, "gamepadLTh-X:" + gamepad.ThumbSticks.Left.X.ToString(), new Vector2(12, 482), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+                spriteBatch.DrawString(font, "gamepadLTh-Y:" + gamepad.ThumbSticks.Left.Y.ToString(), new Vector2(10, 500), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+                spriteBatch.DrawString(font, "gamepadLTh-Y:" + gamepad.ThumbSticks.Left.Y.ToString(), new Vector2(12, 502), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            }
+
+            spriteBatch.DrawString(font, "player1.Walk:" + player1.Walk, new Vector2(10, 520), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "player1.Walk:" + player1.Walk, new Vector2(12, 522), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
         }
 
     }

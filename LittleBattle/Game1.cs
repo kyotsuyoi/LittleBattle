@@ -17,7 +17,7 @@ namespace LittleBattle
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
-            _graphics.IsFullScreen = true;
+            //_graphics.IsFullScreen = true;
         }
 
         protected override void Initialize()

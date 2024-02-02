@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Graphics;
+using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -24,6 +26,25 @@ namespace LittleBattle
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+        }
+
+        private void SetHardCursorPosition()
+        {
+            if (Window.Current.CoreWindow != null)
+            {
+                Window.Current.CoreWindow.PointerPosition = new Windows.Foundation.Point
+                  (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2);
+            }
+        }
+
+        private void CoreWindow_PointerPressed(CoreWindow sender, PointerEventArgs args)
+        {
+            SetHardCursorPosition();
+        }
+
+        private void CoreWindow_PointerReleased(CoreWindow sender, PointerEventArgs args)
+        {
+            SetHardCursorPosition();
         }
 
         //public static bool IsXbox()
@@ -51,6 +72,10 @@ namespace LittleBattle
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
+
+            //Trying to kill mouse pointer o Xbox. Doesn't work.
+            Window.Current.CoreWindow.PointerPressed += CoreWindow_PointerPressed;
+            Window.Current.CoreWindow.PointerPressed += CoreWindow_PointerReleased;
 
             Frame rootFrame = Window.Current.Content as Frame;
 

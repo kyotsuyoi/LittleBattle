@@ -17,7 +17,7 @@ public class Sprite
     public Vector2 CenterPosition { get; set; }
 
     //Needs change to Size Type
-    protected Vector2 Size { get; set; }
+    public Vector2 Size { get; set; }
 
     public bool Walk { get; set; }
     public bool Run { get; set; }
@@ -55,6 +55,8 @@ public class Sprite
     private List<IconDisplay> Icons;
 
     public Enums.Action SelectedAction = 0;
+
+    private float controlSpeed = 0;
 
     public Sprite(int ID, Vector2 position, SpriteType spriteType, Team team, ClassType classType)
     {
@@ -163,7 +165,7 @@ public class Sprite
             return;
         }
 
-        var speed = Attribute.Speed;
+        var speed = Attribute.Speed * controlSpeed;
         if (spriteType != SpriteType.Player1) speed = Attribute.Speed * 2;
 
         AnimationResolve(speed);
@@ -344,13 +346,14 @@ public class Sprite
         return 0;
     }
 
-    public virtual void SetMovement(bool move, Side side)
+    public virtual void SetMovement(bool move, Side side, float speed = 1f)
     {
         if (!EnabledAction()) return;
 
         var PositiveLimit = Globals.PositiveLimit.Width;
         var NegativeLimit = Globals.NegativeLimit.Width;
 
+        controlSpeed = speed;
         if (Climb)
         {
             if (side == Side.Up && Position.Y > 0)

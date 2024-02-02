@@ -8,6 +8,8 @@ namespace LittleBattle.Model
     public class SpriteCameraman : Sprite
     {
 
+        private float controlSpeed = 0;
+
         public SpriteCameraman(int ID, Vector2 position, Enums.SpriteType spriteType, Enums.Team team, Enums.ClassType classType) : base(ID, position, spriteType, team, classType)
         {
         }
@@ -68,7 +70,7 @@ namespace LittleBattle.Model
             AnimationResolve(0);
         }
 
-        public override void SetMovement(bool move, Side side)
+        public override void SetMovement(bool move, Side side, float speed = 1)
         {
             if (IsDead() || Attribute.StuntTime > 0)
             {
@@ -79,6 +81,7 @@ namespace LittleBattle.Model
             var PositiveLimit = Globals.PositiveLimit.Width - Globals.Size.Width / 2;
             var NegativeLimit = Globals.NegativeLimit.Width + Globals.Size.Width / 2;
 
+            Attribute.Speed = 4*speed;
             if (Climb)
             {
                 if (side == Side.Up && Position.Y > 0)

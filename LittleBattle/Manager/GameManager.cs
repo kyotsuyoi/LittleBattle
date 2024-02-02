@@ -28,6 +28,8 @@ public class GameManager
     {
         this.graphics = graphics;
         Globals.Size = new Size(1920, 1080);
+        //Globals.Size = new Size(3840, 2160);
+        
         _canvas = new Canvas(graphics.GraphicsDevice, Globals.Size.Width, Globals.Size.Height);
 
         Globals.Debug = false;
@@ -100,7 +102,7 @@ public class GameManager
         botManager.UpdateCamerman(Cameraman, players);
         foreach (var player in players)
         {
-            InputManager.Update(players, bots, objects, resolution, _canvas, keyMappings);
+            InputManager.Update(players, bots, objects, Cameraman, resolution, _canvas, keyMappings);
             player.Update();
             player.UpdateSpriteFXDamage(players, bots, objects);
             player.UpdateInteraction(objects);

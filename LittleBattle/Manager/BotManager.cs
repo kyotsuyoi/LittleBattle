@@ -74,36 +74,59 @@ namespace LittleBattle.Manager
 
             if (players[0].GetSide() == Enums.Side.Right)
             {
-                player_position_side *= new Vector2(1.25f, 1);
+                player_position_side *= new Vector2(1f, 1);
             }
             else
             if (players[0].GetSide() == Enums.Side.Left)
             {
-                player_position_side /= new Vector2(1.25f, 1);
+                player_position_side /= new Vector2(1f, 1);
             }
 
-            if (players[0].GetSide() == Enums.Side.Right)
+            //if (players[0].GetSide() == Enums.Side.Right)
+            //{
+            //    if (players[0].Position.X - Globals.Size.Width / 2 <= Cameraman.Position.X + Cameraman.Size.X / 2)
+            //    {
+            //        stop = true;
+            //    }
+            //    if ((Cameraman.Position.X > player_position_side.X) || Cameraman.RelativeX + Globals.Size.Width / 2 >= Globals.PositiveLimit.Width)
+            //    {
+            //        stop = true;
+            //    }
+            //}
+            //else if (players[0].GetSide() == Enums.Side.Left)
+            //{
+            //    if (players[0].RelativeX - Globals.Size.Width / 2 > Cameraman.RelativeX)
+            //    {
+            //        stop = true;
+            //    }
+            //    if ((Cameraman.Position.X < player_position_side.X) || Cameraman.RelativeX - Globals.Size.Width / 2 <= Globals.NegativeLimit.Width)
+            //    {
+            //        stop = true;
+            //    }
+            //}
+
+            Collision collision = new Collision();
+
+            var m = 1.2f;
+            var d = 0.8f;
+            if (Cameraman.classType == Enums.ClassType.None)
             {
-                //if (players[0].Position.X - Globals.Size.Width / 2 <= Cameraman.Position.X + Cameraman.Size.X /2)
-                //{
-                //    stop = true;
-                //}
-                if ((Cameraman.Position.X > player_position_side.X /*&& !players[0].Walk*/) || Cameraman.RelativeX + Globals.Size.Width / 2 >= Globals.PositiveLimit.Width)
-                {
-                    stop = true;
-                }
-            } else 
-            if (players[0].GetSide() == Enums.Side.Left)
-            {
-                //if (players[0].RelativeX - Globals.Size.Width /2 > Cameraman.RelativeX)
-                //{
-                //    stop = true;
-                //}
-                if ((Cameraman.Position.X < player_position_side.X/* && !players[0].Walk*/) || Cameraman.RelativeX - Globals.Size.Width / 2 <= Globals.NegativeLimit.Width)
-                {
-                    stop = true;
-                }
+                m = 0.0001f;
+                d = 0.0001f;
             }
+
+            var collide = collision.SquareCollision(
+                new Vector2((int)Cameraman.RelativeX * d, 0),
+                Cameraman.GetSize() * new Vector2(m, 1),
+                new Vector2((int)players[0].RelativeX * d, 0),
+                players[0].GetSize() * new Vector2(m, 1)
+            );
+
+            if (collide)
+            {
+                stop = true;
+            }
+            
 
             if (stop)
             {
@@ -119,33 +142,45 @@ namespace LittleBattle.Manager
 
             lastSecond = Globals.TotalSeconds;
 
-            if (Cameraman.Attribute.Speed == players[0].Attribute.Speed)
+            if ((int)Cameraman.Attribute.Speed == (int)players[0].Attribute.Speed)
             {
-                Cameraman.Attribute.Speed = players[0].Attribute.Speed;
+                Cameraman.Attribute.Speed = players[0].Attribute.Speed-0.1f;
             }
 
-            if (players[0].GetSide() == Enums.Side.Left)
+            //if (players[0].GetSide() == Enums.Side.Left)
+            //{
+            //    if (Cameraman.Position.X < player_position_side.X && players[0].Walk)
+            //    {
+            //        Cameraman.Attribute.Speed = players[0].Attribute.Speed;
+            //    }
+            //    else
+            //    {
+            //        Cameraman.Attribute.Speed += 0.1f;
+            //    }
+            //    Cameraman.SetMovement(true, Enums.Side.Left);
+            //} else 
+            //if (players[0].GetSide() == Enums.Side.Right)
+            //{                
+            //    if (Cameraman.Position.X > player_position_side.X && players[0].Walk) {
+            //        Cameraman.Attribute.Speed = players[0].Attribute.Speed;
+            //    }
+            //    else
+            //    {
+            //        Cameraman.Attribute.Speed += 0.1f;
+            //    }
+            //    Cameraman.SetMovement(true, Enums.Side.Right);
+            //}
+
+            if (Cameraman.Position.X < player_position_side.X)
             {
-                if (Cameraman.Position.X < player_position_side.X && players[0].Walk)
-                {
-                    Cameraman.Attribute.Speed = players[0].Attribute.Speed;
-                }
-                else
-                {
-                    Cameraman.Attribute.Speed += 0.1f;
-                }
-                Cameraman.SetMovement(true, Enums.Side.Left);
-            } else 
-            if (players[0].GetSide() == Enums.Side.Right)
-            {                
-                if (Cameraman.Position.X > player_position_side.X && players[0].Walk) {
-                    Cameraman.Attribute.Speed = players[0].Attribute.Speed;
-                }
-                else
-                {
-                    Cameraman.Attribute.Speed += 0.1f;
-                }
+                Cameraman.Attribute.Speed = players[0].Attribute.Speed;
                 Cameraman.SetMovement(true, Enums.Side.Right);
+            }
+
+            if (Cameraman.Position.X > player_position_side.X)
+            {
+                Cameraman.Attribute.Speed = players[0].Attribute.Speed;
+                Cameraman.SetMovement(true, Enums.Side.Left);
             }
         }
 
