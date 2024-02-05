@@ -185,16 +185,16 @@ public static class InputManager
 
         if (gamepad.ThumbSticks.Right.X > 0)
         {
-            cameraman.SetMovement(true, Side.Right, gamepad.ThumbSticks.Right.X);
+            cameraman.SetMovement(true, Side.Right, gamepad.ThumbSticks.Right.X*2);
         }
         else if (gamepad.ThumbSticks.Right.X < 0)
         {
-            cameraman.SetMovement(true, Side.Left, -gamepad.ThumbSticks.Right.X);
+            cameraman.SetMovement(true, Side.Left, -gamepad.ThumbSticks.Right.X*2);
         }
 
         if (gamepad.ThumbSticks.Right.X == 0 && gamepad.ThumbSticks.Right.Y == 0)
         {
-            cameraman.Attribute.Speed = 2;
+            //cameraman.Attribute.Speed = 2;
         }
 
         //if (gamepad.DPad.Up == ButtonState.Pressed)

@@ -17,19 +17,23 @@ namespace LittleBattle.Model
         public float PositionY { get; set; }
         public float Alpha { get; set; }
 
-        public IconDisplay(SpriteType spriteType, int Quantity)
+        public SpriteObject spriteObject { get; }
+
+        public IconDisplay(SpriteType spriteType, int Quantity, SpriteObject spriteObject)
         {
             this.spriteType = spriteType;
             this.Quantity = Quantity;
             Time = 4f;
-            this.PositionY = PositionY;
+            //this.PositionY = PositionY;
             Alpha = 1f;
+            this.spriteObject = spriteObject;
         }
 
-        public IconDisplay(Enums.Action action)
+        public IconDisplay(SpriteType spriteType, SpriteObject spriteObject)
         {
             this.action = action;
             Time = 1f;
+            this.spriteObject = spriteObject;
         }
     }
 }

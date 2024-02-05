@@ -8,7 +8,7 @@ namespace LittleBattle.Model
     public class SpriteCameraman : Sprite
     {
 
-        private float controlSpeed = 0;
+        public bool SameSpeed { get; set; }
 
         public SpriteCameraman(int ID, Vector2 position, Enums.SpriteType spriteType, Enums.Team team, Enums.ClassType classType) : base(ID, position, spriteType, team, classType)
         {
@@ -81,7 +81,8 @@ namespace LittleBattle.Model
             var PositiveLimit = Globals.PositiveLimit.Width - Globals.Size.Width / 2;
             var NegativeLimit = Globals.NegativeLimit.Width + Globals.Size.Width / 2;
 
-            Attribute.Speed = 4*speed;
+            if(!SameSpeed) Attribute.Speed = 2*speed;
+
             if (Climb)
             {
                 if (side == Side.Up && Position.Y > 0)

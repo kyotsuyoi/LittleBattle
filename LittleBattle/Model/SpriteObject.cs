@@ -139,13 +139,17 @@ public class SpriteObject
         Position += new Vector2(Globals.CameraMovement,0);
         RelativeX = Position.X - Globals.GroundX;
 
+        var direction = Direction.None;
+        if (Side == Side.Right) direction = Direction.StandRight;
+        if (Side == Side.Left) direction = Direction.StandLeft;
+
         if (IsDead())
         {
-            _anims.Update(Direction.StandRight, false, -1);
+            _anims.Update(direction, false, -1);
         }
         else
         {
-            _anims.Update(Direction.StandRight, false, 0);
+            _anims.Update(direction, false, 0);
         }
 
         UpdateBuild();
@@ -253,17 +257,18 @@ public class SpriteObject
             Position =  new Vector2(center_position.X - GetSize().X /2, center_position.Y);
             return;
         }
+
+        //var oCenterX = Owner.Position.X + Owner.GetSize().X /2;
+        //var oCenterY = Owner.Position.Y + Owner.GetSize().Y /2;
+        //var centerX = Size.X / 2;
+        //var centerY = Size.Y / 2;
+
+        //Position = new Vector2(oCenterX - centerX, oCenterY - centerY);
+
+        //if (Owner.GetSide() == Side.Right) Position += new Vector2(25, 0);
+        //if (Owner.GetSide() == Side.Left) Position -= new Vector2(25, 0);
         
-        var oCenterX = Owner.Position.X + Owner.GetSize().X /2;
-        var oCenterY = Owner.Position.Y + Owner.GetSize().Y /2;
-        var centerX = Size.X / 2;
-        var centerY = Size.Y / 2;
-
-        Position = new Vector2(oCenterX - centerX, oCenterY - centerY);
-
-        if (Owner.GetSide() == Side.Right) Position += new Vector2(25, 0);
-        if (Owner.GetSide() == Side.Left) Position -= new Vector2(25, 0);
-
+        Position = center_position;
         GroundLevel = Globals.GroundLevel - Size.Y;
     }
 
@@ -346,6 +351,15 @@ public class SpriteObject
         return Side;
     }
 
+    public void SetSideBuild(Enums.Side side)
+    {
+        Side = side;
+        var direction = Direction.None;
+        if (Side == Side.Right) direction = Direction.StandRight;
+        if (Side == Side.Left) direction = Direction.StandLeft;
+        _anims.Update(direction, false, 0);
+    }
+
     private Rectangle GetRectangle()
     {
         var Pos = new Point((int)Position.X, (int)Position.Y);
@@ -357,6 +371,11 @@ public class SpriteObject
     public Vector2 GetSize()
     {
         return Size;
+    }
+
+    public void setAlpha(float alpha)
+    {
+        deadAlpha = alpha;
     }
 
     public void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics, float layerDepth)

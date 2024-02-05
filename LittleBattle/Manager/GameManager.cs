@@ -21,7 +21,7 @@ public class GameManager
     private List<SpriteBot> bots;
     private List<SpriteObject> objects;
     private BotManager botManager;
-    private Sprite Cameraman;
+    private SpriteCameraman Cameraman;
     public static KeyMappingsManager keyMappings;
 
     public GameManager(Game game, GraphicsDeviceManager graphics)
@@ -221,7 +221,7 @@ public class GameManager
         {
             player.Draw(spriteBatch, font, graphics);
         }
-        if (Globals.Debug) debugManager.Draw(spriteBatch, font, players[0], players[0], bots, _canvas);
+        if (Globals.Debug) debugManager.Draw(spriteBatch, font, players[0], players[0], bots, _canvas, Cameraman);
 
         foreach (var obj in objects_layer1)
         {

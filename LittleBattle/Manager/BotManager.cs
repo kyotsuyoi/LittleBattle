@@ -59,7 +59,7 @@ namespace LittleBattle.Manager
             }
         }
 
-        public void UpdateCamerman(Sprite Cameraman, List<Sprite> players)
+        public void UpdateCamerman(SpriteCameraman Cameraman, List<Sprite> players)
         {
             var stop = false;
             if (players[0].Climb) {
@@ -68,7 +68,7 @@ namespace LittleBattle.Manager
             var player_position_side = players[0].Position;
             if (Cameraman.GetSide() != players[0].GetSide())
             {
-                Cameraman.Attribute.Speed = 3;
+                //Cameraman.Attribute.Speed = 3;
                 lastSecond = Globals.TotalSeconds - 1f;
             }
 
@@ -122,17 +122,27 @@ namespace LittleBattle.Manager
                 players[0].GetSize() * new Vector2(m, 1)
             );
 
+            Cameraman.SameSpeed = false;
             if (collide)
             {
                 stop = true;
+                Cameraman.SameSpeed = true;
+                Cameraman.Attribute.Speed = players[0].Attribute.CurrentSpeed*2;
             }
-            
+
+            if (!Cameraman.SameSpeed)
+            {
+                Cameraman.Attribute.Speed = 4;
+            }
 
             if (stop)
             {
-                Cameraman.Attribute.Speed = 1;
-                Cameraman.SetMovement(false, Enums.Side.None);
-                return;
+                if (players[0].Attribute.CurrentSpeed <= 0)
+                {
+                    Cameraman.SetMovement(false, Enums.Side.None);
+                    Cameraman.Attribute.Speed = 2;
+                    return;
+                }
             }
 
             if (Globals.TotalSeconds - lastSecond < 0.1f)
@@ -142,10 +152,10 @@ namespace LittleBattle.Manager
 
             lastSecond = Globals.TotalSeconds;
 
-            if ((int)Cameraman.Attribute.Speed == (int)players[0].Attribute.Speed)
-            {
-                Cameraman.Attribute.Speed = players[0].Attribute.Speed-0.1f;
-            }
+            //if ((int)Cameraman.Attribute.Speed == (int)players[0].Attribute.Speed)
+            //{
+            //    Cameraman.Attribute.Speed = players[0].Attribute.Speed-0.2f;
+            //}
 
             //if (players[0].GetSide() == Enums.Side.Left)
             //{
@@ -173,13 +183,13 @@ namespace LittleBattle.Manager
 
             if (Cameraman.Position.X < player_position_side.X)
             {
-                Cameraman.Attribute.Speed = players[0].Attribute.Speed;
+                //Cameraman.Attribute.Speed = players[0].Attribute.Speed;
                 Cameraman.SetMovement(true, Enums.Side.Right);
             }
 
             if (Cameraman.Position.X > player_position_side.X)
             {
-                Cameraman.Attribute.Speed = players[0].Attribute.Speed;
+                //Cameraman.Attribute.Speed = players[0].Attribute.Speed;
                 Cameraman.SetMovement(true, Enums.Side.Left);
             }
         }

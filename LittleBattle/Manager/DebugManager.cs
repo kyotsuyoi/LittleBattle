@@ -9,7 +9,7 @@ namespace LittleBattle.Manager
 {
     public class DebugManager
     {
-        public void Draw(SpriteBatch spriteBatch, SpriteFont font, Sprite player1, Sprite player2, List<SpriteBot> bots, Canvas _canvas) {
+        public void Draw(SpriteBatch spriteBatch, SpriteFont font, Sprite player1, Sprite player2, List<SpriteBot> bots, Canvas _canvas, Sprite Cameraman) {
 
             spriteBatch.DrawString(font, "Time:" + Globals.TotalSeconds, new Vector2(10, 0), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "Time:" + Globals.TotalSeconds, new Vector2(12, 2), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
@@ -97,6 +97,10 @@ namespace LittleBattle.Manager
 
             spriteBatch.DrawString(font, "player1.Walk:" + player1.Walk, new Vector2(10, 520), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "player1.Walk:" + player1.Walk, new Vector2(12, 522), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+
+            spriteBatch.DrawString(font, "Cameraman.Speed:" + Cameraman.Attribute.Speed, new Vector2(10, 540), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1f);
+            spriteBatch.DrawString(font, "Cameraman.Speed:" + Cameraman.Attribute.Speed, new Vector2(12, 542), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
         }
 
     }
