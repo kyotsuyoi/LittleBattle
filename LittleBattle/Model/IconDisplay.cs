@@ -1,9 +1,5 @@
 ﻿using LittleBattle.Classes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using static LittleBattle.Classes.Enums;
 
 namespace LittleBattle.Model
@@ -34,6 +30,14 @@ namespace LittleBattle.Model
             this.action = action;
             Time = 1f;
             this.spriteObject = spriteObject;
+        }
+
+        public void Reset(Vector2 Position)
+        {
+            PositionY = 0;
+            Time = 4f;
+            Alpha = 1f;
+            spriteObject.Position = Position;
         }
     }
 }

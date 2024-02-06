@@ -775,55 +775,17 @@ public class Sprite
 
             if (_obj == null) return;
 
-            switch (_obj.spriteType)
+            _obj.Active = false;
+            _Bag.AddItem(_obj.spriteType, _obj.Quantity);
+            var _icon = Icons.FirstOrDefault(icon => icon.spriteType == _obj.spriteType);
+            if(_icon != null)
             {
-                case SpriteType.Wood:
-                    _obj.Active = false;
-                    _Bag.AddItem(SpriteType.Wood, _obj.Quantity);
-                    Icons.Add(new IconDisplay(SpriteType.Wood, _obj.Quantity, new SpriteObject(null,Side.Right, SpriteType.Wood, Position)));
-                    break;
-
-                case SpriteType.Seed01:
-                    _obj.Active = false;
-                    _Bag.AddItem(SpriteType.Seed01, _obj.Quantity);
-                    Icons.Add(new IconDisplay(SpriteType.Seed01, _obj.Quantity, new SpriteObject(null, Side.Right, SpriteType.Seed01, Position)));
-                    break;
-
-                case SpriteType.Seed02:
-                    _obj.Active = false;
-                    _Bag.AddItem(SpriteType.Seed02, _obj.Quantity);
-                    Icons.Add(new IconDisplay(SpriteType.Seed02, _obj.Quantity, new SpriteObject(null, Side.Right, SpriteType.Seed02, Position)));
-                    break;
-
-                case SpriteType.Stone:
-                    _obj.Active = false;
-                    _Bag.AddItem(SpriteType.Stone, _obj.Quantity);
-                    Icons.Add(new IconDisplay(SpriteType.Stone, _obj.Quantity, new SpriteObject(null, Side.Right, SpriteType.Stone, Position)));
-                    break;
-
-                case SpriteType.Iron:
-                    _obj.Active = false;
-                    _Bag.AddItem(SpriteType.Iron, _obj.Quantity);
-                    Icons.Add(new IconDisplay(SpriteType.Iron, _obj.Quantity, new SpriteObject(null, Side.Right, SpriteType.Iron, Position)));
-                    break;
-
-                case SpriteType.Vine:
-                    _obj.Active = false;
-                    _Bag.AddItem(SpriteType.Vine, _obj.Quantity);
-                    Icons.Add(new IconDisplay(SpriteType.Vine, _obj.Quantity, new SpriteObject(null, Side.Right, SpriteType.Vine, Position)));
-                    break;
-
-                case SpriteType.ToolBag:
-                    _obj.Active = false;
-                    _Bag.AddItem(SpriteType.ToolBag, _obj.Quantity);
-                    Icons.Add(new IconDisplay(SpriteType.ToolBag, 1, new SpriteObject(null, Side.Right, SpriteType.ToolBag, Position)));
-                    break;
-
-                case SpriteType.Fruit:
-                    _obj.Active = false;
-                    _Bag.AddItem(SpriteType.Fruit, _obj.Quantity);
-                    Icons.Add(new IconDisplay(SpriteType.Fruit, 1, new SpriteObject(null, Side.Right, SpriteType.Fruit, Position)));
-                    break;
+                _icon.Quantity += _obj.Quantity;
+                _icon.Reset(Position);
+            }
+            else
+            {
+                Icons.Add(new IconDisplay(_obj.spriteType, _obj.Quantity, new SpriteObject(null, Side.Right, _obj.spriteType, Position)));
             }
             return;
         }
@@ -848,6 +810,7 @@ public class Sprite
             switch (_object.spriteType)
             {
                 case SpriteType.Tree01:
+                case SpriteType.Tree02:
                 case SpriteType.ArcherTowerBuilding:
                 case SpriteType.ResourceStone:
                 case SpriteType.ResourceIron:
@@ -963,7 +926,17 @@ public class Sprite
     {
         if (_Bag.UseItem(SpriteType.Fruit,1))
         {
-            newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.Seed01, IconDisplay.spriteObject.Position, 1));
+            if (PercentualCalc(80))
+            {
+                if(PercentualCalc(22))
+                {
+                    newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.Seed02, IconDisplay.spriteObject.Position, 1));
+                }
+                else
+                {
+                    newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.Seed01, IconDisplay.spriteObject.Position, 1));
+                }
+            }
             Attribute.HP += 10;
             if (Attribute.HP > Attribute.BaseHP) Attribute.HP = Attribute.BaseHP;
             return true;
@@ -1063,6 +1036,7 @@ public class Sprite
             switch (_object.spriteType)
             {
                 case SpriteType.Tree01:
+                case SpriteType.Tree02:
                 case SpriteType.ResourceStone:
                 case SpriteType.ResourceIron:
                     _object.UnbuildObject();
@@ -1236,6 +1210,14 @@ public class Sprite
             IconDisplay.spriteObject.SetSideBuild(Side.Left);
             var s = IconDisplay.spriteObject.GetSide();
         }
+    }
+
+    private bool PercentualCalc(int limit)
+    {
+        Random random = new Random();
+        int randomVal = random.Next(100 + 1) * 1 + 0;
+        if (randomVal <= limit) return true; 
+        return false;
     }
 
     public virtual void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics)

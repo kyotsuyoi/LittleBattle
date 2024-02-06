@@ -230,7 +230,7 @@ public class GameManager
         if (spriteType == SpriteType.Tree01)
         {
             new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Wood, position + RandomPosition(), RandomQuantity(8,1)));
-            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Seed01, position + RandomPosition(), RandomQuantity(2,1)));
+            //new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Seed01, position + RandomPosition(), RandomQuantity(2,1)));
             new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Vine, position + RandomPosition(), RandomQuantity(10)));
         }
         if (spriteType == SpriteType.Tree02)
