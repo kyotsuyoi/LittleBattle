@@ -39,7 +39,7 @@ public static class InputManager
         return _currentKeyboard.IsKeyDown(key) && _lastKeyboard.IsKeyUp(key);
     }
 
-    public static void Update(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, Sprite cameraman, Resolution resolution, Canvas _canvas, KeyMappingsManager keyMappings)
+    public static void Update(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, List<SpriteObjectItem> objectItems, Sprite cameraman, Resolution resolution, Canvas _canvas, KeyMappingsManager keyMappings)
     {
         _lastKeyboard = _currentKeyboard;
         _currentKeyboard = Keyboard.GetState();
@@ -50,11 +50,11 @@ public static class InputManager
         { 
             if (gamepad.IsConnected)
             {
-                Player1_Gamepad(gamepad, players, objects, cameraman);
+                Player1_Gamepad(gamepad, players, objects, objectItems, cameraman);
             }
             else
             {
-                Player1_Keybord(players, objects, keyboard, keyMappings);
+                Player1_Keybord(players, objects, objectItems, keyboard, keyMappings);
             }
         }
 
@@ -74,7 +74,7 @@ public static class InputManager
         DebugCommand(players, bots, objects, _canvas);
     }
 
-    private static void Player1_Keybord(List<Sprite> players, List<SpriteObject> objects, KeyboardState keyboard, KeyMappingsManager keyMappings)
+    private static void Player1_Keybord(List<Sprite> players, List<SpriteObject> objects, List<SpriteObjectItem> objectItems, KeyboardState keyboard, KeyMappingsManager keyMappings)
     {
         var player = players[0];
         if (keyboard.IsKeyDown(keyMappings.MoveLeft))
@@ -128,7 +128,7 @@ public static class InputManager
 
         if (IsKeyPressed(Keys.K))
         {
-            player.SetInteractionObjects(objects);
+            player.SetInteractionObjects(objects, objectItems);
         }
 
         if (IsKeyPressed(Keys.Q))
@@ -147,7 +147,7 @@ public static class InputManager
         }
     }
 
-    private static void Player1_Gamepad(GamePadState gamepad, List<Sprite> players, List<SpriteObject> objects, Sprite cameraman)
+    private static void Player1_Gamepad(GamePadState gamepad, List<Sprite> players, List<SpriteObject> objects, List<SpriteObjectItem> objectItems, Sprite cameraman)
     {
         var player = players[0];
         //if (gamepad.DPad.Left == ButtonState.Pressed)
@@ -239,7 +239,7 @@ public static class InputManager
         if (gamepad.Buttons.Y == ButtonState.Pressed && !p1_interact_key_pressed)
         {
             p1_interact_key_pressed = true;
-            player.SetInteractionObjects(objects);
+            player.SetInteractionObjects(objects, objectItems);
         }
         if (gamepad.Buttons.Y == ButtonState.Released)
         {
@@ -277,7 +277,7 @@ public static class InputManager
         }
     }
 
-    private static void Player2_Keybord(List<SpriteObject> objects, KeyboardState keyboard, Sprite player)
+    private static void Player2_Keybord(List<SpriteObject> objects, List<SpriteObjectItem> objectItems, KeyboardState keyboard, Sprite player)
     {
         if (keyboard.IsKeyDown(Keys.Left))
         {
@@ -329,7 +329,7 @@ public static class InputManager
 
         if (IsKeyPressed(Keys.NumPad4))
         {
-            player.SetInteractionObjects(objects);
+            player.SetInteractionObjects(objects, objectItems);
         }
     }
 
@@ -449,11 +449,11 @@ public static class InputManager
         if (IsKeyPressed(Keys.Y))
         {
             //players[1].SetObject(SpriteType.ArcherTower);
-            objects.Add(new SpriteObject(null, Side.None, SpriteType.Resource, players[0].Position));
+            objects.Add(new SpriteObject(null, Side.Right, SpriteType.ResourceIron, players[0].Position));
         }
         if (IsKeyPressed(Keys.U))
         {
-            objects.Add(new SpriteObject(null, Side.None, SpriteType.Tree01, players[0].Position));
+            objects.Add(new SpriteObject(null, Side.Right, SpriteType.Tree01, players[0].Position));
         }
 
         if (IsKeyPressed(Keys.F8))

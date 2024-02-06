@@ -7,6 +7,7 @@ namespace LittleBattle.Classes
     public class Bag
     {
         private List<Item> Items;
+        //private List<Item> NeededItems;
 
         public Bag() 
         { 
@@ -47,6 +48,90 @@ namespace LittleBattle.Classes
                 }
             }
             return false;
+        }
+
+        public bool UseItemsFor(SpriteType spriteType)
+        {
+            var NeededItems = Needs(spriteType);
+            if (NeededItems.Count <= 0) return false;
+
+            bool hasAll = true;
+            foreach (var needdedItem in NeededItems)
+            {
+                var items = Items.Where(inner_item => inner_item.spriteType == needdedItem.spriteType).ToList();
+                if (items.Count() <= 0) return false;
+                if(items[0].Quantity - needdedItem.Quantity >= 0)
+                {
+                    hasAll = hasAll && true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            if (hasAll)
+            {
+                foreach (var needdedItem in NeededItems)
+                {
+                    UseItem(needdedItem.spriteType, needdedItem.Quantity);
+                }
+            }
+
+            return hasAll;
+        }
+
+        private List<Item> Needs(SpriteType spriteType)
+        {
+            List<Item> NeededItems = null;
+            switch (spriteType)
+            {
+                case SpriteType.Seed01:
+                    NeededItems = new List<Item>
+                    {
+                        new Item(SpriteType.Seed01, 1)
+                    };
+                    break;
+
+                case SpriteType.Seed02:
+                    NeededItems = new List<Item>
+                    {
+                        new Item(SpriteType.Seed02, 1)
+                    };
+                    break;
+
+                case SpriteType.ArcherTowerBuilding:
+                    NeededItems = new List<Item>
+                    {
+                        new Item(SpriteType.Wood, 12)
+                    };
+                    break;
+
+                case SpriteType.Digging:
+                    NeededItems = new List<Item>
+                    {
+                        new Item(SpriteType.Wood, 8),
+                        new Item(SpriteType.Vine, 10)
+                    };
+                    break;
+
+                case SpriteType.WorkStationBuilding:
+                    NeededItems = new List<Item>
+                    {
+                        new Item(SpriteType.Wood, 30),
+                        new Item(SpriteType.Vine, 26),
+                        new Item(SpriteType.ToolBag, 1)
+                    };
+                    break;
+
+                case SpriteType.ReferencePointBuilding:
+                    NeededItems = new List<Item>
+                    {
+                        new Item(SpriteType.Wood, 20),
+                        new Item(SpriteType.Vine, 10)
+                    };
+                    break;
+            }
+            return NeededItems;
         }
     }
 

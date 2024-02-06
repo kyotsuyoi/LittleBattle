@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Xml.Linq;
 using static LittleBattle.Classes.Enums;
 
 public class GameManager
@@ -20,6 +21,7 @@ public class GameManager
     private DebugManager debugManager;
     private List<SpriteBot> bots;
     private List<SpriteObject> objects;
+    private List<SpriteObjectItem> objectItems;
     private BotManager botManager;
     private SpriteCameraman Cameraman;
     public static KeyMappingsManager keyMappings;
@@ -79,8 +81,14 @@ public class GameManager
 
         objects = new List<SpriteObject>
         {
-            new SpriteObject(null, Side.None, SpriteType.Tree01, new Vector2(100, Globals.GroundLevel)),
-            new SpriteObject(null, Side.None, SpriteType.Resource, new Vector2(50, Globals.GroundLevel)),
+            new SpriteObject(null, Side.Right, SpriteType.Tree01, new Vector2(100, Globals.GroundLevel)),
+            new SpriteObject(null, Side.Right, SpriteType.ResourceStone, new Vector2(50, Globals.GroundLevel)),
+            new SpriteObject(null, Side.Right, SpriteType.ResourceIron, new Vector2(150, Globals.GroundLevel)),
+        };
+
+        objectItems = new List<SpriteObjectItem>
+        {
+            new SpriteObjectItem(null, Side.None, SpriteType.ToolBag, new Vector2(10, Globals.GroundLevel), 1),
         };
 
         //KeyMappingsManager custom = new KeyMappingsManager();
@@ -102,15 +110,20 @@ public class GameManager
         botManager.UpdateCamerman(Cameraman, players);
         foreach (var player in players)
         {
-            InputManager.Update(players, bots, objects, Cameraman, resolution, _canvas, keyMappings);
+            InputManager.Update(players, bots, objects, objectItems, Cameraman, resolution, _canvas, keyMappings);
             player.Update();
             player.UpdateSpriteFXDamage(players, bots, objects);
             player.UpdateInteraction(objects);
 
             var objBuild = player.GetObjectsBuild();
+            var objNewBuild = player.GetNewObjectsBuild();
             foreach (var obj in objBuild)
             {
                 objects.Add(obj);
+            }
+            foreach (var obj in objNewBuild)
+            {
+                objectItems.Add(obj);
             }
         }
 
@@ -139,34 +152,54 @@ public class GameManager
         }
 
         objects = objects.Where(_object => _object.Active).ToList();
-        var new_objects = new List<SpriteObject>();
-        foreach (var _object in objects)
+        objectItems = objectItems.Where(_object => _object.Active).ToList();
+        var new_objectItems = new List<SpriteObjectItem>();
+
+        foreach (var _objectItem in objects)
         {
-            bool putNewObject = _object.PutNewObject();
+            bool putNewObject = _objectItem.PutNewObject();
             Vector2 pos = new Vector2();
             if (putNewObject)
             {
-                var pX = (_object.Position.X + (_object.GetSize().X / 2));
-                var pY = _object.Position.Y;
+                var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
+                var pY = _objectItem.Position.Y;
                 pos = new Vector2(pX, pY);
             }
 
-            if (putNewObject && _object.spriteType == SpriteType.Tree01)
+            if (putNewObject && _objectItem.spriteType == SpriteType.Tree01)
             {
-                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Wood, pos + RandomPosition()));
-                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Seed, pos + RandomPosition()));
-                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Vine, pos + RandomPosition()));
+                new_objectItems = RandomObjects(new_objectItems, SpriteType.Tree01, pos);
             }
-            if (putNewObject && _object.spriteType == SpriteType.Resource)
+            if (putNewObject && _objectItem.spriteType == SpriteType.Tree02)
             {
-                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Stone, pos + RandomPosition()));
-                new_objects.Add(new SpriteObject(null, Side.None, SpriteType.Iron, pos + RandomPosition()));
+                new_objectItems = RandomObjects(new_objectItems, SpriteType.Tree02, pos);
+            }
+            if (putNewObject && _objectItem.spriteType == SpriteType.ResourceStone)
+            {
+                new_objectItems = RandomObjects(new_objectItems, SpriteType.ResourceStone, pos);
+            }
+            if (putNewObject && _objectItem.spriteType == SpriteType.ResourceIron)
+            {
+                new_objectItems = RandomObjects(new_objectItems, SpriteType.ResourceIron, pos);
+            }
+
+            if (_objectItem.DropNewObject() && _objectItem.spriteType == SpriteType.Tree02)
+            {
+                var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
+                var pY = _objectItem.Position.Y;
+                pos = new Vector2(pX, pY);
+                new_objectItems = RandomObjects(new_objectItems, SpriteType.Fruit, pos);
             }
         }
 
-        foreach (var _object in new_objects)
+        foreach (var _object in new_objectItems)
         {
-            objects.Add(_object);
+            objectItems.Add(_object);
+        }
+
+        foreach (var _object in objectItems)
+        {
+            _object.Update();
         }
 
         foreach (var _object in objects)
@@ -184,6 +217,44 @@ public class GameManager
         return new Vector2(randomValX, randomValY);
     }
 
+    private int RandomQuantity(int max, int min = 0)
+    {
+        int randomVal;
+        Random random = new Random();
+        randomVal = random.Next(max + 1) * 1 + min;
+        return randomVal;
+    }
+
+    private List<SpriteObjectItem> RandomObjects(List<SpriteObjectItem> new_objects, SpriteType spriteType, Vector2 position)
+    {
+        if (spriteType == SpriteType.Tree01)
+        {
+            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Wood, position + RandomPosition(), RandomQuantity(8,1)));
+            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Seed01, position + RandomPosition(), RandomQuantity(2,1)));
+            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Vine, position + RandomPosition(), RandomQuantity(10)));
+        }
+        if (spriteType == SpriteType.Tree02)
+        {
+            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Wood, position + RandomPosition(), RandomQuantity(2, 1)));
+            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Seed02, position + RandomPosition(), RandomQuantity(1, 1)));
+        }
+        if (spriteType == SpriteType.ResourceStone)
+        {
+            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Stone, position + RandomPosition(), RandomQuantity(8,1)));
+        }
+        if (spriteType == SpriteType.ResourceIron)
+        {
+            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Stone, position + RandomPosition(), RandomQuantity(2, 1)));
+            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Iron, position + RandomPosition(), RandomQuantity(3)));
+        }
+        if (spriteType == SpriteType.Fruit)
+        {
+            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Fruit, position + RandomPosition(), RandomQuantity(1, 0)));
+        }
+        new_objects = new_objects.Where(item => item.Quantity > 0).ToList();
+        return new_objects;
+    }
+
     public void Draw(SpriteBatch spriteBatch)
     {
         _canvas.Activate();
@@ -199,7 +270,15 @@ public class GameManager
 
         var objects_layer0 = objects.Where(objects => objects.layer == 0).ToList();
         var objects_layer1 = objects.Where(objects => objects.layer == 1).ToList();
+
+        var objectItems_layer0 = objectItems.Where(objects => objects.layer == 0).ToList();
+        var objectItems_layer1 = objectItems.Where(objects => objects.layer == 1).ToList();
+
         foreach (var obj in objects_layer0)
+        {
+            obj.Draw(spriteBatch, font, graphics, 0.1f);
+        }
+        foreach (var obj in objectItems_layer0)
         {
             obj.Draw(spriteBatch, font, graphics, 0.1f);
         }
@@ -221,9 +300,14 @@ public class GameManager
         {
             player.Draw(spriteBatch, font, graphics);
         }
-        if (Globals.Debug) debugManager.Draw(spriteBatch, font, players[0], players[0], bots, _canvas, Cameraman);
+
+        debugManager.Draw(spriteBatch, font, players[0], players[0], bots, _canvas, Cameraman);
 
         foreach (var obj in objects_layer1)
+        {
+            obj.Draw(spriteBatch, font, graphics, 0.1f);
+        }
+        foreach (var obj in objectItems_layer1)
         {
             obj.Draw(spriteBatch, font, graphics, 0.1f);
         }

@@ -119,6 +119,7 @@
     <Compile Include="Model\SpriteCameraman.cs" />
     <Compile Include="Model\SpriteBot.cs" />
     <Compile Include="Model\SpriteObject.cs" />
+    <Compile Include="Model\SpriteObjectItems.cs" />
     <Compile Include="Manager\KeyMappingsManager.cs" />
     <Compile Include="Model\SpriteFX.cs" />
     <Compile Include="Model\Sprite.cs" />

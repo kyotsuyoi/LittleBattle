@@ -9,6 +9,7 @@ namespace LittleBattle.Model
 
         public int MaxBuild { get; set; }
         public float Build { get; set; }
+        public float BuildNew { get; set; }
 
         private SpriteType spriteType;
 
@@ -23,22 +24,43 @@ namespace LittleBattle.Model
 
             //MaxBuild = 240;
             Build = 0;
+            BuildNew = 0;
         }
 
         private void SetMaxBuild()
         {
             switch (spriteType)
             {
-                case SpriteType.GrowingTree:
+                case SpriteType.GrowingTree01:
                     MaxBuild = 240;
                     break;
 
-                case SpriteType.ArcherTowerBuild:
+                case SpriteType.GrowingTree02:
+                    MaxBuild = 300;
+                    break;
+
+                case SpriteType.ArcherTowerBuilding:
                     MaxBuild = 30;
                     break;
 
                 case SpriteType.Digging:
                     MaxBuild = 4;
+                    break;
+
+                case SpriteType.WorkStationBuilding:
+                    MaxBuild = 50;
+                    break;
+
+                case SpriteType.ReferencePoint:
+                    MaxBuild = 50;
+                    break;
+
+                case SpriteType.Tree02:
+                    MaxBuild = 5;
+                    break;
+
+                case SpriteType.ReferencePointBuilding:
+                    MaxBuild = 20;
                     break;
 
                 default:
@@ -59,7 +81,11 @@ namespace LittleBattle.Model
                     BaseHP = 10;
                     break;
 
-                case SpriteType.Resource:
+                case SpriteType.ResourceStone:
+                    BaseHP = 5;
+                    break;
+
+                case SpriteType.ResourceIron:
                     BaseHP = 5;
                     break;
 

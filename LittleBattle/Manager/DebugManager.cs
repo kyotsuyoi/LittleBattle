@@ -11,6 +11,34 @@ namespace LittleBattle.Manager
     {
         public void Draw(SpriteBatch spriteBatch, SpriteFont font, Sprite player1, Sprite player2, List<SpriteBot> bots, Canvas _canvas, Sprite Cameraman) {
 
+            var x = Globals.Size.Width - 160;
+            spriteBatch.DrawString(font, "Wood:" + player1.GetBagItem(Enums.SpriteType.Wood), new Vector2(x, 0), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Wood:" + player1.GetBagItem(Enums.SpriteType.Wood), new Vector2(x + 2, 2), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            spriteBatch.DrawString(font, "Seed01:" + player1.GetBagItem(Enums.SpriteType.Seed01), new Vector2(x, 20), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Seed01:" + player1.GetBagItem(Enums.SpriteType.Seed01), new Vector2(x + 2, 22), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            spriteBatch.DrawString(font, "Seed02:" + player1.GetBagItem(Enums.SpriteType.Seed02), new Vector2(x, 40), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Seed02:" + player1.GetBagItem(Enums.SpriteType.Seed02), new Vector2(x + 2, 42), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            spriteBatch.DrawString(font, "Stone:" + player1.GetBagItem(Enums.SpriteType.Stone), new Vector2(x, 60), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Stone:" + player1.GetBagItem(Enums.SpriteType.Stone), new Vector2(x + 2, 62), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            spriteBatch.DrawString(font, "Iron:" + player1.GetBagItem(Enums.SpriteType.Iron), new Vector2(x, 80), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Iron:" + player1.GetBagItem(Enums.SpriteType.Iron), new Vector2(x + 2, 82), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            spriteBatch.DrawString(font, "Vine:" + player1.GetBagItem(Enums.SpriteType.Vine), new Vector2(x, 100), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Vine:" + player1.GetBagItem(Enums.SpriteType.Vine), new Vector2(x + 2, 102), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            spriteBatch.DrawString(font, "Fruit:" + player1.GetBagItem(Enums.SpriteType.Fruit), new Vector2(x, 120), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "Fruit:" + player1.GetBagItem(Enums.SpriteType.Fruit), new Vector2(x + 2, 122), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+            spriteBatch.DrawString(font, "ToolBag:" + player1.GetBagItem(Enums.SpriteType.ToolBag), new Vector2(x, 140), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "ToolBag:" + player1.GetBagItem(Enums.SpriteType.ToolBag), new Vector2(x + 2, 142), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+
+            if (!Globals.Debug) return;
+
             spriteBatch.DrawString(font, "Time:" + Globals.TotalSeconds, new Vector2(10, 0), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "Time:" + Globals.TotalSeconds, new Vector2(12, 2), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
@@ -64,20 +92,7 @@ namespace LittleBattle.Manager
             spriteBatch.DrawString(font, "player1.Ground:" + player1.Ground, new Vector2(10, 320), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "player1.Ground:" + player1.Ground, new Vector2(12, 322), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-            spriteBatch.DrawString(font, "Wood:" + player1.GetBagItem(Enums.SpriteType.Wood), new Vector2(10, 340), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            spriteBatch.DrawString(font, "Wood:" + player1.GetBagItem(Enums.SpriteType.Wood), new Vector2(12, 342), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-            spriteBatch.DrawString(font, "Seed:" + player1.GetBagItem(Enums.SpriteType.Seed), new Vector2(10, 360), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            spriteBatch.DrawString(font, "Seed:" + player1.GetBagItem(Enums.SpriteType.Seed), new Vector2(12, 362), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
-
-            spriteBatch.DrawString(font, "Stone:" + player1.GetBagItem(Enums.SpriteType.Stone), new Vector2(10, 380), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            spriteBatch.DrawString(font, "Stone:" + player1.GetBagItem(Enums.SpriteType.Stone), new Vector2(12, 382), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
-
-            spriteBatch.DrawString(font, "Iron:" + player1.GetBagItem(Enums.SpriteType.Iron), new Vector2(10, 400), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            spriteBatch.DrawString(font, "Iron:" + player1.GetBagItem(Enums.SpriteType.Iron), new Vector2(12, 402), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
-
-            spriteBatch.DrawString(font, "Vine:" + player1.GetBagItem(Enums.SpriteType.Vine), new Vector2(10, 420), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
-            spriteBatch.DrawString(font, "Vine:" + player1.GetBagItem(Enums.SpriteType.Vine), new Vector2(12, 422), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
             spriteBatch.DrawString(font, "CanvasX:" + _canvas.GetPosition().X.ToString(), new Vector2(10, 440), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "CanvasX:" + _canvas.GetPosition().X.ToString(), new Vector2(12, 442), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
@@ -101,6 +116,7 @@ namespace LittleBattle.Manager
 
             spriteBatch.DrawString(font, "Cameraman.Speed:" + Cameraman.Attribute.Speed, new Vector2(10, 540), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1f);
             spriteBatch.DrawString(font, "Cameraman.Speed:" + Cameraman.Attribute.Speed, new Vector2(12, 542), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+            
         }
 
     }

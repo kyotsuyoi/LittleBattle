@@ -27,6 +27,7 @@ public class SpriteObject
     private float deadAlpha = 1f;
 
     private bool putNewObject = false;
+    private bool dropNewObject = false;
 
     private bool transformed = false;
 
@@ -64,6 +65,12 @@ public class SpriteObject
             layer = 0;
         }
 
+        if (spriteType == SpriteType.Tree02)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/Tree02");
+            layer = 0;
+        }
+
         if (spriteType == SpriteType.Wood)
         {
             framesX = 1;
@@ -71,20 +78,34 @@ public class SpriteObject
             layer = 1;
         }
 
-        if (spriteType == SpriteType.Seed)
+        if (spriteType == SpriteType.Seed01)
         {
             framesX = 1;
-            texture = Globals.Content.Load<Texture2D>("Sprite/Seed");
+            texture = Globals.Content.Load<Texture2D>("Sprite/Seed01");
             layer = 1;
         }
 
-        if (spriteType == SpriteType.GrowingTree)
+        if (spriteType == SpriteType.Seed02)
         {
-            texture = Globals.Content.Load<Texture2D>("Sprite_x3/GrowingTree");
+            framesX = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprite/Seed02");
+            layer = 1;
+        }
+
+        if (spriteType == SpriteType.GrowingTree01)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/GrowingTree01");
             layer = 0;
         }
 
-        if (spriteType == SpriteType.ArcherTowerBuild)
+
+        if (spriteType == SpriteType.GrowingTree02)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/GrowingTree02");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.ArcherTowerBuilding)
         {
             texture = Globals.Content.Load<Texture2D>("Sprite_x3/ArcherTowerBuild");
             layer = 0;
@@ -104,10 +125,17 @@ public class SpriteObject
             layer = 1;
         }
 
-        if (spriteType == SpriteType.Resource)
+        if (spriteType == SpriteType.ResourceStone)
         {
             framesX = 1;
-            texture = Globals.Content.Load<Texture2D>("Sprite_x3/Resource");
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/ResourceStone");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.ResourceIron)
+        {
+            framesX = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/ResourceIron");
             layer = 0;
         }
 
@@ -121,6 +149,44 @@ public class SpriteObject
         {
             framesX = 1;
             texture = Globals.Content.Load<Texture2D>("Sprite/Vine");
+            layer = 1;
+        }
+
+        if (spriteType == SpriteType.ToolBag)
+        {
+            framesX = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprite/ToolBag");
+            layer = 1;
+        }
+
+        if (spriteType == SpriteType.WorkStationBuilding)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/WorkStationBuilding");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.WorkStation)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/WorkStation");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.ReferencePointBuilding)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/ReferencePointBuilding");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.ReferencePoint)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/ReferencePoint");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.Fruit)
+        {
+            framesX = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprite/Fruit");
             layer = 1;
         }
 
@@ -157,30 +223,49 @@ public class SpriteObject
 
     private void UpdateBuild()
     {
-        if (spriteType == SpriteType.GrowingTree || spriteType == SpriteType.ArcherTowerBuild || spriteType == SpriteType.Digging)
+        if (spriteType == SpriteType.GrowingTree01 || spriteType == SpriteType.GrowingTree02 || spriteType == SpriteType.ArcherTowerBuilding || spriteType == SpriteType.Digging || 
+            spriteType == SpriteType.WorkStationBuilding || spriteType == SpriteType.ReferencePointBuilding)
         {
             if (AttributeObject.Build > AttributeObject.MaxBuild)
             {
                 AttributeObject.Build = AttributeObject.MaxBuild;
             }
-            double percent = (float)AttributeObject.Build / (float)AttributeObject.MaxBuild * 100;
+            double percent = (float)AttributeObject.Build / AttributeObject.MaxBuild * 100;
 
             if (percent >= 100)
             {
                 transformed = true;
                 switch (spriteType)
                 {
-                    case SpriteType.GrowingTree:
+                    case SpriteType.GrowingTree01:
                         spriteType = SpriteType.Tree01;
                         transformed = false;
                         break;
 
-                    case SpriteType.ArcherTowerBuild:
+                    case SpriteType.GrowingTree02:
+                        spriteType = SpriteType.Tree02;
+                        transformed = false;
+                        AttributeObject.Build = 0;
+                        break;
+
+                    case SpriteType.ArcherTowerBuilding:
                         spriteType = SpriteType.ArcherTower;
                         break;
 
                     case SpriteType.Digging:
-                        spriteType = SpriteType.Resource;
+                        spriteType = SpriteType.ResourceStone;
+                        break;
+
+                    //case SpriteType.Digging:
+                    //    spriteType = SpriteType.IronStone;
+                    //    break;
+
+                    case SpriteType.WorkStationBuilding:
+                        spriteType = SpriteType.WorkStation;
+                        break;
+
+                    case SpriteType.ReferencePointBuilding:
+                        spriteType = SpriteType.ReferencePoint;
                         break;
                 }
 
@@ -188,7 +273,7 @@ public class SpriteObject
                 _anims = new AnimationManager();
                 SetTexture();
 
-                if (spriteType == SpriteType.Resource)
+                if (spriteType == SpriteType.ResourceStone || spriteType == SpriteType.ResourceIron)
                 {
                     InitialPosition(Position);
                 }
@@ -206,9 +291,21 @@ public class SpriteObject
                 _anims.Update(Direction.StandRight, false, 1);
             }
 
-            if (spriteType == SpriteType.GrowingTree)
+            if (spriteType == SpriteType.GrowingTree01 || spriteType == SpriteType.GrowingTree02)
             {
                 BuildObject();
+            }
+        }
+
+        //Fruit
+        if(spriteType == SpriteType.Tree02)
+        {
+            BuildNewObject();
+            AttributeObject.MaxBuild = 5;
+            double percent = (float)AttributeObject.BuildNew / AttributeObject.MaxBuild * 100;
+            if (percent >= 100)
+            {
+                dropNewObject = true;
             }
         }
     }
@@ -294,6 +391,11 @@ public class SpriteObject
         AttributeObject.Build += Globals.ElapsedSeconds*10;
     }
 
+    private void BuildNewObject()
+    {
+        AttributeObject.BuildNew += Globals.ElapsedSeconds;
+    }
+
     public bool Building()
     {
         if (AttributeObject.Build >= AttributeObject.MaxBuild) return false;
@@ -305,6 +407,17 @@ public class SpriteObject
         if (IsDead() && !putNewObject)
         {
             putNewObject = true;
+            return true;
+        }
+        return false;
+    }
+
+    public bool DropNewObject()
+    {
+        if (dropNewObject)
+        {
+            dropNewObject = false;
+            AttributeObject.BuildNew = 0;
             return true;
         }
         return false;
@@ -373,7 +486,7 @@ public class SpriteObject
         return Size;
     }
 
-    public void setAlpha(float alpha)
+    public void SetAlpha(float alpha)
     {
         deadAlpha = alpha;
     }
@@ -394,6 +507,10 @@ public class SpriteObject
         //spriteBatch.DrawString(font, "frame:" + Globals.SpriteFrame.ToString(), new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
         //float percent = (float)AttributeObject.Build / (float)AttributeObject.MaxBuild * 100;
+        //spriteBatch.DrawString(font, "Build:" + percent, new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        //spriteBatch.DrawString(font, "Build:" + percent, new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+        //float percent = (float)AttributeObject.BuildNew / (float)AttributeObject.MaxBuild * 100;
         //spriteBatch.DrawString(font, "Build:" + percent, new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         //spriteBatch.DrawString(font, "Build:" + percent, new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 

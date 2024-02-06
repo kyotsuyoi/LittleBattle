@@ -51,6 +51,7 @@ public class Sprite
 
     private Bag _Bag;
     private List<SpriteObject> objectsBuild;
+    private List<SpriteObjectItem> newObjectsBuild;
     private IconDisplay IconDisplay;
     private List<IconDisplay> Icons;
 
@@ -88,21 +89,27 @@ public class Sprite
         spriteFXs = new List<SpriteFX>();
         spriteObjects = new List<SpriteObject>();
         objectsBuild = new List<SpriteObject>();
+        newObjectsBuild = new List<SpriteObjectItem>();
         Icons = new List<IconDisplay>();
         _Bag = new Bag();
 
         if (classType == ClassType.Worker)
         {
-            _Bag.AddItem(SpriteType.Seed, 5);
+            _Bag.AddItem(SpriteType.Seed01, 5);
+            _Bag.AddItem(SpriteType.Seed02, 1);
         }
         CalcGroundLevel();
 
         spriteTypesSelection = new List<SpriteType>
         {
             SpriteType.None,
-            SpriteType.Seed,
-            SpriteType.ArcherTowerBuild,
-            SpriteType.Digging
+            SpriteType.Seed01,
+            SpriteType.Seed02,
+            SpriteType.ArcherTowerBuilding,
+            SpriteType.Digging,
+            SpriteType.WorkStationBuilding,
+            SpriteType.ReferencePointBuilding,
+            SpriteType.Fruit
         };
     }
 
@@ -434,7 +441,8 @@ public class Sprite
 
     public void SetAttack()
     {
-        _Bag.AddItem(SpriteType.Wood, 999);
+        //_Bag.AddItem(SpriteType.Wood, 10);
+        //_Bag.AddItem(SpriteType.Seed, 1);
         if (Climb || Work || Attribute.AttackCooldown > 0) return;
         if (!EnabledAction()) return;
 
@@ -751,7 +759,7 @@ public class Sprite
         spriteObjects.Add(new SpriteObject(this, GetSide(), spriteType, new Vector2(0, 0)));
     }
 
-    public void SetInteractionObjects(List<SpriteObject> objects)
+    public void SetInteractionObjects(List<SpriteObject> objects, List<SpriteObjectItem> objectItems)
     {
         //_Bag.AddItem(SpriteType.Wood, 9999);
         if (!EnabledAction()) return;
@@ -759,9 +767,9 @@ public class Sprite
         //Item collect only        
         if (HoldDown)
         {
-            var inner_objects = objects.Where(obj => 
-                obj.spriteType == SpriteType.Wood || obj.spriteType == SpriteType.Seed ||
-                obj.spriteType == SpriteType.Stone || obj.spriteType == SpriteType.Iron || obj.spriteType == SpriteType.Vine
+            var inner_objects = objectItems.Where(obj => 
+                obj.spriteType == SpriteType.Wood || obj.spriteType == SpriteType.Seed01 || obj.spriteType == SpriteType.Seed02 || obj.spriteType == SpriteType.Fruit ||
+                obj.spriteType == SpriteType.Stone || obj.spriteType == SpriteType.Iron || obj.spriteType == SpriteType.Vine || obj.spriteType == SpriteType.ToolBag
             ).ToList();
             var _obj = GetInteractObject(inner_objects);
 
@@ -771,32 +779,50 @@ public class Sprite
             {
                 case SpriteType.Wood:
                     _obj.Active = false;
-                    _Bag.AddItem(SpriteType.Wood, 5);
-                    Icons.Add(new IconDisplay(SpriteType.Wood, 5, new SpriteObject(null,Side.Right, SpriteType.Wood, Position)));
+                    _Bag.AddItem(SpriteType.Wood, _obj.Quantity);
+                    Icons.Add(new IconDisplay(SpriteType.Wood, _obj.Quantity, new SpriteObject(null,Side.Right, SpriteType.Wood, Position)));
                     break;
 
-                case SpriteType.Seed:
+                case SpriteType.Seed01:
                     _obj.Active = false;
-                    _Bag.AddItem(SpriteType.Seed, 1);
-                    Icons.Add(new IconDisplay(SpriteType.Seed, 1, new SpriteObject(null, Side.Right, SpriteType.Seed, Position)));
+                    _Bag.AddItem(SpriteType.Seed01, _obj.Quantity);
+                    Icons.Add(new IconDisplay(SpriteType.Seed01, _obj.Quantity, new SpriteObject(null, Side.Right, SpriteType.Seed01, Position)));
+                    break;
+
+                case SpriteType.Seed02:
+                    _obj.Active = false;
+                    _Bag.AddItem(SpriteType.Seed02, _obj.Quantity);
+                    Icons.Add(new IconDisplay(SpriteType.Seed02, _obj.Quantity, new SpriteObject(null, Side.Right, SpriteType.Seed02, Position)));
                     break;
 
                 case SpriteType.Stone:
                     _obj.Active = false;
-                    _Bag.AddItem(SpriteType.Stone, 3);
-                    Icons.Add(new IconDisplay(SpriteType.Stone, 3, new SpriteObject(null, Side.Right, SpriteType.Stone, Position)));
+                    _Bag.AddItem(SpriteType.Stone, _obj.Quantity);
+                    Icons.Add(new IconDisplay(SpriteType.Stone, _obj.Quantity, new SpriteObject(null, Side.Right, SpriteType.Stone, Position)));
                     break;
 
                 case SpriteType.Iron:
                     _obj.Active = false;
-                    _Bag.AddItem(SpriteType.Iron, 1);
-                    Icons.Add(new IconDisplay(SpriteType.Iron, 1, new SpriteObject(null, Side.Right, SpriteType.Iron, Position)));
+                    _Bag.AddItem(SpriteType.Iron, _obj.Quantity);
+                    Icons.Add(new IconDisplay(SpriteType.Iron, _obj.Quantity, new SpriteObject(null, Side.Right, SpriteType.Iron, Position)));
                     break;
 
                 case SpriteType.Vine:
                     _obj.Active = false;
-                    _Bag.AddItem(SpriteType.Vine, 3);
-                    Icons.Add(new IconDisplay(SpriteType.Vine, 3, new SpriteObject(null, Side.Right, SpriteType.Vine, Position)));
+                    _Bag.AddItem(SpriteType.Vine, _obj.Quantity);
+                    Icons.Add(new IconDisplay(SpriteType.Vine, _obj.Quantity, new SpriteObject(null, Side.Right, SpriteType.Vine, Position)));
+                    break;
+
+                case SpriteType.ToolBag:
+                    _obj.Active = false;
+                    _Bag.AddItem(SpriteType.ToolBag, _obj.Quantity);
+                    Icons.Add(new IconDisplay(SpriteType.ToolBag, 1, new SpriteObject(null, Side.Right, SpriteType.ToolBag, Position)));
+                    break;
+
+                case SpriteType.Fruit:
+                    _obj.Active = false;
+                    _Bag.AddItem(SpriteType.Fruit, _obj.Quantity);
+                    Icons.Add(new IconDisplay(SpriteType.Fruit, 1, new SpriteObject(null, Side.Right, SpriteType.Fruit, Position)));
                     break;
             }
             return;
@@ -804,8 +830,9 @@ public class Sprite
 
         WorkingID = 0;
         var _objects = objects.Where(obj =>
-                obj.spriteType != SpriteType.Wood && obj.spriteType != SpriteType.Seed &&
-                obj.spriteType != SpriteType.Stone && obj.spriteType != SpriteType.Iron && obj.spriteType != SpriteType.GrowingTree
+                obj.spriteType != SpriteType.Wood && obj.spriteType != SpriteType.Seed01 && obj.spriteType != SpriteType.Seed02 &&
+                obj.spriteType != SpriteType.Stone && obj.spriteType != SpriteType.Iron && obj.spriteType != SpriteType.GrowingTree01 && obj.spriteType != SpriteType.GrowingTree01 && 
+                obj.spriteType != SpriteType.ToolBag
         ).ToList();
         var _object = GetInteractObject(_objects);
 
@@ -817,13 +844,16 @@ public class Sprite
                 SetSide(GetSide());
                 return;
             }
-
+            
             switch (_object.spriteType)
             {
                 case SpriteType.Tree01:
-                case SpriteType.ArcherTowerBuild:
-                case SpriteType.Resource:
+                case SpriteType.ArcherTowerBuilding:
+                case SpriteType.ResourceStone:
+                case SpriteType.ResourceIron:
                 case SpriteType.Digging:
+                case SpriteType.WorkStationBuilding:
+                case SpriteType.ReferencePointBuilding:
 
                     WorkingID = _object.ID;
                     Work = true;
@@ -869,11 +899,21 @@ public class Sprite
         }
     }
 
-    private bool PlantSeed()
+    private bool PlantSeed01()
     {
-        if (_Bag.UseItem(SpriteType.Seed, 1))
+        if (_Bag.UseItem(SpriteType.Seed01, 1))
         {
-            objectsBuild.Add(new SpriteObject(null, GetSide(), SpriteType.GrowingTree, IconDisplay.spriteObject.Position));
+            objectsBuild.Add(new SpriteObject(null, GetSide(), SpriteType.GrowingTree01, IconDisplay.spriteObject.Position));
+            return true;
+        }
+        return false;
+    }
+
+    private bool PlantSeed02()
+    {
+        if (_Bag.UseItem(SpriteType.Seed02, 1))
+        {
+            objectsBuild.Add(new SpriteObject(null, GetSide(), SpriteType.GrowingTree02, IconDisplay.spriteObject.Position));
             return true;
         }
         return false;
@@ -881,9 +921,9 @@ public class Sprite
 
     private bool BuildArcherTower()
     {
-        if (_Bag.UseItem(SpriteType.Wood, 12))
+        if (_Bag.UseItemsFor(SpriteType.ArcherTowerBuilding))
         {
-            objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.ArcherTowerBuild, IconDisplay.spriteObject.Position));
+            objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.ArcherTowerBuilding, IconDisplay.spriteObject.Position));
             return true;
         }
         return false;
@@ -891,9 +931,41 @@ public class Sprite
     
     private bool Dig()
     {
-        if (_Bag.UseItem(SpriteType.Wood, 8))
+        if (_Bag.UseItemsFor(SpriteType.Digging))
         {
             objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.Digging, IconDisplay.spriteObject.Position));
+            return true;
+        }
+        return false;
+    }
+
+    private bool BuildWorkStation()
+    {
+        if (_Bag.UseItemsFor(SpriteType.WorkStationBuilding))
+        {
+            objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.WorkStationBuilding, IconDisplay.spriteObject.Position));
+            return true;
+        }
+        return false;
+    }
+
+    private bool BuildReferencePoint()
+    {
+        if (_Bag.UseItemsFor(SpriteType.ReferencePointBuilding))
+        {
+            objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.ReferencePointBuilding, IconDisplay.spriteObject.Position));
+            return true;
+        }
+        return false;
+    }
+
+    private bool Eat()
+    {
+        if (_Bag.UseItem(SpriteType.Fruit,1))
+        {
+            newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.Seed01, IconDisplay.spriteObject.Position, 1));
+            Attribute.HP += 10;
+            if (Attribute.HP > Attribute.BaseHP) Attribute.HP = Attribute.BaseHP;
             return true;
         }
         return false;
@@ -909,7 +981,7 @@ public class Sprite
             return;
         }
         SpriteObject newSpriteObject = new SpriteObject(null, GetSide(), spriteTypesSelection[SelectedAction], new Vector2(0, 0));
-        newSpriteObject.setAlpha(0.5f);
+        newSpriteObject.SetAlpha(0.5f);
         IconDisplay = new IconDisplay(spriteTypesSelection[SelectedAction], newSpriteObject);
     }
 
@@ -927,7 +999,7 @@ public class Sprite
         }
 
         SpriteObject newSpriteObject = new SpriteObject(null, GetSide(), spriteTypesSelection[SelectedAction], new Vector2(0, 0));
-        newSpriteObject.setAlpha(0.5f);
+        newSpriteObject.SetAlpha(0.5f);
         IconDisplay = new IconDisplay(spriteTypesSelection[SelectedAction], newSpriteObject);
     }
 
@@ -936,16 +1008,32 @@ public class Sprite
         if (IconDisplay == null) return;
         switch (spriteTypesSelection[SelectedAction])
         {
-            case Enums.SpriteType.ArcherTowerBuild:
+            case Enums.SpriteType.ArcherTowerBuilding:
                 BuildArcherTower();
                 break;
 
-            case Enums.SpriteType.Seed:
-                PlantSeed();
+            case Enums.SpriteType.Seed01:
+                PlantSeed01();
+                break;
+
+            case Enums.SpriteType.Seed02:
+                PlantSeed02();
                 break;
 
             case Enums.SpriteType.Digging:
                 Dig();
+                break;
+
+            case Enums.SpriteType.WorkStationBuilding:
+                BuildWorkStation();
+                break;
+
+            case Enums.SpriteType.ReferencePointBuilding:
+                BuildReferencePoint();
+                break;
+
+            case Enums.SpriteType.Fruit:
+                Eat();
                 break;
         }
     }
@@ -954,6 +1042,13 @@ public class Sprite
     {
         var temp_objects = objectsBuild;
         objectsBuild = new List<SpriteObject>();
+        return temp_objects;
+    }
+
+    public List<SpriteObjectItem> GetNewObjectsBuild()
+    {
+        var temp_objects = newObjectsBuild;
+        newObjectsBuild = new List<SpriteObjectItem>();
         return temp_objects;
     }
 
@@ -968,12 +1063,15 @@ public class Sprite
             switch (_object.spriteType)
             {
                 case SpriteType.Tree01:
-                case SpriteType.Resource:
+                case SpriteType.ResourceStone:
+                case SpriteType.ResourceIron:
                     _object.UnbuildObject();
                     break;
 
-                case SpriteType.ArcherTowerBuild:
+                case SpriteType.ArcherTowerBuilding:
                 case SpriteType.Digging:
+                case SpriteType.WorkStationBuilding:
+                case SpriteType.ReferencePointBuilding:
                     _object.BuildObject();
                     break;
 
@@ -1056,6 +1154,27 @@ public class Sprite
         }
         return _object;
     }
+    private SpriteObjectItem GetInteractObject(List<SpriteObjectItem> objects)
+    {
+        SpriteObjectItem _object = null;
+
+        Collision collision = new Collision();
+        objects = objects.Where(_spriteobject => !_spriteobject.IsDead()).ToList();
+        foreach (var local_object in objects)
+        {
+            var PosB = new Point((int)local_object.Position.X, (int)local_object.Position.Y);
+            var SizB = new Point((int)local_object.GetSize().X, (int)local_object.GetSize().Y);
+            var RectB = new Rectangle(PosB, SizB);
+            var isCollide = collision.IsCollide(GetRectangle(), RectB);
+
+            if (isCollide)
+            {
+                _object = local_object;
+                break;
+            }
+        }
+        return _object;
+    }
 
     protected Rectangle GetRectangle()
     {
@@ -1101,7 +1220,7 @@ public class Sprite
             icon.Time -= 1 * Globals.ElapsedSeconds;
             icon.PositionY += 30 * Globals.ElapsedSeconds;
             icon.spriteObject.Position = new Vector2(Position.X, icon.spriteObject.Position.Y - 30 * Globals.ElapsedSeconds);
-            icon.spriteObject.setAlpha(icon.Alpha);
+            icon.spriteObject.SetAlpha(icon.Alpha);
         }
 
         if (IconDisplay == null) return;

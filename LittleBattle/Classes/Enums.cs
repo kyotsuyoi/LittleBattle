@@ -60,18 +60,31 @@ namespace LittleBattle.Classes
             Cameraman = 6,
             SwordEffect = 50,
             ArrowEffect = 51,
-            ArcherTowerBuild = 99,
-            ArcherTower = 100,
+
             Tree01 = 101,
+            Tree02 = 102,
+
             Wood = 105,
-            Seed = 106,
-            GrowingTree = 107,
-            Stone = 108,
-            Iron = 109,
-            Resource = 110,
-            Digging = 111,
-            Vine = 112,
-            Rope = 113,
+            Seed01 = 106,
+            Seed02 = 107,
+            GrowingTree01 = 108,
+            GrowingTree02 = 109,
+            Stone = 110,
+            Iron = 111,
+            ResourceStone = 112,
+            ResourceIron = 113,
+            Digging = 114,
+            Vine = 115,
+            Rope = 116,
+            ToolBag = 117,
+            Fruit = 118,
+
+            ArcherTowerBuilding = 144,
+            ArcherTower = 145,
+            WorkStationBuilding = 146,
+            WorkStation = 147,
+            ReferencePointBuilding = 148,
+            ReferencePoint = 149
         }
 
         public enum Team
