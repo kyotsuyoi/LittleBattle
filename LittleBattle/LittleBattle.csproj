@@ -95,6 +95,7 @@
     </Compile>
     <Compile Include="Classes\Animation.cs" />
     <Compile Include="Classes\Bag.cs" />
+    <Compile Include="Classes\Common.cs" />
     <Compile Include="Classes\Enums.cs" />
     <Compile Include="Classes\Globals.cs" />
     <Compile Include="Classes\Layer.cs" />

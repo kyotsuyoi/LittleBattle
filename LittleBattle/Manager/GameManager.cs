@@ -25,6 +25,7 @@ public class GameManager
     private BotManager botManager;
     private SpriteCameraman Cameraman;
     public static KeyMappingsManager keyMappings;
+    private Common Common;
 
     public GameManager(Game game, GraphicsDeviceManager graphics)
     {
@@ -75,6 +76,7 @@ public class GameManager
         font = Globals.Content.Load<SpriteFont>("Font/fontMedium");
         debugManager = new DebugManager();
         botManager = new BotManager();
+        Common = new Common();
 
         keyMappings = new KeyMappingsManager();
         keyMappings.LoadKeyMappings();
@@ -99,10 +101,7 @@ public class GameManager
 
     public void Update()
     {
-
         Globals.GroundLevel = Globals.Size.Height - 62;
-        //InputManager.UpdateResolution(resolution);
-        //InputManager.DebugCommand(players, bots);
         Globals.CameraMovement = Cameraman.CameraDirectionSpeed();
         backgroundManager.Update();
 
@@ -150,7 +149,11 @@ public class GameManager
         {
             botManager.Update(bots, players);
         }
+        UpdateObjects();
+    }
 
+    private void UpdateObjects()
+    {
         objects = objects.Where(_object => _object.Active).ToList();
         objectItems = objectItems.Where(_object => _object.Active).ToList();
         var new_objectItems = new List<SpriteObjectItem>();
@@ -168,19 +171,19 @@ public class GameManager
 
             if (putNewObject && _objectItem.spriteType == SpriteType.Tree01)
             {
-                new_objectItems = RandomObjects(new_objectItems, SpriteType.Tree01, pos);
+                new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.Tree01, pos);
             }
             if (putNewObject && _objectItem.spriteType == SpriteType.Tree02)
             {
-                new_objectItems = RandomObjects(new_objectItems, SpriteType.Tree02, pos);
+                new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.Tree02, pos);
             }
             if (putNewObject && _objectItem.spriteType == SpriteType.ResourceStone)
             {
-                new_objectItems = RandomObjects(new_objectItems, SpriteType.ResourceStone, pos);
+                new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.ResourceStone, pos);
             }
             if (putNewObject && _objectItem.spriteType == SpriteType.ResourceIron)
             {
-                new_objectItems = RandomObjects(new_objectItems, SpriteType.ResourceIron, pos);
+                new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.ResourceIron, pos);
             }
 
             if (_objectItem.DropNewObject() && _objectItem.spriteType == SpriteType.Tree02)
@@ -188,7 +191,7 @@ public class GameManager
                 var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
                 var pY = _objectItem.Position.Y;
                 pos = new Vector2(pX, pY);
-                new_objectItems = RandomObjects(new_objectItems, SpriteType.Fruit, pos);
+                new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.Fruit, pos);
             }
         }
 
@@ -206,53 +209,6 @@ public class GameManager
         {
             _object.Update();
         }
-    }
-
-    private Vector2 RandomPosition()
-    {
-        int randomValX, randomValY;
-        Random random = new Random();
-        randomValX = random.Next(120) * 1 - 60;
-        randomValY = random.Next(60) * 1 - 30;
-        return new Vector2(randomValX, randomValY);
-    }
-
-    private int RandomQuantity(int max, int min = 0)
-    {
-        int randomVal;
-        Random random = new Random();
-        randomVal = random.Next(max + 1) * 1 + min;
-        return randomVal;
-    }
-
-    private List<SpriteObjectItem> RandomObjects(List<SpriteObjectItem> new_objects, SpriteType spriteType, Vector2 position)
-    {
-        if (spriteType == SpriteType.Tree01)
-        {
-            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Wood, position + RandomPosition(), RandomQuantity(8,1)));
-            //new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Seed01, position + RandomPosition(), RandomQuantity(2,1)));
-            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Vine, position + RandomPosition(), RandomQuantity(10)));
-        }
-        if (spriteType == SpriteType.Tree02)
-        {
-            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Wood, position + RandomPosition(), RandomQuantity(2, 1)));
-            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Seed02, position + RandomPosition(), RandomQuantity(1, 1)));
-        }
-        if (spriteType == SpriteType.ResourceStone)
-        {
-            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Stone, position + RandomPosition(), RandomQuantity(8,1)));
-        }
-        if (spriteType == SpriteType.ResourceIron)
-        {
-            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Stone, position + RandomPosition(), RandomQuantity(2, 1)));
-            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Iron, position + RandomPosition(), RandomQuantity(3)));
-        }
-        if (spriteType == SpriteType.Fruit)
-        {
-            new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Fruit, position + RandomPosition(), RandomQuantity(1, 0)));
-        }
-        new_objects = new_objects.Where(item => item.Quantity > 0).ToList();
-        return new_objects;
     }
 
     public void Draw(SpriteBatch spriteBatch)

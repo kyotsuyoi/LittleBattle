@@ -60,6 +60,8 @@ public class Sprite
 
     private float controlSpeed = 0;
 
+    private Common Common;
+
     public Sprite(int ID, Vector2 position, SpriteType spriteType, Team team, ClassType classType)
     {
         Active = true;
@@ -91,7 +93,8 @@ public class Sprite
         objectsBuild = new List<SpriteObject>();
         newObjectsBuild = new List<SpriteObjectItem>();
         Icons = new List<IconDisplay>();
-        _Bag = new Bag();
+        _Bag = new Bag(); 
+        Common = new Common();
 
         if (classType == ClassType.Worker)
         {
@@ -926,9 +929,9 @@ public class Sprite
     {
         if (_Bag.UseItem(SpriteType.Fruit,1))
         {
-            if (PercentualCalc(80))
+            if (Common.PercentualCalc(60))
             {
-                if(PercentualCalc(22))
+                if(Common.PercentualCalc(10))
                 {
                     newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.Seed02, IconDisplay.spriteObject.Position, 1));
                 }
@@ -1210,14 +1213,6 @@ public class Sprite
             IconDisplay.spriteObject.SetSideBuild(Side.Left);
             var s = IconDisplay.spriteObject.GetSide();
         }
-    }
-
-    private bool PercentualCalc(int limit)
-    {
-        Random random = new Random();
-        int randomVal = random.Next(100 + 1) * 1 + 0;
-        if (randomVal <= limit) return true; 
-        return false;
     }
 
     public virtual void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics)
