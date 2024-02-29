@@ -27,16 +27,15 @@ namespace LittleBattle.Classes
 
         public List<SpriteObjectItem> RandomObjects(List<SpriteObjectItem> new_objects, SpriteType spriteType, Vector2 position)
         {
-            if (spriteType == SpriteType.Tree01)
+            if (spriteType == SpriteType.Tree01 || spriteType == SpriteType.Tree01MidLife)
             {
                 new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Wood, position + RandomPosition(), RandomQuantity(8, 1)));
-                //new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Seed01, position + RandomPosition(), RandomQuantity(2,1)));
                 new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Vine, position + RandomPosition(), RandomQuantity(10)));
             }
-            if (spriteType == SpriteType.Tree02)
+            if (spriteType == SpriteType.Tree02 || spriteType == SpriteType.Tree02MidLife)
             {
                 new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Wood, position + RandomPosition(), RandomQuantity(2, 1)));
-                new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Seed02, position + RandomPosition(), RandomQuantity(1, 1)));
+                new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Seed02, position + RandomPosition(), RandomQuantity(1)));
             }
             if (spriteType == SpriteType.ResourceStone)
             {
@@ -49,8 +48,20 @@ namespace LittleBattle.Classes
             }
             if (spriteType == SpriteType.Fruit)
             {
-                new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Fruit, position + RandomPosition(), RandomQuantity(1, 0)));
+                new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Fruit, position + RandomPosition(), RandomQuantity(1)));
             }
+            if (spriteType == SpriteType.Tree01EndLife)
+            {
+                new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Wood, position + RandomPosition(), RandomQuantity(2)));
+            }
+            if (spriteType == SpriteType.Tree02EndLife)
+            {
+                new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Wood, position + RandomPosition(), RandomQuantity(1)));
+            }
+            //if (spriteType == SpriteType.TreeDried)
+            //{
+            //    new_objects.Add(new SpriteObjectItem(null, Side.None, SpriteType.Wood, position + RandomPosition(), RandomQuantity(1)));
+            //}
             new_objects = new_objects.Where(item => item.Quantity > 0).ToList();
             return new_objects;
         }

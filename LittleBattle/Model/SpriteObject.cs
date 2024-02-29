@@ -37,9 +37,6 @@ public class SpriteObject
 
     public bool InteractionPointer { get; set; }
 
-    private Common common = new Common();
-    private Collision collision = new Collision();
-
     public SpriteObject(Sprite Owner, Side side, SpriteType spriteType, Vector2 initialPosition)
     {
         Active = true;
@@ -248,7 +245,7 @@ public class SpriteObject
         AttributeObject = new AttributeObject(spriteType);
     }
 
-    public void Update()
+    public void Update(List<SpriteObject> objects)
     {        
         AnimationResolve();
         FallingResolve();
@@ -269,10 +266,10 @@ public class SpriteObject
             _anims.Update(direction, false, 0);
         }
 
-        UpdateBuild();
+        UpdateBuild(objects);
     }
 
-    private void UpdateBuild()
+    private void UpdateBuild(List<SpriteObject> objects)
     {
         if (spriteType == SpriteType.Tree01Growing || spriteType == SpriteType.Tree02Growing || spriteType == SpriteType.ArcherTowerBuilding || spriteType == SpriteType.Digging || 
             spriteType == SpriteType.WorkStationBuilding || spriteType == SpriteType.ReferencePointBuilding)
@@ -307,10 +304,6 @@ public class SpriteObject
                         spriteType = SpriteType.ResourceStone;
                         break;
 
-                    //case SpriteType.Digging:
-                    //    spriteType = SpriteType.IronStone;
-                    //    break;
-
                     case SpriteType.WorkStationBuilding:
                         spriteType = SpriteType.WorkStation;
                         break;
@@ -344,6 +337,7 @@ public class SpriteObject
 
             if (spriteType == SpriteType.Tree01Growing || spriteType == SpriteType.Tree02Growing)
             {
+                if (IsTreeCollision(objects) && percent >= 25) return;
                 BuildObject();
             }
         }
@@ -364,12 +358,37 @@ public class SpriteObject
         }
     }
 
-    public void CheckTreeCollision(List<SpriteObject> objects)
+    private bool IsTreeCollision(List<SpriteObject> objects)
     {
         Collision collision = new Collision();
 
-        objects = objects.Where(_spriteobject => !_spriteobject.IsDead() &&
-        _spriteobject.spriteType == SpriteType.Tree02 || _spriteobject.spriteType == SpriteType.Tree02MidLife || _spriteobject.spriteType == SpriteType.Tree02EndLife).ToList();
+        var Trees = objects.Where(_spriteobject => !_spriteobject.IsDead() && 
+        (_spriteobject.spriteType == SpriteType.Tree02 || _spriteobject.spriteType == SpriteType.Tree02MidLife || _spriteobject.spriteType == SpriteType.Tree02EndLife ||
+        _spriteobject.spriteType == SpriteType.Tree01 || _spriteobject.spriteType == SpriteType.Tree01MidLife || _spriteobject.spriteType == SpriteType.Tree01EndLife ||
+        _spriteobject.spriteType == SpriteType.TreeDried) &&
+        ID != _spriteobject.ID).ToList();
+
+        foreach (var Tree in Trees)
+        {
+            var PosB = new Point((int)Tree.Position.X, (int)Tree.Position.Y);
+            var SizB = new Point((int)Tree.GetSize().X, (int)Tree.GetSize().Y);
+            var RectB = new Rectangle(PosB, SizB);
+            var isCollide = collision.IsCollide(GetRectangle(), RectB);
+
+            if (isCollide)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public List<SpriteObjectItem> FruitCollision(List<SpriteObjectItem> objects)
+    {
+        Collision collision = new Collision();
+        List<SpriteObjectItem> returnObjects = new List<SpriteObjectItem>();
+        objects = objects.Where(_spriteobject => !_spriteobject.IsDead() && (_spriteobject.spriteType == SpriteType.FruitRotten) && ID != _spriteobject.ID).ToList();
         foreach (var local_object in objects)
         {
             var PosB = new Point((int)local_object.Position.X, (int)local_object.Position.Y);
@@ -379,13 +398,11 @@ public class SpriteObject
 
             if (isCollide)
             {
-                AttributeObject.Build -= Globals.ElapsedSeconds * 10;
-                if(AttributeObject.Build <= AttributeObject.MaxBuild)
-                {
-                    AttributeObject.Build = 0;
-                }
+                returnObjects.Add(local_object);
             }
         }
+
+        return returnObjects;
     }
 
     private void AnimationResolve()
@@ -432,16 +449,6 @@ public class SpriteObject
             Position =  new Vector2(center_position.X - GetSize().X /2, center_position.Y);
             return;
         }
-
-        //var oCenterX = Owner.Position.X + Owner.GetSize().X /2;
-        //var oCenterY = Owner.Position.Y + Owner.GetSize().Y /2;
-        //var centerX = Size.X / 2;
-        //var centerY = Size.Y / 2;
-
-        //Position = new Vector2(oCenterX - centerX, oCenterY - centerY);
-
-        //if (Owner.GetSide() == Side.Right) Position += new Vector2(25, 0);
-        //if (Owner.GetSide() == Side.Left) Position -= new Vector2(25, 0);
         
         Position = center_position;
         GroundLevel = Globals.GroundLevel - Size.Y;
@@ -492,6 +499,8 @@ public class SpriteObject
 
     public bool DropNewObject()
     {
+
+        if (IsDead()) return false;
         if (dropNewObject)
         {
             dropNewObject = false;
@@ -504,10 +513,10 @@ public class SpriteObject
                 Common commom = new Common();
 
                 spriteType = SpriteType.Tree02MidLife;
-                if (commom.PercentualCalc(50))
-                {
-                    spriteType = SpriteType.Tree01MidLife;
-                }
+                //if (commom.PercentualCalc(50))
+                //{
+                //    spriteType = SpriteType.Tree01MidLife;
+                //}
 
                 _anims = new AnimationManager();
                 SetTexture();

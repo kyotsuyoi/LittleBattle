@@ -80,6 +80,12 @@ namespace LittleBattle.Model
                     break;
 
                 case SpriteType.Tree01:
+                case SpriteType.Tree02:
+                case SpriteType.Tree01MidLife:
+                case SpriteType.Tree01EndLife:
+                case SpriteType.Tree02MidLife:
+                case SpriteType.Tree02EndLife:
+                case SpriteType.TreeDried:
                     BaseHP = 10;
                     break;
 

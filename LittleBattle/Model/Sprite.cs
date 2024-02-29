@@ -794,7 +794,7 @@ public class Sprite
         WorkingID = 0;
         var _objects = objects.Where(obj =>
                 obj.spriteType != SpriteType.Wood && obj.spriteType != SpriteType.Seed01 && obj.spriteType != SpriteType.Seed02 &&
-                obj.spriteType != SpriteType.Stone && obj.spriteType != SpriteType.Iron && obj.spriteType != SpriteType.Tree01Growing && 
+                obj.spriteType != SpriteType.Stone && obj.spriteType != SpriteType.Iron && obj.spriteType != SpriteType.Tree01Growing && obj.spriteType != SpriteType.Tree02Growing &&
                 obj.spriteType != SpriteType.ToolBag && obj.spriteType != SpriteType.SetBagWorker
         ).ToList();
         var _object = GetInteractObject(_objects);
@@ -818,6 +818,11 @@ public class Sprite
                 case SpriteType.Digging:
                 case SpriteType.WorkStationBuilding:
                 case SpriteType.ReferencePointBuilding:
+                case SpriteType.Tree01MidLife:
+                case SpriteType.Tree01EndLife:
+                case SpriteType.Tree02MidLife:
+                case SpriteType.Tree02EndLife:
+                case SpriteType.TreeDried:
 
                     WorkingID = _object.ID;
                     Work = true;
@@ -865,6 +870,8 @@ public class Sprite
 
     private bool PlantSeed01()
     {
+        if (classType != ClassType.Worker) return false;
+        _Bag.AddItem(SpriteType.Seed01, 1);
         if (_Bag.UseItem(SpriteType.Seed01, 1))
         {
             objectsBuild.Add(new SpriteObject(null, GetSide(), SpriteType.Tree01Growing, IconDisplay.spriteObject.Position));
@@ -875,6 +882,7 @@ public class Sprite
 
     private bool PlantSeed02()
     {
+        if (classType != ClassType.Worker) return false;
         _Bag.AddItem(SpriteType.Seed02, 1);
         if (_Bag.UseItem(SpriteType.Seed02, 1))
         {
@@ -886,6 +894,7 @@ public class Sprite
 
     private bool BuildArcherTower()
     {
+        if (classType != ClassType.Worker) return false;
         if (_Bag.UseItemsFor(SpriteType.ArcherTowerBuilding))
         {
             objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.ArcherTowerBuilding, IconDisplay.spriteObject.Position));
@@ -896,6 +905,7 @@ public class Sprite
     
     private bool Dig()
     {
+        if (classType != ClassType.Worker) return false;
         if (_Bag.UseItemsFor(SpriteType.Digging))
         {
             objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.Digging, IconDisplay.spriteObject.Position));
@@ -906,6 +916,7 @@ public class Sprite
 
     private bool BuildWorkStation()
     {
+        if (classType != ClassType.Worker) return false;
         if (_Bag.UseItemsFor(SpriteType.WorkStationBuilding))
         {
             objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.WorkStationBuilding, IconDisplay.spriteObject.Position));
@@ -916,6 +927,7 @@ public class Sprite
 
     private bool BuildReferencePoint()
     {
+        if (classType != ClassType.Worker) return false;
         if (_Bag.UseItemsFor(SpriteType.ReferencePointBuilding))
         {
             objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.ReferencePointBuilding, IconDisplay.spriteObject.Position));
@@ -1069,6 +1081,11 @@ public class Sprite
                 case SpriteType.Tree02:
                 case SpriteType.ResourceStone:
                 case SpriteType.ResourceIron:
+                case SpriteType.Tree01MidLife:
+                case SpriteType.Tree01EndLife:
+                case SpriteType.Tree02MidLife:
+                case SpriteType.Tree02EndLife:
+                case SpriteType.TreeDried:
                     _object.UnbuildObject();
                     break;
 
