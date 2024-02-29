@@ -21,36 +21,23 @@ namespace LittleBattle.Model
         public float BaseComboTimeLimit { get; set; }
         public float StuntTime { get; set; }
 
-
         public int BuffAttack { get; set; }
         public int BuffKnockback { get; set; }
 
         public Attribute(Enums.ClassType classType)
         {
-            BaseHP = 100;
+            BaseHP = 10;
             HP = BaseHP;
 
-            Attack = 2;
-            Defense = 1;
+            Attack = 1;
+            Defense = 0;
 
-            CurrentSpeed = 0;
             Speed = 2;
-            JumpPower = 0;
-            BaseJumpPower = 5;
-            AttackCooldown = 0;
-            BaseAttackCooldown = 0.5f;
-
-            Knockback = 0;
-            KnockbackSide = Enums.Side.None;
-
             Range = 5;
 
-            ComboTimeLimit = 0;
-            BaseComboTimeLimit = 0.5f;
+            BaseJumpPower = 5;
 
-            StuntTime = 0;
-
-            if(classType == Enums.ClassType.Warrior)
+            if (classType == Enums.ClassType.Warrior)
             {
                 BaseHP = 200;
                 HP = BaseHP;
@@ -58,6 +45,43 @@ namespace LittleBattle.Model
                 Attack = 4;
                 Defense = 2;
             }
+
+            if (classType == Enums.ClassType.Archer)
+            {
+                BaseHP = 100;
+                HP = BaseHP;
+
+                Attack = 2;
+                Defense = 1;
+            }
+
+            if (classType == Enums.ClassType.Worker)
+            {
+                BaseHP = 100;
+                HP = BaseHP;
+
+                Attack = 1;
+                Defense = 1;
+            }
+
+            if (classType == Enums.ClassType.Newbie)
+            {
+                Speed = 2.5f;
+                BaseJumpPower = 3;
+            }
+
+            ComboTimeLimit = 0;
+            BaseComboTimeLimit = 0.5f;
+
+            CurrentSpeed = 0;
+            JumpPower = 0;
+            AttackCooldown = 0;
+            BaseAttackCooldown = 0.5f;
+
+            Knockback = 0;
+            KnockbackSide = Enums.Side.None;
+
+            StuntTime = 0;
 
             BuffAttack = 0;
             BuffKnockback = 0;

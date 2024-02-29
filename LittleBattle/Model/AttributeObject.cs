@@ -13,6 +13,8 @@ namespace LittleBattle.Model
 
         private SpriteType spriteType;
 
+        public int BuildNewCounter { get; set; }
+
         public AttributeObject(SpriteType spriteType)
         {
             this.spriteType = spriteType;
@@ -31,11 +33,11 @@ namespace LittleBattle.Model
         {
             switch (spriteType)
             {
-                case SpriteType.GrowingTree01:
+                case SpriteType.Tree01Growing:
                     MaxBuild = 240;
                     break;
 
-                case SpriteType.GrowingTree02:
+                case SpriteType.Tree02Growing:
                     MaxBuild = 300;
                     break;
 

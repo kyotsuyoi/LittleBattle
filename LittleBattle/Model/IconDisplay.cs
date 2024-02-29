@@ -15,12 +15,12 @@ namespace LittleBattle.Model
 
         public SpriteObject spriteObject { get; }
 
-        public IconDisplay(SpriteType spriteType, int Quantity, SpriteObject spriteObject)
+        public IconDisplay(SpriteType spriteType, int Quantity, SpriteObject spriteObject, float PositionY = 0)
         {
             this.spriteType = spriteType;
             this.Quantity = Quantity;
             Time = 4f;
-            //this.PositionY = PositionY;
+            this.PositionY = PositionY;
             Alpha = 1f;
             this.spriteObject = spriteObject;
         }

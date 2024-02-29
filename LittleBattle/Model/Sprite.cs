@@ -31,13 +31,13 @@ public class Sprite
     public float FallingSpeed { get; set; }
     public Vector2 Direction { get; set; }
     public SpriteType spriteType { get; }
-    public ClassType classType { get; }
+    public ClassType classType { get; set; }
     public float RelativeX { get; set; }
 
     protected List<SpriteFX> spriteFXs;
     private List<SpriteObject> spriteObjects;
 
-    protected readonly AnimationManager _anims = new AnimationManager();
+    protected AnimationManager _anims = new AnimationManager();
     public LittleBattle.Model.Attribute Attribute { get; set; }
 
     public Team Team;
@@ -96,11 +96,6 @@ public class Sprite
         _Bag = new Bag(); 
         Common = new Common();
 
-        if (classType == ClassType.Worker)
-        {
-            _Bag.AddItem(SpriteType.Seed01, 5);
-            _Bag.AddItem(SpriteType.Seed02, 1);
-        }
         CalcGroundLevel();
 
         spriteTypesSelection = new List<SpriteType>
@@ -112,7 +107,8 @@ public class Sprite
             SpriteType.Digging,
             SpriteType.WorkStationBuilding,
             SpriteType.ReferencePointBuilding,
-            SpriteType.Fruit
+            SpriteType.Fruit,
+            SpriteType.SetBagWorker
         };
     }
 
@@ -126,12 +122,14 @@ public class Sprite
             if (classType == ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite01");
             if (classType == ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite03");
             if (classType == ClassType.Worker) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite05");
+            if (classType == ClassType.Newbie) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite07");
         }
         else if (Team == Team.Team2)
         {
             if (classType == ClassType.Warrior) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite02");
             if (classType == ClassType.Archer) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite04");
             if (classType == ClassType.Worker) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite06");
+            if (classType == ClassType.Newbie) texture = Globals.Content.Load<Texture2D>("Sprite_x3/Sprite08");
         }
 
         _anims.AddAnimation(Enums.Direction.StandRight, new Animation(texture, framesX, framesY, 0, 3, 0.25f, 1, false, true));
@@ -449,7 +447,7 @@ public class Sprite
         if (Climb || Work || Attribute.AttackCooldown > 0) return;
         if (!EnabledAction()) return;
 
-        if (classType == ClassType.Warrior || classType == ClassType.Worker) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.SwordEffect));
+        if (classType == ClassType.Warrior || classType == ClassType.Worker || classType == ClassType.Newbie) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.SwordEffect));
         if (classType == ClassType.Archer) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.ArrowEffect));
 
         var spFX = spriteFXs[spriteFXs.Count() - 1];
@@ -767,17 +765,17 @@ public class Sprite
         //_Bag.AddItem(SpriteType.Wood, 9999);
         if (!EnabledAction()) return;
 
-        //Item collect only        
+        //Item collect only
+        //var inner_objects = objectItems.Where(obj =>
+        //    obj.spriteType == SpriteType.Wood || obj.spriteType == SpriteType.Seed01 || obj.spriteType == SpriteType.Seed02 || obj.spriteType == SpriteType.Fruit ||
+        //    obj.spriteType == SpriteType.Stone || obj.spriteType == SpriteType.Iron || obj.spriteType == SpriteType.Vine || obj.spriteType == SpriteType.ToolBag ||
+        //    obj.spriteType == SpriteType.SetBagWorker
+        //).ToList();
+        var _obj = GetInteractObject(objectItems);
+
         if (HoldDown)
         {
-            var inner_objects = objectItems.Where(obj => 
-                obj.spriteType == SpriteType.Wood || obj.spriteType == SpriteType.Seed01 || obj.spriteType == SpriteType.Seed02 || obj.spriteType == SpriteType.Fruit ||
-                obj.spriteType == SpriteType.Stone || obj.spriteType == SpriteType.Iron || obj.spriteType == SpriteType.Vine || obj.spriteType == SpriteType.ToolBag
-            ).ToList();
-            var _obj = GetInteractObject(inner_objects);
-
             if (_obj == null) return;
-
             _obj.Active = false;
             _Bag.AddItem(_obj.spriteType, _obj.Quantity);
             var _icon = Icons.FirstOrDefault(icon => icon.spriteType == _obj.spriteType);
@@ -796,8 +794,8 @@ public class Sprite
         WorkingID = 0;
         var _objects = objects.Where(obj =>
                 obj.spriteType != SpriteType.Wood && obj.spriteType != SpriteType.Seed01 && obj.spriteType != SpriteType.Seed02 &&
-                obj.spriteType != SpriteType.Stone && obj.spriteType != SpriteType.Iron && obj.spriteType != SpriteType.GrowingTree01 && obj.spriteType != SpriteType.GrowingTree01 && 
-                obj.spriteType != SpriteType.ToolBag
+                obj.spriteType != SpriteType.Stone && obj.spriteType != SpriteType.Iron && obj.spriteType != SpriteType.Tree01Growing && 
+                obj.spriteType != SpriteType.ToolBag && obj.spriteType != SpriteType.SetBagWorker
         ).ToList();
         var _object = GetInteractObject(_objects);
 
@@ -869,7 +867,7 @@ public class Sprite
     {
         if (_Bag.UseItem(SpriteType.Seed01, 1))
         {
-            objectsBuild.Add(new SpriteObject(null, GetSide(), SpriteType.GrowingTree01, IconDisplay.spriteObject.Position));
+            objectsBuild.Add(new SpriteObject(null, GetSide(), SpriteType.Tree01Growing, IconDisplay.spriteObject.Position));
             return true;
         }
         return false;
@@ -877,9 +875,10 @@ public class Sprite
 
     private bool PlantSeed02()
     {
+        _Bag.AddItem(SpriteType.Seed02, 1);
         if (_Bag.UseItem(SpriteType.Seed02, 1))
         {
-            objectsBuild.Add(new SpriteObject(null, GetSide(), SpriteType.GrowingTree02, IconDisplay.spriteObject.Position));
+            objectsBuild.Add(new SpriteObject(null, GetSide(), SpriteType.Tree02Growing, IconDisplay.spriteObject.Position));
             return true;
         }
         return false;
@@ -929,7 +928,7 @@ public class Sprite
     {
         if (_Bag.UseItem(SpriteType.Fruit,1))
         {
-            if (Common.PercentualCalc(60))
+            if (Common.PercentualCalc(40))
             {
                 if(Common.PercentualCalc(10))
                 {
@@ -942,6 +941,24 @@ public class Sprite
             }
             Attribute.HP += 10;
             if (Attribute.HP > Attribute.BaseHP) Attribute.HP = Attribute.BaseHP;
+            return true;
+        }
+        return false;
+    }
+
+    private bool UseSetBagWorker()
+    {
+        //_Bag.AddItem(SpriteType.SetBagWorker, 1);
+        if (_Bag.UseItem(SpriteType.SetBagWorker, 1))
+        {
+            classType = ClassType.Worker;
+            _anims = new AnimationManager();
+            SetTexture();
+            Attribute = new LittleBattle.Model.Attribute(ClassType.Worker);
+            //_Bag.AddItem(SpriteType.Seed01, 5);
+            _Bag.AddItem(SpriteType.Seed02, 1);
+            //Icons.Add(new IconDisplay(SpriteType.Seed01, 5, new SpriteObject(null, Side.Right, SpriteType.Seed01, new Vector2(Position.X, Position.Y - 20)), 20));
+            Icons.Add(new IconDisplay(SpriteType.Seed02, 1, new SpriteObject(null, Side.Right, SpriteType.Seed02, Position)));
             return true;
         }
         return false;
@@ -1011,6 +1028,10 @@ public class Sprite
             case Enums.SpriteType.Fruit:
                 Eat();
                 break;
+
+            case Enums.SpriteType.SetBagWorker:
+                UseSetBagWorker();
+                break;
         }
     }
 
@@ -1028,10 +1049,16 @@ public class Sprite
         return temp_objects;
     }
 
-    public void UpdateInteraction(List<SpriteObject> spriteObjects)
+    public void UpdateInteraction(List<SpriteObject> spriteObjects, List<SpriteObjectItem> spriteObjectItems)
     {
-        var inner_spriteObjects = spriteObjects.Where(_spriteobject => _spriteobject.Active && _spriteobject.ID == WorkingID).ToList();
+        //To update Pointer
+        //var inner_objectItems = spriteObjectItems.Where(obj =>
+        //    obj.spriteType == SpriteType.Wood || obj.spriteType == SpriteType.Seed01 || obj.spriteType == SpriteType.Seed02 || obj.spriteType == SpriteType.Fruit ||
+        //    obj.spriteType == SpriteType.Stone || obj.spriteType == SpriteType.Iron || obj.spriteType == SpriteType.Vine || obj.spriteType == SpriteType.ToolBag
+        //).ToList();
+        GetInteractObject(spriteObjectItems);       
 
+        var inner_spriteObjects = spriteObjects.Where(_spriteobject => _spriteobject.Active && _spriteobject.ID == WorkingID).ToList();
         var _object = GetInteractObject(inner_spriteObjects);
 
         if (_object != null && Work && !_object.IsTransformed())
@@ -1123,14 +1150,20 @@ public class Sprite
             var RectB = new Rectangle(PosB, SizB);
             var isCollide = collision.IsCollide(GetRectangle(), RectB);
 
+            local_object.InteractionPointer = false;
             if (isCollide)
             {
                 _object = local_object;
-                break;
+                if (!HoldDown)
+                {
+                    _object.InteractionPointer = true;
+                }
+                //break;
             }
         }
         return _object;
     }
+    
     private SpriteObjectItem GetInteractObject(List<SpriteObjectItem> objects)
     {
         SpriteObjectItem _object = null;
@@ -1144,10 +1177,15 @@ public class Sprite
             var RectB = new Rectangle(PosB, SizB);
             var isCollide = collision.IsCollide(GetRectangle(), RectB);
 
+            local_object.InteractionPointer = false;
             if (isCollide)
             {
                 _object = local_object;
-                break;
+                if (HoldDown)
+                {
+                    _object.InteractionPointer = true;
+                }
+                //break;
             }
         }
         return _object;

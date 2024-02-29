@@ -54,7 +54,7 @@ public class GameManager
 
         players = new List<Sprite>
         {
-            new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player1, Team.Team1, ClassType.Worker),
+            new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player1, Team.Team1, ClassType.Newbie),
             //new Sprite(02, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player2, Team.Team2, ClassType.Archer),
         };
         foreach (var player in players)
@@ -91,6 +91,7 @@ public class GameManager
         objectItems = new List<SpriteObjectItem>
         {
             new SpriteObjectItem(null, Side.None, SpriteType.ToolBag, new Vector2(10, Globals.GroundLevel), 1),
+            new SpriteObjectItem(null, Side.None, SpriteType.SetBagWorker, new Vector2(-10, Globals.GroundLevel), 1),
         };
 
         //KeyMappingsManager custom = new KeyMappingsManager();
@@ -112,7 +113,7 @@ public class GameManager
             InputManager.Update(players, bots, objects, objectItems, Cameraman, resolution, _canvas, keyMappings);
             player.Update();
             player.UpdateSpriteFXDamage(players, bots, objects);
-            player.UpdateInteraction(objects);
+            player.UpdateInteraction(objects, objectItems);
 
             var objBuild = player.GetObjectsBuild();
             var objNewBuild = player.GetNewObjectsBuild();
@@ -186,7 +187,7 @@ public class GameManager
                 new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.ResourceIron, pos);
             }
 
-            if (_objectItem.DropNewObject() && _objectItem.spriteType == SpriteType.Tree02)
+            if (_objectItem.DropNewObject() && (_objectItem.spriteType == SpriteType.Tree02 || _objectItem.spriteType == SpriteType.Tree02MidLife))
             {
                 var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
                 var pY = _objectItem.Position.Y;
@@ -203,11 +204,16 @@ public class GameManager
         foreach (var _object in objectItems)
         {
             _object.Update();
+            if (_object.DropNewObject() && _object.spriteType == SpriteType.FruitRotten && Common.PercentualCalc(10))
+            {
+                objects.Add(new SpriteObject(null, Side.None, SpriteType.Tree02Growing, _object.Position));
+            }
         }
 
         foreach (var _object in objects)
         {
             _object.Update();
+            _object.CheckTreeCollision(objects);
         }
     }
 

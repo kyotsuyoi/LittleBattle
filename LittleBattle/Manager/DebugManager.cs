@@ -36,6 +36,8 @@ namespace LittleBattle.Manager
             spriteBatch.DrawString(font, "ToolBag:" + player1.GetBagItem(Enums.SpriteType.ToolBag), new Vector2(x, 140), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
             spriteBatch.DrawString(font, "ToolBag:" + player1.GetBagItem(Enums.SpriteType.ToolBag), new Vector2(x + 2, 142), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
+            spriteBatch.DrawString(font, "BagWork:" + player1.GetBagItem(Enums.SpriteType.SetBagWorker), new Vector2(x, 160), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+            spriteBatch.DrawString(font, "BagWork:" + player1.GetBagItem(Enums.SpriteType.SetBagWorker), new Vector2(x + 2, 162), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
             if (!Globals.Debug) return;
 

@@ -3,6 +3,8 @@ using LittleBattle.Manager;
 using LittleBattle.Model;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
+using System.Linq;
 using Windows.UI.Xaml.Controls;
 using static LittleBattle.Classes.Enums;
 
@@ -32,6 +34,11 @@ public class SpriteObject
     private bool transformed = false;
 
     public int layer = 0;
+
+    public bool InteractionPointer { get; set; }
+
+    private Common common = new Common();
+    private Collision collision = new Collision();
 
     public SpriteObject(Sprite Owner, Side side, SpriteType spriteType, Vector2 initialPosition)
     {
@@ -92,16 +99,16 @@ public class SpriteObject
             layer = 1;
         }
 
-        if (spriteType == SpriteType.GrowingTree01)
+        if (spriteType == SpriteType.Tree01Growing)
         {
-            texture = Globals.Content.Load<Texture2D>("Sprite_x3/GrowingTree01");
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/Tree01Growing");
             layer = 0;
         }
 
 
-        if (spriteType == SpriteType.GrowingTree02)
+        if (spriteType == SpriteType.Tree02Growing)
         {
-            texture = Globals.Content.Load<Texture2D>("Sprite_x3/GrowingTree02");
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/Tree02Growing");
             layer = 0;
         }
 
@@ -190,6 +197,50 @@ public class SpriteObject
             layer = 1;
         }
 
+        if (spriteType == SpriteType.SetBagWorker)
+        {
+            framesX = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprite/SetBagWorker");
+            layer = 1;
+        }
+
+        if (spriteType == SpriteType.Tree01MidLife)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/Tree01MidLife");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.Tree02MidLife)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/Tree02MidLife");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.Tree01EndLife)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/Tree01EndLife");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.Tree02EndLife)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/Tree02EndLife");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.TreeDried)
+        {
+            texture = Globals.Content.Load<Texture2D>("Sprite_x3/TreeDried");
+            layer = 0;
+        }
+
+        if (spriteType == SpriteType.FruitRotten)
+        {
+            framesX = 1;
+            texture = Globals.Content.Load<Texture2D>("Sprite/FruitRotten");
+            layer = 1;
+        }
+
         _anims.AddAnimation(Direction.StandRight, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 1, false, false));
         _anims.AddAnimation(Direction.StandLeft, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 1, true, false));
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
@@ -198,7 +249,7 @@ public class SpriteObject
     }
 
     public void Update()
-    {
+    {        
         AnimationResolve();
         FallingResolve();
 
@@ -223,7 +274,7 @@ public class SpriteObject
 
     private void UpdateBuild()
     {
-        if (spriteType == SpriteType.GrowingTree01 || spriteType == SpriteType.GrowingTree02 || spriteType == SpriteType.ArcherTowerBuilding || spriteType == SpriteType.Digging || 
+        if (spriteType == SpriteType.Tree01Growing || spriteType == SpriteType.Tree02Growing || spriteType == SpriteType.ArcherTowerBuilding || spriteType == SpriteType.Digging || 
             spriteType == SpriteType.WorkStationBuilding || spriteType == SpriteType.ReferencePointBuilding)
         {
             if (AttributeObject.Build > AttributeObject.MaxBuild)
@@ -237,12 +288,12 @@ public class SpriteObject
                 transformed = true;
                 switch (spriteType)
                 {
-                    case SpriteType.GrowingTree01:
+                    case SpriteType.Tree01Growing:
                         spriteType = SpriteType.Tree01;
                         transformed = false;
                         break;
 
-                    case SpriteType.GrowingTree02:
+                    case SpriteType.Tree02Growing:
                         spriteType = SpriteType.Tree02;
                         transformed = false;
                         AttributeObject.Build = 0;
@@ -291,14 +342,17 @@ public class SpriteObject
                 _anims.Update(Direction.StandRight, false, 1);
             }
 
-            if (spriteType == SpriteType.GrowingTree01 || spriteType == SpriteType.GrowingTree02)
+            if (spriteType == SpriteType.Tree01Growing || spriteType == SpriteType.Tree02Growing)
             {
                 BuildObject();
             }
         }
 
-        //Fruit
-        if(spriteType == SpriteType.Tree02)
+        //Fruit 
+        //Counting LifeTime Cycles (Needs Adjust)
+        if(spriteType == SpriteType.Tree02 || spriteType == SpriteType.Tree02MidLife || spriteType == SpriteType.Tree02EndLife ||
+           spriteType == SpriteType.Tree01 || spriteType == SpriteType.Tree01MidLife || spriteType == SpriteType.Tree01EndLife ||
+           spriteType == SpriteType.Fruit  || spriteType == SpriteType.FruitRotten   || spriteType == SpriteType.TreeDried)
         {
             BuildNewObject();
             AttributeObject.MaxBuild = 5;
@@ -306,6 +360,30 @@ public class SpriteObject
             if (percent >= 100)
             {
                 dropNewObject = true;
+            }
+        }
+    }
+
+    public void CheckTreeCollision(List<SpriteObject> objects)
+    {
+        Collision collision = new Collision();
+
+        objects = objects.Where(_spriteobject => !_spriteobject.IsDead() &&
+        _spriteobject.spriteType == SpriteType.Tree02 || _spriteobject.spriteType == SpriteType.Tree02MidLife || _spriteobject.spriteType == SpriteType.Tree02EndLife).ToList();
+        foreach (var local_object in objects)
+        {
+            var PosB = new Point((int)local_object.Position.X, (int)local_object.Position.Y);
+            var SizB = new Point((int)local_object.GetSize().X, (int)local_object.GetSize().Y);
+            var RectB = new Rectangle(PosB, SizB);
+            var isCollide = collision.IsCollide(GetRectangle(), RectB);
+
+            if (isCollide)
+            {
+                AttributeObject.Build -= Globals.ElapsedSeconds * 10;
+                if(AttributeObject.Build <= AttributeObject.MaxBuild)
+                {
+                    AttributeObject.Build = 0;
+                }
             }
         }
     }
@@ -418,6 +496,81 @@ public class SpriteObject
         {
             dropNewObject = false;
             AttributeObject.BuildNew = 0;
+            AttributeObject.BuildNewCounter++;
+
+            if(spriteType == SpriteType.Tree02 && AttributeObject.BuildNewCounter >= 5)
+            {
+                AttributeObject.BuildNewCounter = 0;
+                Common commom = new Common();
+
+                spriteType = SpriteType.Tree02MidLife;
+                if (commom.PercentualCalc(50))
+                {
+                    spriteType = SpriteType.Tree01MidLife;
+                }
+
+                _anims = new AnimationManager();
+                SetTexture();
+            }
+
+            if (spriteType == SpriteType.Tree02MidLife && AttributeObject.BuildNewCounter >= 5)
+            {
+                AttributeObject.BuildNewCounter = 0;
+                spriteType = SpriteType.Tree02EndLife;
+                _anims = new AnimationManager();
+                SetTexture();
+            }
+
+            if (spriteType == SpriteType.Tree02EndLife && AttributeObject.BuildNewCounter >= 5)
+            {
+                AttributeObject.BuildNewCounter = 0;
+                spriteType = SpriteType.TreeDried;
+                _anims = new AnimationManager();
+                SetTexture();
+            }
+
+            if (spriteType == SpriteType.Tree01 && AttributeObject.BuildNewCounter >= 5)
+            {
+                AttributeObject.BuildNewCounter = 0;
+                spriteType = SpriteType.Tree01MidLife;
+                _anims = new AnimationManager();
+                SetTexture();
+            }
+
+            if (spriteType == SpriteType.Tree01MidLife && AttributeObject.BuildNewCounter >= 5)
+            {
+                AttributeObject.BuildNewCounter = 0;
+                spriteType = SpriteType.Tree01EndLife;
+                _anims = new AnimationManager();
+                SetTexture();
+            }
+
+            if (spriteType == SpriteType.Tree01EndLife && AttributeObject.BuildNewCounter >= 5)
+            {
+                AttributeObject.BuildNewCounter = 0;
+                spriteType = SpriteType.TreeDried;
+                _anims = new AnimationManager();
+                SetTexture();
+            }
+
+            if (spriteType == SpriteType.TreeDried && AttributeObject.BuildNewCounter >= 5)
+            {
+                AttributeObject.HP = 0;
+            }
+
+            if (spriteType == SpriteType.Fruit && AttributeObject.BuildNewCounter >= 5)
+            {
+                AttributeObject.BuildNewCounter = 0;
+                spriteType = SpriteType.FruitRotten;
+                _anims = new AnimationManager();
+                SetTexture();
+            }
+
+            if (spriteType == SpriteType.FruitRotten && AttributeObject.BuildNewCounter >= 5)
+            {
+                Active = false;
+            }
+
             return true;
         }
         return false;
@@ -446,7 +599,7 @@ public class SpriteObject
 
     public void SetToGroundLevel()
     {
-        Position = new Vector2(Position.X, Globals.GroundX);
+        Position = new Vector2(Position.X, Globals.GroundX - Size.Y);
     }
 
     public bool IsTransformed()
@@ -491,6 +644,44 @@ public class SpriteObject
         deadAlpha = alpha;
     }
 
+    private void DisplayHP(SpriteBatch spriteBatch, GraphicsDeviceManager graphics)
+    {
+        var barSize = 40;
+        var _hp_percent = AttributeObject.HP * 100 / AttributeObject.BaseHP;
+        if (_hp_percent >= 100 || _hp_percent <= 0) return;
+        var hp_val = barSize * _hp_percent / 100;
+
+        Texture2D _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
+        _texture.SetData(new Color[] { Color.Black });
+        spriteBatch.Draw(_texture, new Rectangle((int)(Position.X + Size.X / 2 - barSize / 2), (int)(Position.Y - 10), barSize, 4), Color.Black * 0.6f);
+
+        var _color = Color.GreenYellow;
+        if (_hp_percent < 75) _color = Color.Yellow;
+        if (_hp_percent < 50) _color = Color.Orange;
+        if (_hp_percent < 25) _color = Color.Red;
+
+        _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
+        _texture.SetData(new Color[] { _color });
+        spriteBatch.Draw(_texture, new Rectangle((int)(Position.X + Size.X / 2 - barSize / 2), (int)(Position.Y - 10), (int)hp_val, 4), _color * 0.6f);
+    }
+
+    private void DisplayPointer(SpriteBatch spriteBatch, SpriteFont font)
+    {
+        if (!InteractionPointer || IsDead()) return;
+
+        int RefPX = 7;
+        int RefPY = 12;
+        if(AttributeObject.HP < AttributeObject.BaseHP)
+        {
+            RefPY += 16;
+        }
+        //spriteBatch.DrawString(font, "l", new Vector2(Position.X - 08 + Size.X / 2 + RefPX+2, Position.Y - 10 - RefPY), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        //spriteBatch.DrawString(font, "l", new Vector2(Position.X - 10 + Size.X / 2 + RefPX+2, Position.Y - 12 - RefPY), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
+        spriteBatch.DrawString(font, "Y", new Vector2(Position.X - 10 + Size.X / 2 + RefPX, Position.Y - 00 - RefPY), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        spriteBatch.DrawString(font, "Y", new Vector2(Position.X - 12 + Size.X / 2 + RefPX, Position.Y - 02 - RefPY), Color.Yellow, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+    }
+
     public void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics, float layerDepth)
     {
         Texture2D _texture;
@@ -517,23 +708,11 @@ public class SpriteObject
         //spriteBatch.DrawString(font, "HP:" + AttributeObject.HP, new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
         //spriteBatch.DrawString(font, "HP:" + AttributeObject.HP, new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
+        //spriteBatch.DrawString(font, "C:" + AttributeObject.BuildNewCounter.ToString(), new Vector2(Position.X - 10, Position.Y), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
+        //spriteBatch.DrawString(font, "C:" + AttributeObject.BuildNewCounter.ToString(), new Vector2(Position.X - 12, Position.Y - 2), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
 
-        var _hp_percent = AttributeObject.HP * 100 / AttributeObject.BaseHP;
-        if (_hp_percent >= 100 || _hp_percent <= 0) return;
-        var hp_val = Size.X * _hp_percent / 100;
-
-        _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
-        _texture.SetData(new Color[] { Color.Black });
-        spriteBatch.Draw(_texture, new Rectangle((int)Position.X, (int)(Position.Y + Size.Y), (int)Size.X, 4), Color.Black * 0.6f);
-
-        var _color = Color.GreenYellow;
-        if (_hp_percent < 75) _color = Color.Yellow;
-        if (_hp_percent < 50) _color = Color.Orange;
-        if (_hp_percent < 25) _color = Color.Red;
-
-        _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
-        _texture.SetData(new Color[] { _color });
-        spriteBatch.Draw(_texture, new Rectangle((int)Position.X, (int)(Position.Y + Size.Y), (int)hp_val, 4), _color * 0.6f);
+        DisplayHP(spriteBatch, graphics);
+        DisplayPointer(spriteBatch, font);
 
         if (Globals.Debug && Globals.DebugArea)
         {

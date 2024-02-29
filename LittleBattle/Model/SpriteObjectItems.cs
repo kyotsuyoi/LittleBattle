@@ -9,10 +9,12 @@ using static LittleBattle.Classes.Enums;
 public class SpriteObjectItem : SpriteObject
 {
     public int Quantity { get; set; }
+    public bool Collectable;
 
     public SpriteObjectItem(Sprite Owner, Side side, SpriteType spriteType, Vector2 initialPosition, int Quantity) : base(Owner, side, spriteType, initialPosition)
     {
         this.Quantity = Quantity;
+        Collectable = true;
     }
 
 }

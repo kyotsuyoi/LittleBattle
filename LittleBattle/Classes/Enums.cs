@@ -67,8 +67,8 @@ namespace LittleBattle.Classes
             Wood = 105,
             Seed01 = 106,
             Seed02 = 107,
-            GrowingTree01 = 108,
-            GrowingTree02 = 109,
+            Tree01Growing = 108,
+            Tree02Growing = 109,
             Stone = 110,
             Iron = 111,
             ResourceStone = 112,
@@ -78,6 +78,15 @@ namespace LittleBattle.Classes
             Rope = 116,
             ToolBag = 117,
             Fruit = 118,
+            SetBagWorker = 119,
+
+            Tree01MidLife = 120,
+            Tree02MidLife = 121, 
+            Tree01EndLife = 122,
+            Tree02EndLife = 123,
+            TreeDried = 124,
+
+            FruitRotten = 125,
 
             ArcherTowerBuilding = 144,
             ArcherTower = 145,
@@ -102,6 +111,7 @@ namespace LittleBattle.Classes
             Warrior = 1,
             Archer = 2,
             Worker = 3,
+            Newbie = 4,
         }
 
         public enum Action
