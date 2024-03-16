@@ -25,7 +25,6 @@ public static class InputManager
 
     public static bool visibleCamerman = false;
 
-    private static int botID = 9;
     public static bool ClearBot = false;
     public static bool CommandBot = false;
 
@@ -385,34 +384,30 @@ public static class InputManager
 
         if (IsKeyPressed(Keys.D6))
         {
-            botID++;
             var val = Globals.NegativeLimit.Width + Globals.GroundX;
-            bots.Add(new SpriteBot(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team1, ClassType.Warrior));
+            bots.Add(new SpriteBot(new Vector2(val, 0), SpriteType.Bot, Team.Team1, ClassType.Warrior));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
         }
         if (IsKeyPressed(Keys.D7))
         {
-            botID++;
             var val = Globals.NegativeLimit.Width + Globals.GroundX;
-            bots.Add(new SpriteBot(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team1, ClassType.Archer));
+            bots.Add(new SpriteBot(new Vector2(val, 0), SpriteType.Bot, Team.Team1, ClassType.Archer));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
         }
 
         if (IsKeyPressed(Keys.D9))
         {
-            botID++;
             var val = Globals.PositiveLimit.Width + Globals.GroundX;
-            bots.Add(new SpriteBot(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team2, ClassType.Warrior));
+            bots.Add(new SpriteBot(new Vector2(val, 0), SpriteType.Bot, Team.Team2, ClassType.Warrior));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
         }
         if (IsKeyPressed(Keys.D8))
         {
-            botID++;
             var val = Globals.PositiveLimit.Width + Globals.GroundX;
-            bots.Add(new SpriteBot(botID, new Vector2(val, 0), SpriteType.Bot, Team.Team2, ClassType.Archer));
+            bots.Add(new SpriteBot(new Vector2(val, 0), SpriteType.Bot, Team.Team2, ClassType.Archer));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
         }

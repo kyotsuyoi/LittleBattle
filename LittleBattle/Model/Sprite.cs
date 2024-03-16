@@ -52,6 +52,7 @@ public class Sprite
     private Bag _Bag;
     private List<SpriteObject> objectsBuild;
     private List<SpriteObjectItem> newObjectsBuild;
+    private List<SpriteBot> newBots;
     private IconDisplay IconDisplay;
     private List<IconDisplay> Icons;
 
@@ -92,6 +93,7 @@ public class Sprite
         spriteObjects = new List<SpriteObject>();
         objectsBuild = new List<SpriteObject>();
         newObjectsBuild = new List<SpriteObjectItem>();
+        newBots = new List<SpriteBot>();
         Icons = new List<IconDisplay>();
         _Bag = new Bag(); 
         Common = new Common();
@@ -442,8 +444,13 @@ public class Sprite
 
     public void SetAttack()
     {
-        //_Bag.AddItem(SpriteType.Wood, 10);
-        //_Bag.AddItem(SpriteType.Seed, 1);
+        //Debug
+        _Bag.AddItem(SpriteType.Wood, 10);
+        _Bag.AddItem(SpriteType.Vine, 10);
+        _Bag.AddItem(SpriteType.Fruit, 10);
+        _Bag.AddItem(SpriteType.Iron, 10);
+
+
         if (Climb || Work || Attribute.AttackCooldown > 0) return;
         if (!EnabledAction()) return;
 
@@ -510,7 +517,7 @@ public class Sprite
         }
     }
 
-    private void SetRandomSide()
+    protected void SetRandomSide()
     {
         System.Random random = new System.Random();
         var randomVal = random.Next(9);
@@ -771,23 +778,10 @@ public class Sprite
         //    obj.spriteType == SpriteType.Stone || obj.spriteType == SpriteType.Iron || obj.spriteType == SpriteType.Vine || obj.spriteType == SpriteType.ToolBag ||
         //    obj.spriteType == SpriteType.SetBagWorker
         //).ToList();
-        var _obj = GetInteractObject(objectItems);
 
         if (HoldDown)
         {
-            if (_obj == null) return;
-            _obj.Active = false;
-            _Bag.AddItem(_obj.spriteType, _obj.Quantity);
-            var _icon = Icons.FirstOrDefault(icon => icon.spriteType == _obj.spriteType);
-            if(_icon != null)
-            {
-                _icon.Quantity += _obj.Quantity;
-                _icon.Reset(Position);
-            }
-            else
-            {
-                Icons.Add(new IconDisplay(_obj.spriteType, _obj.Quantity, new SpriteObject(null, Side.Right, _obj.spriteType, Position)));
-            }
+            SetInteractionObjects_HoldDown(objectItems);
             return;
         }
 
@@ -838,6 +832,14 @@ public class Sprite
                     }
 
                     break;
+
+                case SpriteType.ReferencePoint:
+                    CallNewbie();
+                    break;
+
+                case SpriteType.WorkStation:
+                    NewWarriorBag();
+                    break;
             }
 
             if (HoldUp) return;
@@ -865,6 +867,25 @@ public class Sprite
         else
         {
             GroundLevel = Globals.GroundLevel;
+        }
+    }
+
+    public void SetInteractionObjects_HoldDown(List<SpriteObjectItem> objectItems)
+    {
+        var _obj = GetInteractObject(objectItems);
+
+        if (_obj == null) return;
+        _obj.Active = false;
+        _Bag.AddItem(_obj.spriteType, _obj.Quantity);
+        var _icon = Icons.FirstOrDefault(icon => icon.spriteType == _obj.spriteType);
+        if (_icon != null)
+        {
+            _icon.Quantity += _obj.Quantity;
+            _icon.Reset(Position);
+        }
+        else
+        {
+            Icons.Add(new IconDisplay(_obj.spriteType, _obj.Quantity, new SpriteObject(null, Side.Right, _obj.spriteType, Position)));
         }
     }
 
@@ -958,7 +979,7 @@ public class Sprite
         return false;
     }
 
-    private bool UseSetBagWorker()
+    public bool UseSetBagWorker()
     {
         //_Bag.AddItem(SpriteType.SetBagWorker, 1);
         if (_Bag.UseItem(SpriteType.SetBagWorker, 1))
@@ -971,6 +992,49 @@ public class Sprite
             _Bag.AddItem(SpriteType.Seed02, 1);
             //Icons.Add(new IconDisplay(SpriteType.Seed01, 5, new SpriteObject(null, Side.Right, SpriteType.Seed01, new Vector2(Position.X, Position.Y - 20)), 20));
             Icons.Add(new IconDisplay(SpriteType.Seed02, 1, new SpriteObject(null, Side.Right, SpriteType.Seed02, Position)));
+            return true;
+        }
+        return false;
+    }
+
+    private bool CallNewbie()
+    {
+        if (_Bag.UseItemsFor(ClassType.Newbie))
+        {
+            newBots.Add(new SpriteBot(Position, SpriteType.Bot, Team, ClassType.Newbie));
+            return true;
+        }
+        return false;
+    }
+
+    private bool NewWorkerBag()
+    {
+        if (classType != ClassType.Worker) return false;
+        if (_Bag.UseItemsFor(ClassType.Worker))
+        {
+            newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.SetBagWorker, Position, 1));
+            return true;
+        }
+        return false;
+    }
+
+    private bool NewWarriorBag()
+    {
+        if (classType != ClassType.Worker) return false;
+        if (_Bag.UseItemsFor(ClassType.Warrior))
+        {
+            newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.SetBagWorker, Position, 1));
+            return true;
+        }
+        return false;
+    }
+
+    private bool NewArcherBag()
+    {
+        if (classType != ClassType.Worker) return false;
+        if (_Bag.UseItemsFor(ClassType.Archer))
+        {
+            newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.SetBagWorker, Position, 1));
             return true;
         }
         return false;
@@ -1058,6 +1122,13 @@ public class Sprite
     {
         var temp_objects = newObjectsBuild;
         newObjectsBuild = new List<SpriteObjectItem>();
+        return temp_objects;
+    }
+
+    public List<SpriteBot> GetNewBots()
+    {
+        var temp_objects = newBots;
+        newBots = new List<SpriteBot>();
         return temp_objects;
     }
 
@@ -1189,10 +1260,10 @@ public class Sprite
         objects = objects.Where(_spriteobject => !_spriteobject.IsDead()).ToList();
         foreach (var local_object in objects)
         {
-            var PosB = new Point((int)local_object.Position.X, (int)local_object.Position.Y);
-            var SizB = new Point((int)local_object.GetSize().X, (int)local_object.GetSize().Y);
-            var RectB = new Rectangle(PosB, SizB);
-            var isCollide = collision.IsCollide(GetRectangle(), RectB);
+            //var PosB = new Point((int)local_object.Position.X, (int)local_object.Position.Y);
+            //var SizB = new Point((int)local_object.GetSize().X, (int)local_object.GetSize().Y);
+            //var RectB = new Rectangle(PosB, SizB);
+            var isCollide = collision.IsCollide(GetRectangle(), local_object.GetRectangle() /*RectB*/);
 
             local_object.InteractionPointer = false;
             if (isCollide)
@@ -1208,7 +1279,7 @@ public class Sprite
         return _object;
     }
 
-    protected Rectangle GetRectangle()
+    public Rectangle GetRectangle()
     {
         var AdjustSizX = (int)(Size.X * 0.5);
         var AdjustPosX = (int)(Position.X + ((Size.X - AdjustSizX)) / 2);

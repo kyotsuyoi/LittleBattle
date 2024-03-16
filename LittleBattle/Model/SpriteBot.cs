@@ -12,8 +12,9 @@ namespace LittleBattle.Model
         public float PatrolWait;
         public bool GoTo = false;
 
-        public SpriteBot(int ID, Vector2 position, Enums.SpriteType spriteType, Enums.Team team, Enums.ClassType classType) : base(ID, position, spriteType, team, classType)
+        public SpriteBot(Vector2 position, Enums.SpriteType spriteType, Enums.Team team, Enums.ClassType classType) : base(Globals.GetNewID(), position, spriteType, team, classType)
         {
+            SetRandomSide();
         }
 
         public void SetInitialPatrolArea(float positionX)

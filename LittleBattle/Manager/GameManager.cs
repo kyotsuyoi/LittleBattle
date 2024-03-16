@@ -117,6 +117,7 @@ public class GameManager
 
             var objBuild = player.GetObjectsBuild();
             var objNewBuild = player.GetNewObjectsBuild();
+            var objNewBots = player.GetNewBots();
             foreach (var obj in objBuild)
             {
                 objects.Add(obj);
@@ -124,6 +125,10 @@ public class GameManager
             foreach (var obj in objNewBuild)
             {
                 objectItems.Add(obj);
+            }
+            foreach (var obj in objNewBots)
+            {
+                bots.Add(obj);
             }
         }
 
@@ -143,12 +148,12 @@ public class GameManager
 
         if (InputManager.CommandBot)
         {
-            botManager.Update(bots, players, true);
+            botManager.Update(bots, players, objectItems, true);
             InputManager.CommandBot = false;
         }
         else
         {
-            botManager.Update(bots, players);
+            botManager.Update(bots, players, objectItems);
         }
         UpdateObjects();
     }
@@ -170,23 +175,10 @@ public class GameManager
                 pos = new Vector2(pX, pY);
             }
 
-            if (putNewObject) new_objectItems = Common.RandomObjects(new_objectItems, _objectItem.spriteType, pos);
-            //if (putNewObject && _objectItem.spriteType == SpriteType.Tree01)
-            //{
-            //    new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.Tree01, pos);
-            //}
-            //if (putNewObject && _objectItem.spriteType == SpriteType.Tree02)
-            //{
-            //    new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.Tree02, pos);
-            //}
-            //if (putNewObject && _objectItem.spriteType == SpriteType.ResourceStone)
-            //{
-            //    new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.ResourceStone, pos);
-            //}
-            //if (putNewObject && _objectItem.spriteType == SpriteType.ResourceIron)
-            //{
-            //    new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.ResourceIron, pos);
-            //}
+            if (putNewObject)
+            {
+                new_objectItems = Common.RandomObjects(new_objectItems, _objectItem.spriteType, pos);
+            }
 
             if (_objectItem.DropNewObject() && (_objectItem.spriteType == SpriteType.Tree02 || _objectItem.spriteType == SpriteType.Tree02MidLife))
             {
@@ -208,7 +200,8 @@ public class GameManager
             var rottenFruits = _object.FruitCollision(objectItems);
             if (_object.DropNewObject() && _object.spriteType == SpriteType.FruitRotten && Common.PercentualCalc(5 + (1 * rottenFruits.Count())))
             {
-                objects.Add(new SpriteObject(null, Side.None, SpriteType.Tree02Growing, _object.Position));
+                //objects.Add(new SpriteObject(null, Side.None, SpriteType.Tree02Growing, _object.Position));
+                objects.Add(new SpriteObject(null, Side.Left, SpriteType.Tree02Growing, _object.Position));
                 foreach (var rottenFruit in rottenFruits)
                 {
                     rottenFruit.Active = false;

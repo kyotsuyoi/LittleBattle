@@ -259,7 +259,7 @@ public class SpriteObject
 
         if (IsDead())
         {
-            _anims.Update(direction, false, -1);
+            _anims.Update(direction, false);
         }
         else
         {
@@ -635,7 +635,7 @@ public class SpriteObject
         _anims.Update(direction, false, 0);
     }
 
-    private Rectangle GetRectangle()
+    public Rectangle GetRectangle()
     {
         var Pos = new Point((int)Position.X, (int)Position.Y);
         var Siz = new Point((int)Size.X, (int)Size.Y);
