@@ -437,6 +437,41 @@ public static class InputManager
             }
         }
 
+        //Call nearby bots to the player's position
+        //Need to migrate this code to BotManager
+        if (IsKeyPressed(Keys.V))
+        {
+            var alliedBots = players.Where(bot => players[0].Team == bot.Team).ToList();
+            foreach (var bot in bots)
+            {
+                bool isRenge = false;
+                if (bot.RelativeX < players[0].RelativeX)
+                {
+                    if ((players[0].RelativeX - bot.RelativeX < 400)
+                        && (bot.RelativeX < players[0].RelativeX))
+                    {
+                        isRenge = true;
+                    }
+                }
+
+                if (bot.RelativeX > players[0].RelativeX)
+                {
+                    if ((bot.RelativeX - (players[0].RelativeX) < 400)
+                        && (players[0].RelativeX) * 1 < bot.RelativeX)
+                    {
+                        isRenge = true;
+                    }
+                }
+
+                if (isRenge)
+                {
+                    bot.PatrolX_Area = players[0].RelativeX;
+                    bot.GoTo = true;
+                }
+
+            }
+        }
+
         if (IsKeyPressed(Keys.T))
         {
             players[0].SetObject(SpriteType.ArcherTower);

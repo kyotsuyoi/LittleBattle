@@ -2,6 +2,7 @@
 using LittleBattle.Model;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Xml.Linq;
@@ -26,7 +27,7 @@ namespace LittleBattle.Manager
         public void Update(List<SpriteBot> bots, List<Sprite> players, List<SpriteObjectItem> objectItems, bool goToCommand = false)
         {
             var aliveBots = bots.Where(bot => !bot.IsDead()).ToList();
-            var test = bots.Where(bot => bot.Team != Enums.Team.Team1).ToList();
+            //var test = bots.Where(bot => bot.Team != Enums.Team.Team1).ToList();
 
             foreach (var bot in aliveBots)
             {
@@ -48,7 +49,7 @@ namespace LittleBattle.Manager
 
                         if (bot.GoTo)
                         {
-                            GoTo(bot);
+                            //GoTo(bot);
                         }
                         else
                         {
@@ -76,11 +77,15 @@ namespace LittleBattle.Manager
 
                         if (bot.GoTo)
                         {
-                            GoTo(bot);
+                            //GoTo(bot);
+                        }
+                        else if(bot.Patrol)
+                        {
+                            Patrol(bot);
                         }
                         else
                         {
-                            Patrol(bot);
+                            bot.SetMovement(false, bot.GetSide());
                         }
                     }
                 }
@@ -88,8 +93,19 @@ namespace LittleBattle.Manager
                 {
                     bot.SetMovement(false, bot.GetSide());
                 }
-                
+
                 _continue:;
+
+                if(!bot.Patrol && !bot.Attack && !bot.Climb && !bot.Walk && !bot.Work){
+                    //int randomVal;
+                    //Random random = new Random();
+                    //randomVal = random.Next(100) * 1 - 50;
+                    //bot.PatrolX_Area = bot.RelativeX + randomVal;
+                    //GoTo(bot);
+                    AllySameLocation(bot, bots);
+                }
+
+                if(bot.GoTo) GoTo(bot);
             }
         }
 
@@ -472,8 +488,8 @@ namespace LittleBattle.Manager
                 bot.PatrolX = randomVal;
                 bot.SetMovement(false, Enums.Side.None);
                 
-                bot.PatrolX = randomVal;
-                bot.SetMovement(false, Enums.Side.None);
+                //bot.PatrolX = randomVal;
+                //bot.SetMovement(false, Enums.Side.None);
             }
             else
             {
@@ -515,9 +531,43 @@ namespace LittleBattle.Manager
             }
         }
 
-        private void VerifyToolBags(Sprite bot)
+        private void VerifyToolBag(Sprite bot)
         {
 
         }
+
+        private void AllySameLocation(SpriteBot bot, List<SpriteBot> bots)
+        {
+            Collision collision = new Collision();
+            var allyBots = bots.Where(allyBot => allyBot.Team == bot.Team && bot.ID != allyBot.ID).ToList();
+            var isCollide = false;
+            foreach (var allyBot in allyBots)
+            {
+                var br = bot.GetRectangle();
+                var abr = allyBot.GetRectangle();
+
+                br.Size = new Microsoft.Xna.Framework.Point(br.Size.X / 2, br.Size.Y);
+                br.X = br.X + br.Size.X;
+                abr.Size = new Microsoft.Xna.Framework.Point(abr.Size.X / 2, abr.Size.Y);
+                abr.X = abr.X + abr.Size.X;
+
+                isCollide = isCollide || collision.IsCollide(br, abr);                
+            }
+
+            if (isCollide && !bot.GoTo)
+            {
+                int randomVal;
+                Random random = new Random();
+                randomVal = random.Next(40) * 1 - 20;
+                int ranSizeSide = (int)bot.Size.X;
+                if (randomVal < 0)
+                {
+                    ranSizeSide *= -1;
+                }
+                bot.PatrolX_Area = bot.RelativeX + randomVal;
+                bot.GoTo = true;
+            }
+        }
+
     }
 }
