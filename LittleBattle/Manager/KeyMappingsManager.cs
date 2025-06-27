@@ -98,7 +98,7 @@ namespace LittleBattle.Model
             }
             catch (FileNotFoundException ex)
             {
-                Debug.WriteLine("Arquivo de configuração não encontrado.");
+                Debug.WriteLine("Arquivo de configuração não encontrado. " + ex.Message);
                 return null;
             }
             catch (Exception ex)

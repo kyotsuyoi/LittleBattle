@@ -32,7 +32,7 @@ namespace LittleBattle.Model
             Attack = 1;
             Defense = 0;
 
-            Speed = 2;
+            Speed = 1;
             Range = 5;
 
             BaseJumpPower = 5;
@@ -66,7 +66,7 @@ namespace LittleBattle.Model
 
             if (classType == Enums.ClassType.Newbie)
             {
-                Speed = 2.5f;
+                Speed *= 1.15f;
                 BaseJumpPower = 3;
             }
 

@@ -73,8 +73,9 @@ public class Sprite
         Attribute = new LittleBattle.Model.Attribute(classType);
         Team = team;
 
-        if (spriteType == SpriteType.Bot) Attribute.Speed = 0.5f;
-        if (spriteType == SpriteType.Player2) Attribute.Speed /= 2;
+        if (spriteType == SpriteType.Player1) Attribute.Speed *= 2;
+        //if (spriteType == SpriteType.Bot) Attribute.Speed = 0.5f;
+        //if (spriteType == SpriteType.Player2) Attribute.Speed /= 2;
 
         Walk = false;
         Run = false;
@@ -988,6 +989,7 @@ public class Sprite
             _anims = new AnimationManager();
             SetTexture();
             Attribute = new LittleBattle.Model.Attribute(ClassType.Worker);
+            if (spriteType == SpriteType.Player1) Attribute.Speed *= 2;
             //_Bag.AddItem(SpriteType.Seed01, 5);
             _Bag.AddItem(SpriteType.Seed02, 1);
             //Icons.Add(new IconDisplay(SpriteType.Seed01, 5, new SpriteObject(null, Side.Right, SpriteType.Seed01, new Vector2(Position.X, Position.Y - 20)), 20));
