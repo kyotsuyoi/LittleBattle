@@ -72,6 +72,10 @@ public class Sprite
     protected Collision collision;
     protected SpriteObject newSpriteObject;
 
+    // Adicione estes campos na classe Sprite
+    private Dictionary<SpriteType, SpriteObject> spriteObjectCache = new Dictionary<SpriteType, SpriteObject>();
+    private Dictionary<SpriteType, IconDisplay> iconDisplayCache = new Dictionary<SpriteType, IconDisplay>();
+
     public Sprite(int ID, Vector2 position, SpriteType spriteType, Team team, ClassType classType, GraphicsDeviceManager graphics)
     {
         Active = true;
@@ -131,7 +135,6 @@ public class Sprite
             SpriteType.SetBagWorker
         };
 
-        //newSpriteObject = new SpriteObject(null, GetSide(), spriteTypesSelection[SelectedAction], new Vector2(0, 0), graphics);
         SetTexture();
     }
 
@@ -710,7 +713,7 @@ public class Sprite
     public void Revive()
     {
         if (!IsDead()) return;
-        Attribute.HP = Attribute.BaseHP;
+        Attribute.HP = Attribute.BaseHP;        
         var animRight = _anims.GetAnimation(Enums.Direction.DeadRight);
         var animLeft = _anims.GetAnimation(Enums.Direction.DeadLeft);
 
@@ -758,6 +761,7 @@ public class Sprite
         Attribute.Knockback = 0;
         Combo = false;
         Jump = false;
+        Attribute.CurrentSpeed = 0;
     }
 
     public int GetSpriteFXCount()
@@ -1057,15 +1061,31 @@ public class Sprite
     public void NextAction()
     {
         SelectedAction++;
-        if (SelectedAction > spriteTypesSelection.Count()-1)
+        if (SelectedAction > spriteTypesSelection.Count() - 1)
         {
             SelectedAction = 0;
             IconDisplay = null;
             return;
         }
-        newSpriteObject = new SpriteObject(null, GetSide(), spriteTypesSelection[SelectedAction], new Vector2(0, 0), graphics);
-        newSpriteObject.SetAlpha(0.5f);
-        IconDisplay = new IconDisplay(spriteTypesSelection[SelectedAction], newSpriteObject);
+
+        var type = spriteTypesSelection[SelectedAction];
+
+        if (!spriteObjectCache.TryGetValue(type, out var cachedSpriteObject))
+        {
+            cachedSpriteObject = new SpriteObject(null, GetSide(), type, new Vector2(0, 0), graphics);
+            cachedSpriteObject.SetAlpha(0.5f);
+            spriteObjectCache[type] = cachedSpriteObject;
+        }
+
+        newSpriteObject = cachedSpriteObject;
+
+        if (!iconDisplayCache.TryGetValue(type, out var cachedIconDisplay))
+        {
+            cachedIconDisplay = new IconDisplay(type, newSpriteObject);
+            iconDisplayCache[type] = cachedIconDisplay;
+        }
+
+        IconDisplay = cachedIconDisplay;
     }
 
     public void PreviousAction()
@@ -1078,12 +1098,27 @@ public class Sprite
         }
         if (SelectedAction < 0)
         {
-            SelectedAction = spriteTypesSelection.Count() -1;
+            SelectedAction = spriteTypesSelection.Count() - 1;
         }
 
-        newSpriteObject = new SpriteObject(null, GetSide(), spriteTypesSelection[SelectedAction], new Vector2(0, 0), graphics);
-        newSpriteObject.SetAlpha(0.5f);
-        IconDisplay = new IconDisplay(spriteTypesSelection[SelectedAction], newSpriteObject);
+        var type = spriteTypesSelection[SelectedAction];
+
+        if (!spriteObjectCache.TryGetValue(type, out var cachedSpriteObject))
+        {
+            cachedSpriteObject = new SpriteObject(null, GetSide(), type, new Vector2(0, 0), graphics);
+            cachedSpriteObject.SetAlpha(0.5f);
+            spriteObjectCache[type] = cachedSpriteObject;
+        }
+
+        newSpriteObject = cachedSpriteObject;
+
+        if (!iconDisplayCache.TryGetValue(type, out var cachedIconDisplay))
+        {
+            cachedIconDisplay = new IconDisplay(type, newSpriteObject);
+            iconDisplayCache[type] = cachedIconDisplay;
+        }
+
+        IconDisplay = cachedIconDisplay;
     }
 
     public void ActionExecute()

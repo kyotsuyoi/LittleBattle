@@ -243,13 +243,13 @@ namespace LittleBattle.Manager
             //    Cameraman.SetMovement(true, Enums.Side.Right);
             //}
 
-            if (Cameraman.Position.X < player_position_side.X)
+            if ((int)Cameraman.Position.X < (int)player_position_side.X)
             {
                 //Cameraman.Attribute.Speed = players[0].Attribute.Speed;
                 Cameraman.SetMovement(true, Enums.Side.Right);
             }
 
-            if (Cameraman.Position.X > player_position_side.X)
+            if ((int)Cameraman.Position.X > (int)player_position_side.X)
             {
                 //Cameraman.Attribute.Speed = players[0].Attribute.Speed;
                 Cameraman.SetMovement(true, Enums.Side.Left);

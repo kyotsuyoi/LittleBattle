@@ -167,46 +167,49 @@ public class GameManager
         objectItems = objectItems.Where(_object => _object.Active).ToList();
         var new_objectItems = new List<SpriteObjectItem>();
 
-        foreach (var _objectItem in objects)
+        if (objects.Count <= 500)
         {
-            bool putNewObject = _objectItem.PutNewObject();
-            if (putNewObject)
+            foreach (var _objectItem in objects)
             {
-                var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
-                var pY = _objectItem.Position.Y;
-                pos = new Vector2(pX, pY);
-            }
-
-            if (putNewObject)
-            {
-                new_objectItems = Common.RandomObjects(new_objectItems, _objectItem.spriteType, pos, graphics);
-            }
-
-            if (_objectItem.DropNewObject() && (_objectItem.spriteType == SpriteType.Tree02 || _objectItem.spriteType == SpriteType.Tree02MidLife))
-            {
-                var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
-                var pY = _objectItem.Position.Y;
-                pos = new Vector2(pX, pY);
-                new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.Fruit, pos, graphics);
-            }
-        }
-
-        foreach (var _object in new_objectItems)
-        {
-            objectItems.Add(_object);
-        }
-
-        foreach (var _object in objectItems)
-        {
-            _object.Update(objects);
-            var rottenFruits = _object.FruitCollision(objectItems);
-            if (_object.DropNewObject() && _object.spriteType == SpriteType.FruitRotten && Common.PercentualCalc(5 + (1 * rottenFruits.Count())))
-            {
-                //objects.Add(new SpriteObject(null, Side.None, SpriteType.Tree02Growing, _object.Position));
-                objects.Add(new SpriteObject(null, Side.Left, SpriteType.Tree02Growing, _object.Position, graphics));
-                foreach (var rottenFruit in rottenFruits)
+                bool putNewObject = _objectItem.PutNewObject();
+                if (putNewObject)
                 {
-                    rottenFruit.Active = false;
+                    var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
+                    var pY = _objectItem.Position.Y;
+                    pos = new Vector2(pX, pY);
+                }
+
+                if (putNewObject)
+                {
+                    new_objectItems = Common.RandomObjects(new_objectItems, _objectItem.spriteType, pos, graphics);
+                }
+
+                if (_objectItem.DropNewObject() && (_objectItem.spriteType == SpriteType.Tree02 || _objectItem.spriteType == SpriteType.Tree02MidLife))
+                {
+                    var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
+                    var pY = _objectItem.Position.Y;
+                    pos = new Vector2(pX, pY);
+                    new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.Fruit, pos, graphics);
+                }
+            }
+
+            foreach (var _object in new_objectItems)
+            {
+                objectItems.Add(_object);
+            }
+
+            foreach (var _object in objectItems)
+            {
+                _object.Update(objects);
+                var rottenFruits = _object.FruitCollision(objectItems);
+                if (_object.DropNewObject() && _object.spriteType == SpriteType.FruitRotten && Common.PercentualCalc(5 + (1 * rottenFruits.Count())))
+                {
+                    //objects.Add(new SpriteObject(null, Side.None, SpriteType.Tree02Growing, _object.Position));
+                    objects.Add(new SpriteObject(null, Side.Left, SpriteType.Tree02Growing, _object.Position, graphics));
+                    foreach (var rottenFruit in rottenFruits)
+                    {
+                        rottenFruit.Active = false;
+                    }
                 }
             }
         }
