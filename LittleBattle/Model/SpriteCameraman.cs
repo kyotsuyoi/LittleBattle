@@ -10,7 +10,7 @@ namespace LittleBattle.Model
 
         public bool SameSpeed { get; set; }
 
-        public SpriteCameraman(int ID, Vector2 position, Enums.SpriteType spriteType, Enums.Team team, Enums.ClassType classType) : base(ID, position, spriteType, team, classType)
+        public SpriteCameraman(int ID, Vector2 position, Enums.SpriteType spriteType, Enums.Team team, Enums.ClassType classType, GraphicsDeviceManager graphics) : base(ID, position, spriteType, team, classType, graphics)
         {
         }
 

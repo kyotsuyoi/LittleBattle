@@ -63,7 +63,16 @@ public class Sprite
 
     private Common Common;
 
-    public Sprite(int ID, Vector2 position, SpriteType spriteType, Team team, ClassType classType)
+    protected GraphicsDeviceManager graphics;
+    protected Texture2D debugArea;
+    protected Texture2D hpBarBackground;
+    protected Texture2D hpBarForeground;
+
+    protected Random random; 
+    protected Collision collision;
+    protected SpriteObject newSpriteObject;
+
+    public Sprite(int ID, Vector2 position, SpriteType spriteType, Team team, ClassType classType, GraphicsDeviceManager graphics)
     {
         Active = true;
         this.ID = ID;
@@ -88,8 +97,6 @@ public class Sprite
         FallingSpeed = 0;
         Direction = Enums.Direction.StandRight;
 
-        SetTexture();
-
         spriteFXs = new List<SpriteFX>();
         spriteObjects = new List<SpriteObject>();
         objectsBuild = new List<SpriteObject>();
@@ -98,6 +105,16 @@ public class Sprite
         Icons = new List<IconDisplay>();
         _Bag = new Bag(); 
         Common = new Common();
+        random = new Random();
+        collision = new Collision();
+
+        this.graphics = graphics;
+        debugArea = new Texture2D(graphics.GraphicsDevice, 1, 1);
+        hpBarBackground = new Texture2D(graphics.GraphicsDevice, 1, 1);
+        hpBarForeground = new Texture2D(graphics.GraphicsDevice, 1, 1);
+        debugArea.SetData(new Color[] { Color.Blue });
+        hpBarBackground.SetData(new Color[] { Color.Black });
+        hpBarForeground.SetData(new Color[] { Color.GreenYellow });
 
         CalcGroundLevel();
 
@@ -113,6 +130,9 @@ public class Sprite
             SpriteType.Fruit,
             SpriteType.SetBagWorker
         };
+
+        //newSpriteObject = new SpriteObject(null, GetSide(), spriteTypesSelection[SelectedAction], new Vector2(0, 0), graphics);
+        SetTexture();
     }
 
     protected virtual void SetTexture()
@@ -448,8 +468,8 @@ public class Sprite
         if (Climb || Work || Attribute.AttackCooldown > 0) return;
         if (!EnabledAction()) return;
 
-        if (classType == ClassType.Warrior || classType == ClassType.Worker || classType == ClassType.Newbie) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.SwordEffect));
-        if (classType == ClassType.Archer) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.ArrowEffect));
+        if (classType == ClassType.Warrior || classType == ClassType.Worker || classType == ClassType.Newbie) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.SwordEffect, graphics));
+        if (classType == ClassType.Archer) spriteFXs.Add(new SpriteFX(this, GetSide(), SpriteType.ArrowEffect, graphics));
 
         var spFX = spriteFXs[spriteFXs.Count() - 1];
         spFX.InitialPosition();
@@ -513,7 +533,6 @@ public class Sprite
 
     protected void SetRandomSide()
     {
-        System.Random random = new System.Random();
         var randomVal = random.Next(9);
 
         if (randomVal >= 5)
@@ -758,7 +777,7 @@ public class Sprite
 
     public void SetObject(SpriteType spriteType)
     {
-        spriteObjects.Add(new SpriteObject(this, GetSide(), spriteType, new Vector2(0, 0)));
+        spriteObjects.Add(new SpriteObject(this, GetSide(), spriteType, new Vector2(0, 0), graphics));
     }
 
     public void SetInteractionObjects(List<SpriteObject> objects, List<SpriteObjectItem> objectItems)
@@ -879,7 +898,7 @@ public class Sprite
         }
         else
         {
-            Icons.Add(new IconDisplay(_obj.spriteType, _obj.Quantity, new SpriteObject(null, Side.Right, _obj.spriteType, Position)));
+            Icons.Add(new IconDisplay(_obj.spriteType, _obj.Quantity, new SpriteObject(null, Side.Right, _obj.spriteType, Position, graphics)));
         }
     }
 
@@ -889,7 +908,7 @@ public class Sprite
         _Bag.AddItem(SpriteType.Seed01, 1);
         if (_Bag.UseItem(SpriteType.Seed01, 1))
         {
-            objectsBuild.Add(new SpriteObject(null, GetSide(), SpriteType.Tree01Growing, IconDisplay.spriteObject.Position));
+            objectsBuild.Add(new SpriteObject(null, GetSide(), SpriteType.Tree01Growing, IconDisplay.spriteObject.Position, graphics));
             return true;
         }
         return false;
@@ -901,7 +920,7 @@ public class Sprite
         _Bag.AddItem(SpriteType.Seed02, 1);
         if (_Bag.UseItem(SpriteType.Seed02, 1))
         {
-            objectsBuild.Add(new SpriteObject(null, GetSide(), SpriteType.Tree02Growing, IconDisplay.spriteObject.Position));
+            objectsBuild.Add(new SpriteObject(null, GetSide(), SpriteType.Tree02Growing, IconDisplay.spriteObject.Position, graphics));
             return true;
         }
         return false;
@@ -912,7 +931,7 @@ public class Sprite
         if (classType != ClassType.Worker) return false;
         if (_Bag.UseItemsFor(SpriteType.ArcherTowerBuilding))
         {
-            objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.ArcherTowerBuilding, IconDisplay.spriteObject.Position));
+            objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.ArcherTowerBuilding, IconDisplay.spriteObject.Position, graphics));
             return true;
         }
         return false;
@@ -923,7 +942,7 @@ public class Sprite
         if (classType != ClassType.Worker) return false;
         if (_Bag.UseItemsFor(SpriteType.Digging))
         {
-            objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.Digging, IconDisplay.spriteObject.Position));
+            objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.Digging, IconDisplay.spriteObject.Position, graphics));
             return true;
         }
         return false;
@@ -934,7 +953,7 @@ public class Sprite
         if (classType != ClassType.Worker) return false;
         if (_Bag.UseItemsFor(SpriteType.WorkStationBuilding))
         {
-            objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.WorkStationBuilding, IconDisplay.spriteObject.Position));
+            objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.WorkStationBuilding, IconDisplay.spriteObject.Position, graphics));
             return true;
         }
         return false;
@@ -945,7 +964,7 @@ public class Sprite
         if (classType != ClassType.Worker) return false;
         if (_Bag.UseItemsFor(SpriteType.ReferencePointBuilding))
         {
-            objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.ReferencePointBuilding, IconDisplay.spriteObject.Position));
+            objectsBuild.Add(new SpriteObject(this, GetSide(), SpriteType.ReferencePointBuilding, IconDisplay.spriteObject.Position, graphics));
             return true;
         }
         return false;
@@ -959,11 +978,11 @@ public class Sprite
             {
                 if(Common.PercentualCalc(10))
                 {
-                    newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.Seed02, IconDisplay.spriteObject.Position, 1));
+                    newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.Seed02, IconDisplay.spriteObject.Position, 1, graphics));
                 }
                 else
                 {
-                    newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.Seed01, IconDisplay.spriteObject.Position, 1));
+                    newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.Seed01, IconDisplay.spriteObject.Position, 1, graphics));
                 }
             }
             Attribute.HP += 10;
@@ -986,7 +1005,7 @@ public class Sprite
             //_Bag.AddItem(SpriteType.Seed01, 5);
             _Bag.AddItem(SpriteType.Seed02, 1);
             //Icons.Add(new IconDisplay(SpriteType.Seed01, 5, new SpriteObject(null, Side.Right, SpriteType.Seed01, new Vector2(Position.X, Position.Y - 20)), 20));
-            Icons.Add(new IconDisplay(SpriteType.Seed02, 1, new SpriteObject(null, Side.Right, SpriteType.Seed02, Position)));
+            Icons.Add(new IconDisplay(SpriteType.Seed02, 1, new SpriteObject(null, Side.Right, SpriteType.Seed02, Position, graphics)));
             return true;
         }
         return false;
@@ -996,7 +1015,7 @@ public class Sprite
     {
         if (_Bag.UseItemsFor(ClassType.Newbie))
         {
-            newBots.Add(new SpriteBot(Position, SpriteType.Bot, Team, ClassType.Newbie));
+            newBots.Add(new SpriteBot(Position, SpriteType.Bot, Team, ClassType.Newbie, graphics));
             return true;
         }
         return false;
@@ -1007,7 +1026,7 @@ public class Sprite
         if (classType != ClassType.Worker) return false;
         if (_Bag.UseItemsFor(ClassType.Worker))
         {
-            newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.SetBagWorker, Position, 1));
+            newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.SetBagWorker, Position, 1, graphics));
             return true;
         }
         return false;
@@ -1018,7 +1037,7 @@ public class Sprite
         if (classType != ClassType.Worker) return false;
         if (_Bag.UseItemsFor(ClassType.Warrior))
         {
-            newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.SetBagWorker, Position, 1));
+            newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.SetBagWorker, Position, 1, graphics));
             return true;
         }
         return false;
@@ -1029,7 +1048,7 @@ public class Sprite
         if (classType != ClassType.Worker) return false;
         if (_Bag.UseItemsFor(ClassType.Archer))
         {
-            newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.SetBagWorker, Position, 1));
+            newObjectsBuild.Add(new SpriteObjectItem(null, GetSide(), SpriteType.SetBagWorker, Position, 1, graphics));
             return true;
         }
         return false;
@@ -1044,7 +1063,7 @@ public class Sprite
             IconDisplay = null;
             return;
         }
-        SpriteObject newSpriteObject = new SpriteObject(null, GetSide(), spriteTypesSelection[SelectedAction], new Vector2(0, 0));
+        newSpriteObject = new SpriteObject(null, GetSide(), spriteTypesSelection[SelectedAction], new Vector2(0, 0), graphics);
         newSpriteObject.SetAlpha(0.5f);
         IconDisplay = new IconDisplay(spriteTypesSelection[SelectedAction], newSpriteObject);
     }
@@ -1062,7 +1081,7 @@ public class Sprite
             SelectedAction = spriteTypesSelection.Count() -1;
         }
 
-        SpriteObject newSpriteObject = new SpriteObject(null, GetSide(), spriteTypesSelection[SelectedAction], new Vector2(0, 0));
+        newSpriteObject = new SpriteObject(null, GetSide(), spriteTypesSelection[SelectedAction], new Vector2(0, 0), graphics);
         newSpriteObject.SetAlpha(0.5f);
         IconDisplay = new IconDisplay(spriteTypesSelection[SelectedAction], newSpriteObject);
     }
@@ -1222,8 +1241,6 @@ public class Sprite
 
     private SpriteObject GetInteractObject(List<SpriteObject> objects)
     {
-        Collision collision = new Collision();
-
         SpriteObject _object = null;
         objects = objects.Where(_spriteobject => !_spriteobject.IsDead()).ToList();
         foreach (var local_object in objects)
@@ -1250,8 +1267,6 @@ public class Sprite
     private SpriteObjectItem GetInteractObject(List<SpriteObjectItem> objects)
     {
         SpriteObjectItem _object = null;
-
-        Collision collision = new Collision();
         objects = objects.Where(_spriteobject => !_spriteobject.IsDead()).ToList();
         foreach (var local_object in objects)
         {
@@ -1378,30 +1393,23 @@ public class Sprite
             //IconDisplay.Time -= 1 * Globals.ElapsedSeconds;
         }
 
-        Texture2D _texture;
         if (Globals.Debug && Globals.DebugArea)
         {
-            _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
-            _texture.SetData(new Color[] { Color.Blue });
-            spriteBatch.Draw(_texture, GetRectangle(), Color.Blue * 0.4f);
+            spriteBatch.Draw(debugArea, GetRectangle(), Color.Blue * 0.4f);
         }
 
         var _hp_percent = Attribute.HP * 100 / Attribute.BaseHP;
         if (_hp_percent >= 100) return;
         var hp_val = Size.X * _hp_percent / 100;
 
-        _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
-        _texture.SetData(new Color[] { Color.Black });
-        spriteBatch.Draw(_texture, new Rectangle((int)Position.X, (int)(Position.Y + Size.Y), (int)Size.X, 4), Color.Black * 0.6f);
+        spriteBatch.Draw(hpBarBackground, new Rectangle((int)Position.X, (int)(Position.Y + Size.Y), (int)Size.X, 4), Color.Black * 0.6f);
 
         var _color = Color.GreenYellow;
         if (_hp_percent < 75) _color = Color.Yellow;
         if (_hp_percent < 50) _color = Color.Orange;
         if (_hp_percent < 25) _color = Color.Red;
 
-        _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
-        _texture.SetData(new Color[] { _color });
-        spriteBatch.Draw(_texture, new Rectangle((int)Position.X, (int)(Position.Y + Size.Y), (int)hp_val, 4), _color * 0.6f);
+        spriteBatch.Draw(hpBarForeground, new Rectangle((int)Position.X, (int)(Position.Y + Size.Y), (int)hp_val, 4), _color * 0.6f);
 
     }
 }

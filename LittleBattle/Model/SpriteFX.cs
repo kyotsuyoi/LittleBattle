@@ -35,7 +35,10 @@ public class SpriteFX
     private float deadAlpha = 1f;
     private bool dead = false;
 
-    public SpriteFX(Sprite Owner, Side side, SpriteType spriteType)
+    protected Texture2D debugArea;
+    private Collision collision;
+
+    public SpriteFX(Sprite Owner, Side side, SpriteType spriteType, GraphicsDeviceManager graphics)
     {
         Active = true;
         this.Owner = Owner;
@@ -51,6 +54,11 @@ public class SpriteFX
         Direction = Enums.Direction.StandRight;
         if (side == Side.Left) Direction = Enums.Direction.StandLeft;
         AttributeFX.Range += Owner.Attribute.Range;
+
+        debugArea = new Texture2D(graphics.GraphicsDevice, 1, 1);
+        debugArea.SetData(new Color[] { Color.Blue });
+
+        collision = new Collision();
 
         SetTexture();
         GroundLevel = Globals.GroundLevel + Size.Y - 20;
@@ -205,7 +213,6 @@ public class SpriteFX
 
     public void Damage(Sprite target)
     {
-        Collision collision = new Collision();
         var collide = collision.SquareCollision(Position, Size, target.Position, target.GetSize());
         if (collide && !DamagedIDs.Any(id=> id == target.ID))
         {
@@ -216,7 +223,6 @@ public class SpriteFX
 
     public void DamageObject(SpriteObject target)
     {
-        Collision collision = new Collision();
         var collide = collision.SquareCollision(Position, Size, target.Position, target.GetSize());
         if (collide && !DamagedIDs.Any(id => id == target.ID))
         {
@@ -288,10 +294,7 @@ public class SpriteFX
     {
         if (Globals.Debug && Globals.DebugArea)
         {
-            Texture2D _texture;
-            _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
-            _texture.SetData(new Color[] { Color.Red });
-            spriteBatch.Draw(_texture, GetRectangle(), Color.Red * 0.4f);
+            spriteBatch.Draw(debugArea, GetRectangle(), Color.Red * 0.4f);
         }
 
         _anims.Draw(Position, 1f, deadAlpha);

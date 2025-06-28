@@ -13,7 +13,6 @@ public class SpriteObject
     public bool Active { get; set; }
     private Texture2D texture;
     private AnimationManager _anims = new AnimationManager();
-
     public Vector2 Position { get; set; }
     private Vector2 Size { get; set; }
     public bool Ground { get; set; }
@@ -37,7 +36,14 @@ public class SpriteObject
 
     public bool InteractionPointer { get; set; }
 
-    public SpriteObject(Sprite Owner, Side side, SpriteType spriteType, Vector2 initialPosition)
+    private Texture2D debugArea;
+    private Texture2D hpBarBackground;
+    private Texture2D hpBarForeground;
+
+    Collision collision;
+    List<SpriteObjectItem> returnObjects;
+
+    public SpriteObject(Sprite Owner, Side side, SpriteType spriteType, Vector2 initialPosition, GraphicsDeviceManager graphics)
     {
         Active = true;
         ID = Globals.GetNewID();
@@ -50,6 +56,16 @@ public class SpriteObject
 
         SetTexture();
         InitialPosition(initialPosition);
+
+        debugArea = new Texture2D(graphics.GraphicsDevice, 1, 1);
+        hpBarBackground = new Texture2D(graphics.GraphicsDevice, 1, 1);
+        hpBarForeground = new Texture2D(graphics.GraphicsDevice, 1, 1);
+        debugArea.SetData(new Color[] { Color.Blue });
+        hpBarBackground.SetData(new Color[] { Color.Black });
+        hpBarForeground.SetData(new Color[] { Color.GreenYellow });
+
+        collision = new Collision();
+        returnObjects = new List<SpriteObjectItem>();
     }
 
     private void SetTexture()
@@ -238,6 +254,8 @@ public class SpriteObject
             layer = 1;
         }
 
+        if (spriteType == SpriteType.None) return;
+
         _anims.AddAnimation(Direction.StandRight, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 1, false, false));
         _anims.AddAnimation(Direction.StandLeft, new Animation(texture, framesX, framesY, 0, 3, 0.2f, 1, true, false));
         Size = new Vector2(texture.Width / framesX, texture.Height / framesY);
@@ -386,8 +404,6 @@ public class SpriteObject
 
     public List<SpriteObjectItem> FruitCollision(List<SpriteObjectItem> objects)
     {
-        Collision collision = new Collision();
-        List<SpriteObjectItem> returnObjects = new List<SpriteObjectItem>();
         objects = objects.Where(_spriteobject => !_spriteobject.IsDead() && (_spriteobject.spriteType == SpriteType.FruitRotten) && ID != _spriteobject.ID).ToList();
         foreach (var local_object in objects)
         {
@@ -510,7 +526,6 @@ public class SpriteObject
             if(spriteType == SpriteType.Tree02 && AttributeObject.BuildNewCounter >= 5)
             {
                 AttributeObject.BuildNewCounter = 0;
-                Common commom = new Common();
 
                 spriteType = SpriteType.Tree02MidLife;
                 //if (commom.PercentualCalc(50))
@@ -660,18 +675,17 @@ public class SpriteObject
         if (_hp_percent >= 100 || _hp_percent <= 0) return;
         var hp_val = barSize * _hp_percent / 100;
 
-        Texture2D _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
-        _texture.SetData(new Color[] { Color.Black });
-        spriteBatch.Draw(_texture, new Rectangle((int)(Position.X + Size.X / 2 - barSize / 2), (int)(Position.Y - 10), barSize, 4), Color.Black * 0.6f);
+        // Barra de fundo
+        spriteBatch.Draw(hpBarBackground, new Rectangle((int)(Position.X + Size.X / 2 - barSize / 2), (int)(Position.Y - 10), barSize, 4), Color.Black * 0.6f);
 
+        // Cor da barra de vida
         var _color = Color.GreenYellow;
         if (_hp_percent < 75) _color = Color.Yellow;
         if (_hp_percent < 50) _color = Color.Orange;
         if (_hp_percent < 25) _color = Color.Red;
 
-        _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
-        _texture.SetData(new Color[] { _color });
-        spriteBatch.Draw(_texture, new Rectangle((int)(Position.X + Size.X / 2 - barSize / 2), (int)(Position.Y - 10), (int)hp_val, 4), _color * 0.6f);
+        // Barra de vida (usa a textura branca e aplica a cor desejada)
+        spriteBatch.Draw(hpBarForeground, new Rectangle((int)(Position.X + Size.X / 2 - barSize / 2), (int)(Position.Y - 10), (int)hp_val, 4), _color * 0.6f);
     }
 
     private void DisplayPointer(SpriteBatch spriteBatch, SpriteFont font)
@@ -693,12 +707,9 @@ public class SpriteObject
 
     public void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics, float layerDepth)
     {
-        Texture2D _texture;
         if (Globals.Debug && Globals.DebugArea)
-        {
-            _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
-            _texture.SetData(new Color[] { Color.Red });
-            spriteBatch.Draw(_texture, GetRectangle(), Color.Red * 0.4f);
+        {            
+            spriteBatch.Draw(debugArea, GetRectangle(), Color.Red * 0.4f);
         }
 
         _anims.Draw(Position, layerDepth, deadAlpha);
@@ -725,9 +736,7 @@ public class SpriteObject
 
         if (Globals.Debug && Globals.DebugArea)
         {
-            _texture = new Texture2D(graphics.GraphicsDevice, 1, 1);
-            _texture.SetData(new Color[] { Color.Blue });
-            spriteBatch.Draw(_texture, GetRectangle(), Color.Blue * 0.4f);
+            spriteBatch.Draw(debugArea, GetRectangle(), Color.Blue * 0.4f);
         }
     }
 }

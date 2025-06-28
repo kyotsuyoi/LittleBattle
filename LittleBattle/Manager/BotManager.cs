@@ -16,6 +16,8 @@ namespace LittleBattle.Manager
         //private List<Sprite> players;
 
         private float lastSecond = 0;
+        Collision collision = new Collision();
+        Random random = new Random();
 
         public BotManager()
         {
@@ -166,8 +168,6 @@ namespace LittleBattle.Manager
             //        stop = true;
             //    }
             //}
-
-            Collision collision = new Collision();
 
             var m = 1.2f;
             var d = 0.8f;
@@ -431,8 +431,6 @@ namespace LittleBattle.Manager
 
         private bool Target_EnemyAttack(Sprite bot, Sprite player)
         {
-            Collision collision = new Collision();
-
             var m = 1.2f;
             var d = 0.8f;
             if (bot.classType == Enums.ClassType.Archer)
@@ -459,8 +457,6 @@ namespace LittleBattle.Manager
 
         private bool Target_GetObjectItem(Sprite bot, SpriteObjectItem item, List<SpriteObjectItem> objectItems)
         {
-            Collision collision = new Collision();
-
             //var m = 0.5f;
             //var d = 0.5f;
 
@@ -503,7 +499,6 @@ namespace LittleBattle.Manager
             if (bot.PatrolX == 0)
             {
                 int randomVal;
-                Random random = new Random();
                 randomVal = random.Next(400) * 1 - 200;
                 bot.PatrolX = randomVal;
                 bot.SetMovement(false, Enums.Side.None);
@@ -580,7 +575,6 @@ namespace LittleBattle.Manager
 
         private void AllySameLocation(SpriteBot bot, List<SpriteBot> bots)
         {
-            Collision collision = new Collision();
             var allyBots = bots.Where(allyBot => allyBot.Team == bot.Team && bot.ID != allyBot.ID).ToList();
             var isCollide = false;
             foreach (var allyBot in allyBots)
@@ -599,7 +593,6 @@ namespace LittleBattle.Manager
             if (isCollide && !bot.GoTo)
             {
                 int randomVal;
-                Random random = new Random();
                 randomVal = random.Next(40) * 1 - 20;
                 int ranSizeSide = (int)bot.Size.X;
                 if (randomVal < 0)

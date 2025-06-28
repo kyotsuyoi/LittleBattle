@@ -27,6 +27,8 @@ public class GameManager
     public static KeyMappingsManager keyMappings;
     private Common Common;
 
+    private Vector2 pos;
+
     public GameManager(Game game, GraphicsDeviceManager graphics)
     {
         this.graphics = graphics;
@@ -49,12 +51,12 @@ public class GameManager
         //resolution.SetFullScreen();
         Globals.GroundLevel = Globals.Size.Height - 60;
 
-        Cameraman = new SpriteCameraman(00, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Cameraman, Team.None, ClassType.None);
+        Cameraman = new SpriteCameraman(00, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Cameraman, Team.None, ClassType.None, graphics);
         Cameraman.CenterX_Adjust();
 
         players = new List<Sprite>
         {
-            new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player1, Team.Team1, ClassType.Newbie),
+            new Sprite(01, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player1, Team.Team1, ClassType.Newbie, graphics),
             //new Sprite(02, new Vector2((Globals.Size.Width / 2), 504), SpriteType.Player2, Team.Team2, ClassType.Archer),
         };
         foreach (var player in players)
@@ -77,21 +79,22 @@ public class GameManager
         debugManager = new DebugManager();
         botManager = new BotManager();
         Common = new Common();
+        pos = new Vector2();
 
         keyMappings = new KeyMappingsManager();
         keyMappings.LoadKeyMappings();
 
         objects = new List<SpriteObject>
         {
-            new SpriteObject(null, Side.Right, SpriteType.Tree01, new Vector2(100, Globals.GroundLevel)),
-            new SpriteObject(null, Side.Right, SpriteType.ResourceStone, new Vector2(50, Globals.GroundLevel)),
-            new SpriteObject(null, Side.Right, SpriteType.ResourceIron, new Vector2(150, Globals.GroundLevel)),
+            new SpriteObject(null, Side.Right, SpriteType.Tree01, new Vector2(100, Globals.GroundLevel), graphics),
+            new SpriteObject(null, Side.Right, SpriteType.ResourceStone, new Vector2(50, Globals.GroundLevel), graphics),
+            new SpriteObject(null, Side.Right, SpriteType.ResourceIron, new Vector2(150, Globals.GroundLevel), graphics),
         };
 
         objectItems = new List<SpriteObjectItem>
         {
-            new SpriteObjectItem(null, Side.None, SpriteType.ToolBag, new Vector2(10, Globals.GroundLevel), 1),
-            new SpriteObjectItem(null, Side.None, SpriteType.SetBagWorker, new Vector2(-10, Globals.GroundLevel), 1),
+            new SpriteObjectItem(null, Side.None, SpriteType.ToolBag, new Vector2(10, Globals.GroundLevel), 1, graphics),
+            new SpriteObjectItem(null, Side.None, SpriteType.SetBagWorker, new Vector2(-10, Globals.GroundLevel), 1, graphics),
         };
 
         //KeyMappingsManager custom = new KeyMappingsManager();
@@ -110,7 +113,7 @@ public class GameManager
         botManager.UpdateCamerman(Cameraman, players);
         foreach (var player in players)
         {
-            InputManager.Update(players, bots, objects, objectItems, Cameraman, resolution, _canvas, keyMappings);
+            InputManager.Update(players, bots, objects, objectItems, Cameraman, resolution, _canvas, keyMappings, graphics);
             player.Update();
             player.UpdateSpriteFXDamage(players, bots, objects);
             player.UpdateInteraction(objects, objectItems);
@@ -167,7 +170,6 @@ public class GameManager
         foreach (var _objectItem in objects)
         {
             bool putNewObject = _objectItem.PutNewObject();
-            Vector2 pos = new Vector2();
             if (putNewObject)
             {
                 var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
@@ -177,7 +179,7 @@ public class GameManager
 
             if (putNewObject)
             {
-                new_objectItems = Common.RandomObjects(new_objectItems, _objectItem.spriteType, pos);
+                new_objectItems = Common.RandomObjects(new_objectItems, _objectItem.spriteType, pos, graphics);
             }
 
             if (_objectItem.DropNewObject() && (_objectItem.spriteType == SpriteType.Tree02 || _objectItem.spriteType == SpriteType.Tree02MidLife))
@@ -185,7 +187,7 @@ public class GameManager
                 var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
                 var pY = _objectItem.Position.Y;
                 pos = new Vector2(pX, pY);
-                new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.Fruit, pos);
+                new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.Fruit, pos, graphics);
             }
         }
 
@@ -201,7 +203,7 @@ public class GameManager
             if (_object.DropNewObject() && _object.spriteType == SpriteType.FruitRotten && Common.PercentualCalc(5 + (1 * rottenFruits.Count())))
             {
                 //objects.Add(new SpriteObject(null, Side.None, SpriteType.Tree02Growing, _object.Position));
-                objects.Add(new SpriteObject(null, Side.Left, SpriteType.Tree02Growing, _object.Position));
+                objects.Add(new SpriteObject(null, Side.Left, SpriteType.Tree02Growing, _object.Position, graphics));
                 foreach (var rottenFruit in rottenFruits)
                 {
                     rottenFruit.Active = false;
@@ -275,4 +277,5 @@ public class GameManager
         spriteBatch.End();
         _canvas.Draw(spriteBatch);
     }
+
 }

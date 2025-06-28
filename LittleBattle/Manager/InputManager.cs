@@ -38,7 +38,7 @@ public static class InputManager
         return _currentKeyboard.IsKeyDown(key) && _lastKeyboard.IsKeyUp(key);
     }
 
-    public static void Update(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, List<SpriteObjectItem> objectItems, Sprite cameraman, Resolution resolution, Canvas _canvas, KeyMappingsManager keyMappings)
+    public static void Update(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, List<SpriteObjectItem> objectItems, Sprite cameraman, Resolution resolution, Canvas _canvas, KeyMappingsManager keyMappings, GraphicsDeviceManager graphics)
     {
         _lastKeyboard = _currentKeyboard;
         _currentKeyboard = Keyboard.GetState();
@@ -70,7 +70,7 @@ public static class InputManager
         //}
 
         UpdateResolution(resolution);
-        DebugCommand(players, bots, objects, _canvas);
+        DebugCommand(players, bots, objects, _canvas, graphics);
     }
 
     private static void Player1_Keybord(List<Sprite> players, List<SpriteObject> objects, List<SpriteObjectItem> objectItems, KeyboardState keyboard, KeyMappingsManager keyMappings)
@@ -347,7 +347,7 @@ public static class InputManager
     }
 
     //Debug
-    public static void DebugCommand(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, Canvas _canvas)
+    public static void DebugCommand(List<Sprite> players, List<SpriteBot> bots, List<SpriteObject> objects, Canvas _canvas, GraphicsDeviceManager graphics)
     {
         if (IsKeyPressed(Keys.F9))
         {
@@ -385,7 +385,7 @@ public static class InputManager
         if (IsKeyPressed(Keys.D6))
         {
             var val = Globals.NegativeLimit.Width + Globals.GroundX;
-            bots.Add(new SpriteBot(new Vector2(val, Globals.GroundLevel), SpriteType.Bot, Team.Team1, ClassType.Warrior));
+            bots.Add(new SpriteBot(new Vector2(val, Globals.GroundLevel), SpriteType.Bot, Team.Team1, ClassType.Warrior, graphics));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
             bot.GoTo = true;
@@ -394,7 +394,7 @@ public static class InputManager
         if (IsKeyPressed(Keys.D7))
         {
             var val = Globals.NegativeLimit.Width + Globals.GroundX;
-            bots.Add(new SpriteBot(new Vector2(val, Globals.GroundLevel), SpriteType.Bot, Team.Team1, ClassType.Archer));
+            bots.Add(new SpriteBot(new Vector2(val, Globals.GroundLevel), SpriteType.Bot, Team.Team1, ClassType.Archer, graphics));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
             bot.GoTo = true;
@@ -405,7 +405,7 @@ public static class InputManager
         if (IsKeyPressed(Keys.D8))
         {
             var val = Globals.PositiveLimit.Width + Globals.GroundX;
-            bots.Add(new SpriteBot(new Vector2(val, Globals.GroundLevel), SpriteType.Bot, Team.Team2, ClassType.Archer));
+            bots.Add(new SpriteBot(new Vector2(val, Globals.GroundLevel), SpriteType.Bot, Team.Team2, ClassType.Archer, graphics));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
             bot.GoTo = true;
@@ -415,7 +415,7 @@ public static class InputManager
         if (IsKeyPressed(Keys.D9))
         {
             var val = Globals.PositiveLimit.Width + Globals.GroundX;
-            bots.Add(new SpriteBot(new Vector2(val, Globals.GroundLevel), SpriteType.Bot, Team.Team2, ClassType.Warrior));
+            bots.Add(new SpriteBot(new Vector2(val, Globals.GroundLevel), SpriteType.Bot, Team.Team2, ClassType.Warrior, graphics));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
             bot.GoTo = true;
@@ -498,12 +498,12 @@ public static class InputManager
         if (IsKeyPressed(Keys.Y))
         {
             //players[1].SetObject(SpriteType.ArcherTower);
-            objects.Add(new SpriteObject(null, Side.Right, SpriteType.ResourceIron, players[0].Position));
+            objects.Add(new SpriteObject(null, Side.Right, SpriteType.ResourceIron, players[0].Position, graphics));
         }
 
         if (IsKeyPressed(Keys.U))
         {
-            objects.Add(new SpriteObject(null, Side.Right, SpriteType.Tree01, players[0].Position));
+            objects.Add(new SpriteObject(null, Side.Right, SpriteType.Tree01, players[0].Position, graphics));
         }
 
         if (IsKeyPressed(Keys.F8))

@@ -11,7 +11,7 @@ public class SpriteObjectItem : SpriteObject
     public int Quantity { get; set; }
     public bool Collectable;
 
-    public SpriteObjectItem(Sprite Owner, Side side, SpriteType spriteType, Vector2 initialPosition, int Quantity) : base(Owner, side, spriteType, initialPosition)
+    public SpriteObjectItem(Sprite Owner, Side side, SpriteType spriteType, Vector2 initialPosition, int Quantity, GraphicsDeviceManager graphics) : base(Owner, side, spriteType, initialPosition, graphics)
     {
         this.Quantity = Quantity;
         Collectable = true;
