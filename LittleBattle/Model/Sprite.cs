@@ -445,13 +445,6 @@ public class Sprite
 
     public void SetAttack()
     {
-        //Debug
-        _Bag.AddItem(SpriteType.Wood, 10);
-        _Bag.AddItem(SpriteType.Vine, 10);
-        _Bag.AddItem(SpriteType.Fruit, 10);
-        _Bag.AddItem(SpriteType.Iron, 10);
-
-
         if (Climb || Work || Attribute.AttackCooldown > 0) return;
         if (!EnabledAction()) return;
 
@@ -1314,6 +1307,11 @@ public class Sprite
     public int GetBagItem(SpriteType spriteType)
     {
         return _Bag.GetItemQuantity(spriteType);
+    }
+
+    public void AddBagItem(SpriteType spriteType, int val)
+    {
+        _Bag.AddItem(spriteType, val);
     }
 
     private void UpdateIcon()

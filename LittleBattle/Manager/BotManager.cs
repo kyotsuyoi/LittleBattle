@@ -35,64 +35,71 @@ namespace LittleBattle.Manager
                 if (target_enemy != null){
                     if (Target_EnemyAttack(bot, target_enemy)) goto _continue;
 
-                    if (!Target_EnemyDistance(bot, target_enemy) || target_enemy == null)
+                    if(Target_EnemyDistance(bot, target_enemy))
                     {
-                        if (goToCommand && bot.Team == players[0].Team)
-                        {
-                            bot.PatrolX_Area = players[0].RelativeX;
-                            bot.GoTo = true;
-                        }
-                        else if (bot.Team != players[0].Team)
-                        {
-                            bot.Patrol = true;
-                        }
-
-                        if (bot.GoTo)
-                        {
-                            //GoTo(bot);
-                        }
-                        else
-                        {
-                            Patrol(bot);
-                        }
+                        bot.PatrolX_Area = target_enemy.RelativeX;
+                        bot.GoTo = true;
                     }
-                }
 
-                var target_objectItem = SetTarget_ObjectItem(bot, objectItems);
-                if (target_objectItem != null)
-                {
-                    if (Target_GetObjectItem(bot, target_objectItem, objectItems)) goto _continue;
-
-                    if (!Target_ObjectItemDistance(bot, target_objectItem) || target_objectItem == null)
+                    if (bot.Team != players[0].Team)
                     {
-                        if (goToCommand && bot.Team == players[0].Team)
-                        {
-                            bot.PatrolX_Area = players[0].RelativeX;
-                            bot.GoTo = true;
-                        }
-                        else if (bot.Team != players[0].Team)
-                        {
-                            bot.Patrol = true;
-                        }
-
-                        if (bot.GoTo)
-                        {
-                            //GoTo(bot);
-                        }
-                        else if(bot.Patrol)
-                        {
-                            Patrol(bot);
-                        }
-                        else
-                        {
-                            bot.SetMovement(false, bot.GetSide());
-                        }
+                        bot.Patrol = true;
                     }
+
+                    //if (!Target_EnemyDistance(bot, target_enemy) || target_enemy == null)
+                    //{
+                    //    if (goToCommand && bot.Team == players[0].Team)
+                    //    {
+                    //        bot.PatrolX_Area = players[0].RelativeX;
+                    //        bot.GoTo = true;
+                    //    }
+                    //    else if (bot.Team != players[0].Team)
+                    //    {
+                    //        bot.Patrol = true;
+                    //    }
+
+                    //    if (!bot.GoTo)
+                    //    {
+                    //        Patrol(bot);
+                    //    }
+                    //}
                 }
-                else
-                {
-                    bot.SetMovement(false, bot.GetSide());
-                }
+
+                //var target_objectItem = SetTarget_ObjectItem(bot, objectItems);
+                //if (target_objectItem != null)
+                //{
+                //    if (Target_GetObjectItem(bot, target_objectItem, objectItems)) goto _continue;
+
+                //    if (!Target_ObjectItemDistance(bot, target_objectItem) || target_objectItem == null)
+                //    {
+                //        if (goToCommand && bot.Team == players[0].Team)
+                //        {
+                //            bot.PatrolX_Area = players[0].RelativeX;
+                //            bot.GoTo = true;
+                //        }
+                //        else if (bot.Team != players[0].Team)
+                //        {
+                //            bot.Patrol = true;
+                //        }
+
+                //        if (bot.GoTo)
+                //        {
+                //            //GoTo(bot);
+                //        }
+                //        else if(bot.Patrol)
+                //        {
+                //            Patrol(bot);
+                //        }
+                //        else
+                //        {
+                //            bot.SetMovement(false, bot.GetSide());
+                //        }
+                //    }
+                //}
+                //else
+                //{
+                //    bot.SetMovement(false, bot.GetSide());
+                //}
 
                 _continue:;
 
@@ -105,7 +112,12 @@ namespace LittleBattle.Manager
                     AllySameLocation(bot, bots);
                 }
 
-                if(bot.GoTo) GoTo(bot);
+                if (bot.Patrol && !bot.GoTo) Patrol(bot);
+                if (bot.GoTo) GoTo(bot);
+                if (!bot.GoTo && !bot.Patrol) 
+                {
+                    bot.SetMovement(false, bot.GetSide());
+                }
             }
         }
 
@@ -480,6 +492,14 @@ namespace LittleBattle.Manager
                 return;
             }
 
+            if (bot.classType == Enums.ClassType.Warrior)
+            {
+                if (bot.ID == 87)
+                {
+                    int a = 0;
+                }
+            }
+
             if (bot.PatrolX == 0)
             {
                 int randomVal;
@@ -493,42 +513,64 @@ namespace LittleBattle.Manager
             }
             else
             {
-                if (bot.RelativeX > bot.PatrolX)
-                {
-                    bot.SetMovement(true, Enums.Side.Left);
-                }
+               
+                bot.PatrolX_Area = bot.PatrolX;
+                bot.GoTo = true;
 
-                if (bot.RelativeX < bot.PatrolX)
-                {
-                    bot.SetMovement(true, Enums.Side.Right);
-                }
+                //if ((int)bot.RelativeX > (int)bot.PatrolX)
+                //{
+                //    bot.SetMovement(true, Enums.Side.Left);
+                //} 
 
-                if ((int)bot.RelativeX == (int)bot.PatrolX)
-                {
-                    bot.SetMovement(false, Enums.Side.None);
-                    bot.PatrolX = 0;
-                    bot.PatrolWait = 5;
-                }
+                //if ((int)bot.RelativeX < (int)bot.PatrolX)
+                //{
+                //    bot.SetMovement(true, Enums.Side.Right);
+                //}
+
+                //if ((int)bot.RelativeX == (int)bot.PatrolX)
+                //{
+                //    bot.SetMovement(false, Enums.Side.None);
+                //    bot.PatrolX = 0;
+                //    bot.PatrolWait = 5;
+                //}
             }
         }
 
         private void GoTo(SpriteBot bot)
         {
-            if (bot.RelativeX > bot.PatrolX_Area)
+            if (bot.classType == Enums.ClassType.Warrior)
+            {
+                if (bot.ID == 87)
+                {
+                    int a = 0;
+                }
+            }
+
+            bot.GoTo = false;
+            if ((int)bot.RelativeX > (int)bot.PatrolX_Area+4)
             {
                 bot.SetMovement(true, Enums.Side.Left);
+                bot.GoTo = true;
             }
 
-            if (bot.RelativeX < bot.PatrolX_Area)
+            if ((int)bot.RelativeX < (int)bot.PatrolX_Area)
             {
                 bot.SetMovement(true, Enums.Side.Right);
+                bot.GoTo = true;
             }
 
-            if ((int)bot.RelativeX == (int)bot.PatrolX_Area)
+            if(bot.Patrol && !bot.GoTo)
             {
                 bot.SetMovement(false, Enums.Side.None);
-                bot.GoTo = false;
+                bot.PatrolX = 0;
+                bot.PatrolWait = 5;
             }
+
+            //if ((int)bot.RelativeX > (int)bot.PatrolX_Area-1 && (int)bot.RelativeX < (int)bot.PatrolX_Area + 1)
+            //{
+            //    bot.SetMovement(false, Enums.Side.None);
+            //    bot.GoTo = false;
+            //}
         }
 
         private void VerifyToolBag(Sprite bot)

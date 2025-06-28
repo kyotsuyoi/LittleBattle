@@ -385,31 +385,41 @@ public static class InputManager
         if (IsKeyPressed(Keys.D6))
         {
             var val = Globals.NegativeLimit.Width + Globals.GroundX;
-            bots.Add(new SpriteBot(new Vector2(val, 0), SpriteType.Bot, Team.Team1, ClassType.Warrior));
+            bots.Add(new SpriteBot(new Vector2(val, Globals.GroundLevel), SpriteType.Bot, Team.Team1, ClassType.Warrior));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
+            bot.GoTo = true;
+            bot.PatrolX_Area = players[0].RelativeX;
         }
         if (IsKeyPressed(Keys.D7))
         {
             var val = Globals.NegativeLimit.Width + Globals.GroundX;
-            bots.Add(new SpriteBot(new Vector2(val, 0), SpriteType.Bot, Team.Team1, ClassType.Archer));
+            bots.Add(new SpriteBot(new Vector2(val, Globals.GroundLevel), SpriteType.Bot, Team.Team1, ClassType.Archer));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
+            bot.GoTo = true;
+            bot.PatrolX_Area = players[0].RelativeX;
+        }
+
+
+        if (IsKeyPressed(Keys.D8))
+        {
+            var val = Globals.PositiveLimit.Width + Globals.GroundX;
+            bots.Add(new SpriteBot(new Vector2(val, Globals.GroundLevel), SpriteType.Bot, Team.Team2, ClassType.Archer));
+            var bot = bots[bots.Count - 1];
+            bot.CenterX_Adjust();
+            bot.GoTo = true;
+            bot.PatrolX_Area = 0;
         }
 
         if (IsKeyPressed(Keys.D9))
         {
             var val = Globals.PositiveLimit.Width + Globals.GroundX;
-            bots.Add(new SpriteBot(new Vector2(val, 0), SpriteType.Bot, Team.Team2, ClassType.Warrior));
+            bots.Add(new SpriteBot(new Vector2(val, Globals.GroundLevel), SpriteType.Bot, Team.Team2, ClassType.Warrior));
             var bot = bots[bots.Count - 1];
             bot.CenterX_Adjust();
-        }
-        if (IsKeyPressed(Keys.D8))
-        {
-            var val = Globals.PositiveLimit.Width + Globals.GroundX;
-            bots.Add(new SpriteBot(new Vector2(val, 0), SpriteType.Bot, Team.Team2, ClassType.Archer));
-            var bot = bots[bots.Count - 1];
-            bot.CenterX_Adjust();
+            bot.GoTo = true;
+            bot.PatrolX_Area = 0;
         }
 
         if (IsKeyPressed(Keys.D0))
@@ -472,15 +482,25 @@ public static class InputManager
             }
         }
 
+        if (IsKeyPressed(Keys.Z))
+        {
+            players[0].AddBagItem(SpriteType.Wood, 10);
+            players[0].AddBagItem(SpriteType.Vine, 10);
+            players[0].AddBagItem(SpriteType.Fruit, 10);
+            players[0].AddBagItem(SpriteType.Iron, 10);
+        }
+
         if (IsKeyPressed(Keys.T))
         {
             players[0].SetObject(SpriteType.ArcherTower);
         }
+
         if (IsKeyPressed(Keys.Y))
         {
             //players[1].SetObject(SpriteType.ArcherTower);
             objects.Add(new SpriteObject(null, Side.Right, SpriteType.ResourceIron, players[0].Position));
         }
+
         if (IsKeyPressed(Keys.U))
         {
             objects.Add(new SpriteObject(null, Side.Right, SpriteType.Tree01, players[0].Position));
