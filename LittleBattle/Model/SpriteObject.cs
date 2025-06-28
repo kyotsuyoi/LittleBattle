@@ -36,12 +36,12 @@ public class SpriteObject
 
     public bool InteractionPointer { get; set; }
 
-    private Texture2D debugArea;
-    private Texture2D hpBarBackground;
-    private Texture2D hpBarForeground;
+    private static Texture2D debugArea;
+    private static Texture2D hpBarBackground;
+    private static Texture2D hpBarForeground;
 
-    Collision collision;
-    List<SpriteObjectItem> returnObjects;
+    private static Collision collision;
+    private List<SpriteObjectItem> returnObjects;
 
     public SpriteObject(Sprite Owner, Side side, SpriteType spriteType, Vector2 initialPosition, GraphicsDeviceManager graphics)
     {

@@ -35,8 +35,8 @@ public class SpriteFX
     private float deadAlpha = 1f;
     private bool dead = false;
 
-    protected Texture2D debugArea;
-    private Collision collision;
+    protected static Texture2D debugArea;
+    private static Collision collision;
 
     public SpriteFX(Sprite Owner, Side side, SpriteType spriteType, GraphicsDeviceManager graphics)
     {

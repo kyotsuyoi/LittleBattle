@@ -2,10 +2,8 @@
 using LittleBattle.Model;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Numerics;
-using System.Xml.Linq;
 
 namespace LittleBattle.Manager
 {
@@ -16,8 +14,8 @@ namespace LittleBattle.Manager
         //private List<Sprite> players;
 
         private float lastSecond = 0;
-        Collision collision = new Collision();
-        Random random = new Random();
+        private static Collision collision = new Collision();
+        private static Random random = new Random();
 
         public BotManager()
         {
@@ -34,8 +32,16 @@ namespace LittleBattle.Manager
             foreach (var bot in aliveBots)
             {
                 var target_enemy = SetTarget_Enemy(bot, players, bots);
+                bot.attackRange = false;
+                if(bot.LastDamageOwner != null && bot.LastDamageOwner.Active) 
+                {
+                    bot.PatrolX_Area = bot.LastDamageOwner.RelativeX;
+                    bot.GoTo = true;
+                }
+
                 if (target_enemy != null){
-                    if (Target_EnemyAttack(bot, target_enemy)) goto _continue;
+                    bot.attackRange = Target_EnemyAttack(bot, target_enemy);
+                    if (bot.attackRange) goto _continue;
 
                     if(Target_EnemyDistance(bot, target_enemy))
                     {
@@ -533,12 +539,10 @@ namespace LittleBattle.Manager
 
         private void GoTo(SpriteBot bot)
         {
-            if (bot.classType == Enums.ClassType.Warrior)
+            if (bot.attackRange) 
             {
-                if (bot.ID == 87)
-                {
-                    int a = 0;
-                }
+                bot.GoTo = false;
+                return;
             }
 
             bot.GoTo = false;

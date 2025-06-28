@@ -9,7 +9,7 @@ namespace LittleBattle.Manager
 {
     public class DebugManager
     {
-        public void Draw(SpriteBatch spriteBatch, SpriteFont font, Sprite player1, Sprite player2, List<SpriteBot> bots, Canvas _canvas, Sprite Cameraman) {
+        public void Draw(SpriteBatch spriteBatch, SpriteFont font, Sprite player1, Sprite player2, List<SpriteBot> bots, Canvas _canvas, Sprite Cameraman, long memoryUsage) {
 
             var x = Globals.Size.Width - 160;
             spriteBatch.DrawString(font, "Wood:" + player1.GetBagItem(Enums.SpriteType.Wood), new Vector2(x, 0), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1);
@@ -118,7 +118,10 @@ namespace LittleBattle.Manager
 
             spriteBatch.DrawString(font, "Cameraman.Speed:" + Cameraman.Attribute.Speed, new Vector2(10, 540), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1f);
             spriteBatch.DrawString(font, "Cameraman.Speed:" + Cameraman.Attribute.Speed, new Vector2(12, 542), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
-            
+
+            spriteBatch.DrawString(font, "GC memoryUsage:" + (int)((memoryUsage/1000) / 1000) + "MB", new Vector2(10, 560), Color.White, 0f, Vector2.One, 1f, SpriteEffects.None, 1f);
+            spriteBatch.DrawString(font, "GC memoryUsage:" + (int)((memoryUsage/1000) / 1000) + "MB", new Vector2(12, 562), Color.Black, 0f, Vector2.One, 1f, SpriteEffects.None, 0.9999f);
+
         }
 
     }

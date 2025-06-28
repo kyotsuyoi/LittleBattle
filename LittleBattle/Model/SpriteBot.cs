@@ -11,6 +11,8 @@ namespace LittleBattle.Model
         public float PatrolX_Area;
         public float PatrolWait;
         public bool GoTo = false;
+        public bool attackRange = false;
+        public Sprite LastDamageOwner { get; set; }
 
         public SpriteBot(Vector2 position, Enums.SpriteType spriteType, Enums.Team team, Enums.ClassType classType, GraphicsDeviceManager graphics) : base(Globals.GetNewID(), position, spriteType, team, classType, graphics)
         {
@@ -21,6 +23,16 @@ namespace LittleBattle.Model
         {
             PatrolX_Area = positionX;
             Patrol = true;
+        }
+
+        public override void TakeDamage(SpriteFX spriteFX)
+        {
+            LastDamageOwner = spriteFX.Owner;
+            if (!LastDamageOwner.Active)
+            {
+                LastDamageOwner = null;
+            }
+            TakeDamageCalc(spriteFX);
         }
 
         public override void Draw(SpriteBatch spriteBatch, SpriteFont font, GraphicsDeviceManager graphics)

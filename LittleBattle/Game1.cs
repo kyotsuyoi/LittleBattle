@@ -23,7 +23,7 @@ namespace LittleBattle
         protected override void Initialize()
         {
             //60FPS
-            this.TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 120.0f);
+            this.TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 60.0f);
 
             Globals.Content = Content;
             _gameManager = new GameManager(this, _graphics);

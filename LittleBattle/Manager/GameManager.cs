@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Xml.Linq;
+using System.Diagnostics; // To monitoring memory usage
 using static LittleBattle.Classes.Enums;
 
 public class GameManager
@@ -28,6 +29,10 @@ public class GameManager
     private Common Common;
 
     private Vector2 pos;
+
+    // Memory usage (bytes)
+    private long memoryUsage;
+    private double memoryTimer = 0;
 
     public GameManager(Game game, GraphicsDeviceManager graphics)
     {
@@ -135,6 +140,14 @@ public class GameManager
             }
         }
 
+        // Atualiza o timer e armazena o consumo de memória a cada segundo
+        memoryTimer += (double)Globals.ElapsedSeconds;
+        if (memoryTimer >= 1.0)
+        {
+            memoryUsage = GC.GetTotalMemory(false); //Process.GetCurrentProcess().WorkingSet64;
+            memoryTimer = 0;
+        }
+
         //Debug Command
         if (InputManager.ClearBot)
         {
@@ -167,49 +180,49 @@ public class GameManager
         objectItems = objectItems.Where(_object => _object.Active).ToList();
         var new_objectItems = new List<SpriteObjectItem>();
 
-        if (objects.Count <= 500)
+        foreach (var _objectItem in objects)
         {
-            foreach (var _objectItem in objects)
+            bool putNewObject = _objectItem.PutNewObject();
+            if (putNewObject)
             {
-                bool putNewObject = _objectItem.PutNewObject();
-                if (putNewObject)
-                {
-                    var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
-                    var pY = _objectItem.Position.Y;
-                    pos = new Vector2(pX, pY);
-                }
-
-                if (putNewObject)
-                {
-                    new_objectItems = Common.RandomObjects(new_objectItems, _objectItem.spriteType, pos, graphics);
-                }
-
-                if (_objectItem.DropNewObject() && (_objectItem.spriteType == SpriteType.Tree02 || _objectItem.spriteType == SpriteType.Tree02MidLife))
-                {
-                    var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
-                    var pY = _objectItem.Position.Y;
-                    pos = new Vector2(pX, pY);
-                    new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.Fruit, pos, graphics);
-                }
+                var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
+                var pY = _objectItem.Position.Y;
+                pos = new Vector2(pX, pY);
             }
 
-            foreach (var _object in new_objectItems)
+            if (putNewObject)
             {
-                objectItems.Add(_object);
+                new_objectItems = Common.RandomObjects(new_objectItems, _objectItem.spriteType, pos, graphics);
             }
 
-            foreach (var _object in objectItems)
+            if (_objectItem.DropNewObject() && (_objectItem.spriteType == SpriteType.Tree02 || _objectItem.spriteType == SpriteType.Tree02MidLife))
             {
-                _object.Update(objects);
-                var rottenFruits = _object.FruitCollision(objectItems);
-                if (_object.DropNewObject() && _object.spriteType == SpriteType.FruitRotten && Common.PercentualCalc(5 + (1 * rottenFruits.Count())))
+                var pX = (_objectItem.Position.X + (_objectItem.GetSize().X / 2));
+                var pY = _objectItem.Position.Y;
+                pos = new Vector2(pX, pY);
+                new_objectItems = Common.RandomObjects(new_objectItems, SpriteType.Fruit, pos, graphics);
+            }
+        }
+
+        foreach (var _object in new_objectItems)
+        {
+            objectItems.Add(_object);
+        }
+
+        var maxTrees = objects.Where(_obj => _obj.spriteType == SpriteType.Tree02Growing || _obj.spriteType == SpriteType.Tree02).ToList();
+        var maxFruit = objects.Where(_obj => _obj.spriteType == SpriteType.Fruit || _obj.spriteType == SpriteType.FruitRotten).ToList();
+        foreach (var _object in objectItems)
+        {
+            _object.Update(objects);           
+            var rottenFruits = _object.FruitCollision(objectItems);
+            if (_object.DropNewObject() && _object.spriteType == SpriteType.FruitRotten && Common.PercentualCalc(5 + (1 * rottenFruits.Count())))
+            {
+                //objects.Add(new SpriteObject(null, Side.None, SpriteType.Tree02Growing, _object.Position));
+
+                if (maxTrees.Count <= 60 && maxFruit.Count <= 100) objects.Add(new SpriteObject(null, Side.Left, SpriteType.Tree02Growing, _object.Position, graphics));
+                foreach (var rottenFruit in rottenFruits)
                 {
-                    //objects.Add(new SpriteObject(null, Side.None, SpriteType.Tree02Growing, _object.Position));
-                    objects.Add(new SpriteObject(null, Side.Left, SpriteType.Tree02Growing, _object.Position, graphics));
-                    foreach (var rottenFruit in rottenFruits)
-                    {
-                        rottenFruit.Active = false;
-                    }
+                    rottenFruit.Active = false;
                 }
             }
         }
@@ -266,7 +279,7 @@ public class GameManager
             player.Draw(spriteBatch, font, graphics);
         }
 
-        debugManager.Draw(spriteBatch, font, players[0], players[0], bots, _canvas, Cameraman);
+        debugManager.Draw(spriteBatch, font, players[0], players[0], bots, _canvas, Cameraman, memoryUsage);
 
         foreach (var obj in objects_layer1)
         {

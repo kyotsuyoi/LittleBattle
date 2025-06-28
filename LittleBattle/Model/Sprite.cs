@@ -64,12 +64,12 @@ public class Sprite
     private Common Common;
 
     protected GraphicsDeviceManager graphics;
-    protected Texture2D debugArea;
-    protected Texture2D hpBarBackground;
-    protected Texture2D hpBarForeground;
+    protected static Texture2D debugArea;
+    protected static Texture2D hpBarBackground;
+    protected static Texture2D hpBarForeground;
 
-    protected Random random; 
-    protected Collision collision;
+    protected static Random random; 
+    protected static Collision collision;
     protected SpriteObject newSpriteObject;
 
     // Adicione estes campos na classe Sprite
@@ -560,7 +560,12 @@ public class Sprite
         if (Attribute.StuntTime < 0) Attribute.StuntTime = 0;
     }
 
-    public void TakeDamage(SpriteFX spriteFX)
+    public virtual void TakeDamage(SpriteFX spriteFX)
+    {
+        TakeDamageCalc(spriteFX);
+    }
+
+    protected void TakeDamageCalc(SpriteFX spriteFX)
     {
         if (!spriteFX.Active) return;
         var Owner = spriteFX.Owner;
