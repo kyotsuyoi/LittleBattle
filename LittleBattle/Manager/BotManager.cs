@@ -4,46 +4,64 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using static LittleBattle.Classes.Enums;
 
 namespace LittleBattle.Manager
 {
     public class BotManager
     {
-        //private Sprite Cameraman;
-        //private List<Sprite> bots;
-        //private List<Sprite> players;
-
         private float lastSecond = 0;
         private static Collision collision = new Collision();
         private static Random random = new Random();
 
         public BotManager()
         {
-            //this.Cameraman = Cameraman;
-            //this.bots = bots;
-            //this.players = players;
         }
 
-        public void Update(List<SpriteBot> bots, List<Sprite> players, List<SpriteObjectItem> objectItems, bool goToCommand = false)
+        public void Update(List<SpriteBot> bots, List<Sprite> players, List<SpriteObjectItem> objectItems, List<SpriteObject> objects, bool goToCommand = false)
         {
             var aliveBots = bots.Where(bot => !bot.IsDead()).ToList();
-            //var test = bots.Where(bot => bot.Team != Enums.Team.Team1).ToList();
 
             foreach (var bot in aliveBots)
             {
+
+                var target_object = SetTarget_Object(bot, objects);
+                if (bot.classType == Enums.ClassType.Archer)
+                {
+                    if (target_object != null && target_object.spriteType == Enums.SpriteType.ArcherTower)
+                    {
+                        if (Target_GetObject(bot, target_object, objects))
+                        {
+                            if (!bot.Climb && bot.Position.Y + bot.Size.Y > target_object.Position.Y &&
+                            //To set interaction to the tower only in the calling site
+                            bot.PatrolX_Area > target_object.RelativeX && bot.PatrolX_Area < target_object.RelativeX + target_object.GetSize().X)
+                            {
+                                bot.SetInteractionObjects(objects, null);
+                                continue;
+                            }
+                        }
+                    }
+                }
+
+                if (bot.Climb) { 
+                    bot.SetMovement(false, Side.Up);
+                    continue;
+                }
+
                 var target_enemy = SetTarget_Enemy(bot, players, bots);
                 bot.attackRange = false;
-                if(bot.LastDamageOwner != null && bot.LastDamageOwner.Active) 
-                {
+                if (bot.LastDamageOwner != null && bot.LastDamageOwner.Active)
+                {    
                     bot.PatrolX_Area = bot.LastDamageOwner.RelativeX;
                     bot.GoTo = true;
                 }
 
-                if (target_enemy != null){
+                if (target_enemy != null)
+                {
                     bot.attackRange = Target_EnemyAttack(bot, target_enemy);
                     if (bot.attackRange) goto _continue;
 
-                    if(Target_EnemyDistance(bot, target_enemy))
+                    if (Target_EnemyDistance(bot, target_enemy))
                     {
                         bot.PatrolX_Area = target_enemy.RelativeX;
                         bot.GoTo = true;
@@ -122,7 +140,7 @@ namespace LittleBattle.Manager
 
                 if (bot.Patrol && !bot.GoTo) Patrol(bot);
                 if (bot.GoTo) GoTo(bot);
-                if (!bot.GoTo && !bot.Patrol) 
+                if (!bot.GoTo && !bot.Patrol)
                 {
                     bot.SetMovement(false, bot.GetSide());
                 }
@@ -132,13 +150,13 @@ namespace LittleBattle.Manager
         public void UpdateCamerman(SpriteCameraman Cameraman, List<Sprite> players)
         {
             var stop = false;
-            if (players[0].Climb) {
+            if (players[0].Climb)
+            {
                 stop = true;
             }
             var player_position_side = players[0].Position;
             if (Cameraman.GetSide() != players[0].GetSide())
             {
-                //Cameraman.Attribute.Speed = 3;
                 lastSecond = Globals.TotalSeconds - 1f;
             }
 
@@ -146,8 +164,7 @@ namespace LittleBattle.Manager
             {
                 player_position_side *= new Vector2(1f, 1);
             }
-            else
-            if (players[0].GetSide() == Enums.Side.Left)
+            else if (players[0].GetSide() == Enums.Side.Left)
             {
                 player_position_side /= new Vector2(1f, 1);
             }
@@ -195,7 +212,7 @@ namespace LittleBattle.Manager
             {
                 stop = true;
                 Cameraman.SameSpeed = true;
-                Cameraman.Attribute.Speed = players[0].Attribute.CurrentSpeed*2;
+                Cameraman.Attribute.Speed = players[0].Attribute.CurrentSpeed * 2;
             }
 
             if (!Cameraman.SameSpeed)
@@ -344,6 +361,43 @@ namespace LittleBattle.Manager
             return target;
         }
 
+        private SpriteObject SetTarget_Object(SpriteBot bot, List<SpriteObject> spriteObject)
+        {
+            SpriteObject target = null;
+
+            if (spriteObject.Count() <= 0) return target;
+            target = spriteObject[0];
+            float distance = 0;
+
+            if (bot.RelativeX >= target.RelativeX)
+            {
+                distance = bot.RelativeX - target.RelativeX;
+            }
+            if (bot.RelativeX < target.RelativeX)
+            {
+                distance = target.RelativeX - bot.RelativeX;
+            }
+
+            foreach (var item in spriteObject)
+            {
+                float inner_distace = 0;
+                if (bot.RelativeX >= item.RelativeX)
+                {
+                    inner_distace = bot.RelativeX - item.RelativeX;
+                }
+                if (bot.RelativeX < item.RelativeX)
+                {
+                    inner_distace = item.RelativeX - bot.RelativeX;
+                }
+                if (inner_distace < distance)
+                {
+                    distance = inner_distace;
+                    target = item;
+                }
+            }
+            return target;
+        }
+
         private bool Target_EnemyDistance(Sprite bot, Sprite target)
         {
             bool range = false;
@@ -435,17 +489,84 @@ namespace LittleBattle.Manager
             return renge;
         }
 
+        private bool Target_ObjectDistance(Sprite bot, SpriteObject target)
+        {
+
+            if (bot.classType != Enums.ClassType.Newbie) return false;
+
+            bool renge = false;
+            if (target == null) return false;
+
+            if (bot.RelativeX < target.RelativeX)
+            {
+                if ((target.RelativeX - bot.RelativeX < 400)
+                    && (bot.RelativeX < target.RelativeX))
+                {
+                    //Needs to get Range using a method (calc Attack Range)
+                    if (bot.RelativeX > target.RelativeX)
+                    {
+                        bot.SetMovement(false, Enums.Side.Right);
+                    }
+                    else
+                    {
+                        bot.SetMovement(true, Enums.Side.Right);
+                    }
+                    renge = true;
+                }
+            }
+
+            if (bot.RelativeX > target.RelativeX)
+            {
+                if ((bot.RelativeX - (target.RelativeX) < 400)
+                    && (target.RelativeX) * 1 < bot.RelativeX)
+                {
+                    //Needs to get Range using a method (calc Attack Range)
+                    if (bot.RelativeX < target.RelativeX)
+                    {
+                        bot.SetMovement(false, Enums.Side.Left);
+                    }
+                    else
+                    {
+                        bot.SetMovement(true, Enums.Side.Left);
+                    }
+                    renge = true;
+                }
+            }
+
+            return renge;
+        }
+
         private bool Target_EnemyAttack(Sprite bot, Sprite player)
         {
             var m = 1.2f;
             var d = 0.8f;
+            var collide = false;
             if (bot.classType == Enums.ClassType.Archer)
             {
                  m = 1.85f;
                  d = 0.15f;
+
+                collide = collision.SquareCollision(
+                    new Vector2((int)bot.RelativeX * d, 0),
+                    bot.GetSize() * new Vector2(m, 1),
+                    new Vector2((int)player.RelativeX * d, 0),
+                    player.GetSize() * new Vector2(m, 1)
+                );
+
+                if (!collide && bot.GroundLevel < Globals.GroundLevel)
+                {
+                    m = 2.05f;
+                    d = 0.1f;
+                    bot.SetMovement(false, Enums.Side.Up);
+                }
+
+                if (collide && bot.GroundLevel < Globals.GroundLevel)
+                {
+                    bot.SetMovement(false, Enums.Side.Down);
+                }
             }
 
-            var collide = collision.SquareCollision(
+            collide = collision.SquareCollision(
                 new Vector2((int)bot.RelativeX * d, 0),
                 bot.GetSize() * new Vector2(m, 1),
                 new Vector2((int)player.RelativeX * d, 0),
@@ -485,6 +606,18 @@ namespace LittleBattle.Manager
             return isCollide;
         }
 
+        private bool Target_GetObject(Sprite bot, SpriteObject item, List<SpriteObject> objects)
+        {
+            var isCollide = collision.IsCollide(bot.GetRectangle(), item.GetRectangle());
+
+            if (isCollide)
+            {
+                if (bot.RelativeX > item.RelativeX) bot.SetMovement(false, Enums.Side.Left);
+                if (bot.RelativeX < item.RelativeX) bot.SetMovement(false, Enums.Side.Right);
+            }
+            return isCollide;
+        }
+
         private void Patrol(SpriteBot bot)
         {
             if (!bot.Patrol) return;
@@ -492,14 +625,6 @@ namespace LittleBattle.Manager
             {
                 bot.PatrolWait -= Globals.ElapsedSeconds;
                 return;
-            }
-
-            if (bot.classType == Enums.ClassType.Warrior)
-            {
-                if (bot.ID == 87)
-                {
-                    int a = 0;
-                }
             }
 
             if (bot.PatrolX == 0)
@@ -546,7 +671,7 @@ namespace LittleBattle.Manager
             }
 
             bot.GoTo = false;
-            if ((int)bot.RelativeX > (int)bot.PatrolX_Area+4)
+            if ((int)bot.RelativeX > (int)bot.PatrolX_Area + 4)
             {
                 bot.SetMovement(true, Enums.Side.Left);
                 bot.GoTo = true;
@@ -558,7 +683,7 @@ namespace LittleBattle.Manager
                 bot.GoTo = true;
             }
 
-            if(bot.Patrol && !bot.GoTo)
+            if (bot.Patrol && !bot.GoTo)
             {
                 bot.SetMovement(false, Enums.Side.None);
                 bot.PatrolX = 0;
@@ -591,7 +716,7 @@ namespace LittleBattle.Manager
                 abr.Size = new Microsoft.Xna.Framework.Point(abr.Size.X / 2, abr.Size.Y);
                 abr.X = abr.X + abr.Size.X;
 
-                isCollide = isCollide || collision.IsCollide(br, abr);                
+                isCollide = isCollide || collision.IsCollide(br, abr);
             }
 
             if (isCollide && !bot.GoTo)
@@ -607,6 +732,5 @@ namespace LittleBattle.Manager
                 bot.GoTo = true;
             }
         }
-
     }
 }

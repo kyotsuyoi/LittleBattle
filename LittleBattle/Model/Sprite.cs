@@ -1307,6 +1307,7 @@ public class Sprite
     private SpriteObjectItem GetInteractObject(List<SpriteObjectItem> objects)
     {
         SpriteObjectItem _object = null;
+        if (objects == null) return null;
         objects = objects.Where(_spriteobject => !_spriteobject.IsDead()).ToList();
         foreach (var local_object in objects)
         {

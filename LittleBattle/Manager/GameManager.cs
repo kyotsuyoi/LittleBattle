@@ -160,16 +160,17 @@ public class GameManager
         {
             bot.Update();
             bot.UpdateSpriteFXDamage(players, bots, objects);
+            bot.UpdateInteraction(objects, objectItems);
         }
 
         if (InputManager.CommandBot)
         {
-            botManager.Update(bots, players, objectItems, true);
+            botManager.Update(bots, players, objectItems, objects, true);
             InputManager.CommandBot = false;
         }
         else
         {
-            botManager.Update(bots, players, objectItems);
+            botManager.Update(bots, players, objectItems, objects);
         }
         UpdateObjects();
     }
